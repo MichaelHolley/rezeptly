@@ -15,6 +15,13 @@
       "when": 1751989902208,
       "tag": "0001_remove_targeted_persons",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751990408542,
+      "tag": "0002_ingredient",
+      "breakpoints": true
     }
   ]
 }

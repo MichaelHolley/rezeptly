@@ -8,7 +8,7 @@
 </script>
 
 <div class="flex flex-row justify-start gap-4">
-	<p class="text-3xl font-bold">Recipes</p>
+	<h2>Recipes</h2>
 	<Button href="/create">+ Create</Button>
 </div>
 
