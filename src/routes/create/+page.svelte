@@ -1,4 +1,8 @@
-<form method="post">
+<script>
+	import { Button } from '$lib/components/ui/button';
+</script>
+
+<form method="post" class="flex flex-col gap-4">
 	<label>
 		Name
 		<input name="name" type="text" placeholder="Name" required />
@@ -11,5 +15,7 @@
 		Targeted Persons
 		<input name="targetedPersons" type="number" placeholder="Targeted Persons" required />
 	</label>
-	<button type="submit">+ Create</button>
+	<div class="flex flex-row">
+		<Button type="submit">+ Create</Button>
+	</div>
 </form>
