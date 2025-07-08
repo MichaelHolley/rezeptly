@@ -15,7 +15,7 @@
 <div class="my-4 flex flex-row flex-wrap gap-4">
 	{#each data.recipes as recipe}
 		<a href="/{recipe.id}" class="w-full max-w-xs">
-			<Card.Root class="group min-h-32">
+			<Card.Root class="group h-full">
 				<Card.Header>
 					<Card.Title class="truncate">{recipe.name}</Card.Title>
 					<Card.Description class="line-clamp-3 pt-1">
