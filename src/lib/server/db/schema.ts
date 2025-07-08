@@ -1,6 +1,8 @@
-import { pgTable, serial, integer } from 'drizzle-orm/pg-core';
+import { integer, pgTable, serial, timestamp } from 'drizzle-orm/pg-core';
 
-export const user = pgTable('user', {
+export const recipes = pgTable('recipes', {
 	id: serial('id').primaryKey(),
-	age: integer('age')
+	name: integer('name').notNull(),
+	description: integer('description').notNull(),
+	createdAt: timestamp('created_at').defaultNow()
 });
