@@ -8,3 +8,7 @@ export type NewIngredient = typeof ingredients.$inferInsert;
 
 export type RecipeIngredient = typeof recipeIngredients.$inferSelect;
 export type NewRecipeIngredient = typeof recipeIngredients.$inferInsert;
+
+export type RecipeWithIngredients = Recipe & {
+	ingredients: Ingredient[];
+};

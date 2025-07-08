@@ -32,3 +32,14 @@ export const recipeIngredients = pgTable('recipe_ingredients', {
 	quantity: varchar('quantity', { length: 50 }).notNull(),
 	unit: varchar('unit', { length: 50 })
 });
+
+export const recipeIngredientsRelations = relations(recipeIngredients, ({ one }) => ({
+	recipe: one(recipes, {
+		fields: [recipeIngredients.recipeId],
+		references: [recipes.id]
+	}),
+	ingredient: one(ingredients, {
+		fields: [recipeIngredients.ingredientId],
+		references: [ingredients.id]
+	})
+}));

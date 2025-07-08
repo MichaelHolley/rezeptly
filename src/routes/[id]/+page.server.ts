@@ -10,14 +10,22 @@ export const load = async ({ params }) => {
 		redirect(302, '/');
 	}
 
-	const recipe = await db
-		.select()
-		.from(recipes)
-		.where(eq(recipes.id, Number(id)));
+	const result = await db.query.recipes.findFirst({
+		where: eq(recipes.id, Number(id)),
+		with: {
+			recipeIngredients: {
+				with: {
+					ingredient: true
+				}
+			}
+		}
+	});
 
-	if (!recipe || recipe.length === 0 || !recipe[0]) {
+	console.log(result);
+
+	if (!result) {
 		redirect(302, '/');
 	}
 
-	return { recipe: recipe[0] };
+	return { recipe: result };
 };

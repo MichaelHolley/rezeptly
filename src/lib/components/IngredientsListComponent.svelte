@@ -1,7 +1,10 @@
 <script lang="ts">
-	import type { Ingredient } from '$lib/server/types';
+	import type { Ingredient, RecipeIngredient } from '$lib/server/types';
 
-	const { ingredients, class: className } = $props<{ ingredients: Ingredient[]; class?: string }>();
+	const { ingredients, class: className } = $props<{
+		ingredients: RecipeIngredient[];
+		class?: string;
+	}>();
 </script>
 
 <div class={className}>
