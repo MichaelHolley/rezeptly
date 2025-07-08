@@ -8,6 +8,13 @@
       "when": 1751978600545,
       "tag": "0000_init_recipes",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1751989902208,
+      "tag": "0001_remove_targeted_persons",
+      "breakpoints": true
     }
   ]
 }
