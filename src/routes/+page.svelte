@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import type { PageProps } from './$types';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
@@ -6,7 +7,10 @@
 	const { data }: PageProps = $props();
 </script>
 
-<div class="flex flex-row justify-end"></div>
+<div class="flex flex-row justify-start gap-4">
+	<p class="text-3xl font-bold">Recipes</p>
+	<Button href="/create">+ Create</Button>
+</div>
 
 <div class="my-4 flex flex-row flex-wrap gap-4">
 	{#each data.recipes as recipe}
