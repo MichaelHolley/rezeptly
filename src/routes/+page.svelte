@@ -1,15 +1,29 @@
 <script lang="ts">
+	import * as Card from '$lib/components/ui/card/';
 	import type { PageProps } from './$types';
+	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
 	const { data }: PageProps = $props();
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<div class="flex flex-row justify-end"></div>
 
-{#each data.recipes as recipe}
-	<div class="my-2 py-4">
-		<p class="text-xl font-bold">{recipe.name}</p>
-		<p>{recipe.description}</p>
-	</div>
-{/each}
+<div class="my-4 flex flex-row flex-wrap gap-4">
+	{#each data.recipes as recipe}
+		<a href="/{recipe.id}" class="w-full max-w-xs">
+			<Card.Root class="group min-h-32">
+				<Card.Header>
+					<Card.Title class="truncate">{recipe.name}</Card.Title>
+					<Card.Description class="line-clamp-3 pt-1">
+						{recipe.description}
+					</Card.Description>
+					<Card.Action>
+						<ArrowRightIcon
+							class="h-4 w-4 text-zinc-400 transition-all group-hover:text-zinc-700"
+						/>
+					</Card.Action>
+				</Card.Header>
+			</Card.Root>
+		</a>
+	{/each}
+</div>
