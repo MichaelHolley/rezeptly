@@ -17,7 +17,6 @@
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
 		"db:generate": "drizzle-kit generate",
-		"vercel:build": "pnpm db:migrate && pnpm build"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
