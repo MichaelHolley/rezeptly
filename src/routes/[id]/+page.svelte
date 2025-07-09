@@ -16,16 +16,18 @@
 	</form>
 </div>
 
+<p class="mt-1 text-xs text-zinc-400">Created: {data.recipe.createdAt?.toLocaleDateString()}</p>
+
 <p class="my-4 text-base font-light text-zinc-500">{data.recipe.description}</p>
 
-<div class="flex flex-row justify-between gap-12">
+<div class="flex flex-row items-start justify-between gap-12">
 	<div>
-		<div class="my-4 block md:hidden">
+		<div class="block md:hidden">
 			<h3>Ingredients</h3>
 			<IngredientsListComponent ingredients={data.recipe.recipeIngredients} />
 		</div>
 
-		<div class="my-4">
+		<div>
 			<h3>Instructions</h3>
 		</div>
 	</div>
