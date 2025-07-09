@@ -1,12 +1,22 @@
 <script lang="ts">
 	import IngredientsListComponent from '$lib/components/IngredientsListComponent.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
 	const { data } = $props();
 </script>
 
-<h2>{data.recipe.name}</h2>
+<div class="flex flex-row justify-between">
+	<h2>{data.recipe.name}</h2>
+	<form method="POST" action="?/delete">
+		<Button class="btn btn-error" variant="destructive" type="submit">
+			<TrashIcon />
+			Delete
+		</Button>
+	</form>
+</div>
 
-<p class="my-4 text-lg font-light text-zinc-500">{data.recipe.description}</p>
+<p class="my-4 text-base font-light text-zinc-500">{data.recipe.description}</p>
 
 <div class="flex flex-row justify-between gap-12">
 	<div>

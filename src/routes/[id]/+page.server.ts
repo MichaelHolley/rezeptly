@@ -27,3 +27,17 @@ export const load = async ({ params }) => {
 
 	return { recipe: result };
 };
+
+export const actions = {
+	delete: async (event) => {
+		const { id } = event.params;
+
+		if (!id || isNaN(Number(id))) {
+			return { status: 400 };
+		}
+
+		await db.delete(recipes).where(eq(recipes.id, Number(id)));
+
+		return redirect(302, '/');
+	}
+};
