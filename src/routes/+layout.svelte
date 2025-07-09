@@ -11,7 +11,7 @@
 			<div>
 				<a href="/" class="flex flex-row items-center gap-2">
 					<CookingPotIcon class="h-8 w-8 stroke-orange-500 stroke-3" />
-					<h1>Rezeptly</h1>
+					<h1 class="font-extralight! tracking-tighter!">Rezeptly</h1>
 				</a>
 			</div>
 			<div></div>

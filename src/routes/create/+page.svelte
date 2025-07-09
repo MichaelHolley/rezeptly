@@ -11,10 +11,10 @@
 		<Input name="name" type="text" placeholder="Name" required />
 	</div>
 	<div class="form-group">
-		<Label>Short Description</Label>
-		<Textarea name="description" placeholder="Short Description" required />
+		<Label>Description</Label>
+		<Textarea name="description" placeholder="Short Recipe Description" required />
 	</div>
-	<div class="flex flex-row">
+	<div class="flex flex-row justify-end">
 		<Button type="submit">+ Create</Button>
 	</div>
 </form>
