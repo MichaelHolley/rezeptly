@@ -21,8 +21,6 @@ export const load = async ({ params }) => {
 		}
 	});
 
-	console.log(result);
-
 	if (!result) {
 		redirect(302, '/');
 	}
