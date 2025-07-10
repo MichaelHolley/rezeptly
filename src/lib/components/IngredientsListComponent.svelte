@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Ingredient, RecipeIngredient } from '$lib/server/types';
+	import type { Ingredient } from '$lib/server/types';
 
 	const { ingredients, class: className } = $props<{
-		ingredients: RecipeIngredient[];
+		ingredients: Ingredient[];
 		class?: string;
 	}>();
 </script>

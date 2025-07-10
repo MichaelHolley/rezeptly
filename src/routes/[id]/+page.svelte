@@ -1,7 +1,9 @@
 <script lang="ts">
+	import IngredientsSheet from '$lib/components/IngredientsSheet.svelte';
 	import IngredientsListComponent from '$lib/components/IngredientsListComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
+	import PenIcon from '@lucide/svelte/icons/pen';
 
 	const { data } = $props();
 </script>
@@ -23,7 +25,12 @@
 <div class="flex flex-row items-start justify-between gap-12">
 	<div>
 		<div class="block md:hidden">
-			<h3>Ingredients</h3>
+			<div class="flex flex-row gap-1">
+				<h3>Ingredients</h3>
+				<IngredientsSheet recipeId={data.recipe.id} ingredients={data.recipe.ingredients}>
+					<Button variant="ghost" slot="trigger"><PenIcon /></Button>
+				</IngredientsSheet>
+			</div>
 			<IngredientsListComponent ingredients={data.recipe.ingredients} />
 		</div>
 
@@ -32,7 +39,12 @@
 		</div>
 	</div>
 	<div class="hidden md:block">
-		<h3>Ingredients</h3>
+		<div class="flex flex-row gap-1">
+			<h3>Ingredients</h3>
+			<IngredientsSheet recipeId={data.recipe.id} ingredients={data.recipe.ingredients}>
+				<Button variant="ghost" slot="trigger"><PenIcon /></Button>
+			</IngredientsSheet>
+		</div>
 		<IngredientsListComponent ingredients={data.recipe.ingredients} />
 	</div>
 </div>

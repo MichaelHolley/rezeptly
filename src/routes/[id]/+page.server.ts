@@ -28,5 +28,16 @@ export const actions = {
 		await deleteRecipe(Number(id));
 
 		return redirect(302, '/');
+	},
+	updateIngredients: async (event) => {
+		const { id } = event.params;
+
+		if (!id || isNaN(Number(id))) {
+			return { status: 400 };
+		}
+
+		// TODO: Update ingredients
+
+		return { status: 200 };
 	}
 };
