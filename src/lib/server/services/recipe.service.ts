@@ -7,7 +7,8 @@ export const getRecipes = async (): Promise<RecipeWithIngredients[]> => {
 	const result = await db.query.recipes.findMany({
 		with: {
 			ingredients: true
-		}
+		},
+		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
 	});
 	return result;
 };

@@ -13,7 +13,6 @@
 	<form method="POST" action="?/delete">
 		<Button class="btn btn-error" variant="destructive" type="submit">
 			<TrashIcon />
-			Delete
 		</Button>
 	</form>
 </div>
