@@ -1,3 +1,4 @@
+import { createIngredient, deleteIngredient } from '$lib/server/services';
 import { deleteRecipe, getRecipeById } from '$lib/server/services/recipe.service.js';
 import { redirect } from '@sveltejs/kit';
 
@@ -29,14 +30,42 @@ export const actions = {
 
 		return redirect(302, '/');
 	},
-	updateIngredients: async (event) => {
+	addIngredient: async (event) => {
 		const { id } = event.params;
 
 		if (!id || isNaN(Number(id))) {
 			return { status: 400 };
 		}
 
-		// TODO: Update ingredients
+		const formData = await event.request.formData();
+		const name = formData.get('name');
+
+		if (!name) {
+			return { status: 400, message: 'Name is required' };
+		}
+
+		await createIngredient({
+			name: name as string,
+			recipeId: Number(id)
+		});
+
+		return { status: 200 };
+	},
+	deleteIngredient: async (event) => {
+		const { id } = event.params;
+
+		if (!id || isNaN(Number(id))) {
+			return { status: 400 };
+		}
+
+		const formData = await event.request.formData();
+		const ingrId = formData.get('id') as string;
+
+		if (!ingrId) {
+			return { status: 400 };
+		}
+
+		await deleteIngredient(Number(ingrId));
 
 		return { status: 200 };
 	}

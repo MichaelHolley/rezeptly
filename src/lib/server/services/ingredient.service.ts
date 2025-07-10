@@ -1,12 +1,12 @@
+import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients } from '../db/schema';
-import { eq, inArray } from 'drizzle-orm';
 import type { Ingredient, NewIngredient } from '../types';
 
 export const getIngredients = async (recipeId: number): Promise<Ingredient[]> => {
 	return await db.query.ingredients.findMany({
-        where: eq(ingredients.recipeId, recipeId)
-    });
+		where: eq(ingredients.recipeId, recipeId)
+	});
 };
 
 export const createIngredient = async (data: NewIngredient): Promise<Ingredient> => {
@@ -14,7 +14,10 @@ export const createIngredient = async (data: NewIngredient): Promise<Ingredient>
 	return result[0];
 };
 
-export const updateIngredient = async (id: number, data: Partial<NewIngredient>): Promise<Ingredient> => {
+export const updateIngredient = async (
+	id: number,
+	data: Partial<NewIngredient>
+): Promise<Ingredient> => {
 	const result = await db.update(ingredients).set(data).where(eq(ingredients.id, id)).returning();
 	return result[0];
 };
@@ -43,14 +46,12 @@ export const updateIngredientsForRecipe = async (
 		);
 
 		if (ingredientsToDelete.length > 0) {
-			await tx
-				.delete(ingredients)
-				.where(
-					inArray(
-						ingredients.id,
-						ingredientsToDelete.map((i) => i.id)
-					)
-				);
+			await tx.delete(ingredients).where(
+				inArray(
+					ingredients.id,
+					ingredientsToDelete.map((i) => i.id)
+				)
+			);
 		}
 
 		const ingredientsToAdd = newIngredientNames

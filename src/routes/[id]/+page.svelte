@@ -1,12 +1,22 @@
 <script lang="ts">
-	import IngredientsSheet from '$lib/components/IngredientsSheet.svelte';
-	import IngredientsListComponent from '$lib/components/IngredientsListComponent.svelte';
+	import IngredientsListComponent from '$lib/components/ingredients/IngredientsListComponent.svelte';
+	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import PenIcon from '@lucide/svelte/icons/pen';
+	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
 	const { data } = $props();
 </script>
+
+{#snippet ingredientsBlock()}
+	<div class="flex flex-row gap-1 pb-2">
+		<h3>Ingredients</h3>
+		<IngredientsSheet ingredients={data.recipe.ingredients}>
+			<Button variant="ghost" slot="trigger"><PenIcon /></Button>
+		</IngredientsSheet>
+	</div>
+	<IngredientsListComponent ingredients={data.recipe.ingredients} />
+{/snippet}
 
 <div class="flex flex-row justify-between">
 	<h2>{data.recipe.name}</h2>
@@ -19,31 +29,19 @@
 
 <p class="mt-1 text-xs text-zinc-400">Created: {data.recipe.createdAt?.toLocaleDateString()}</p>
 
-<p class="my-4 text-base font-light text-zinc-500">{data.recipe.description}</p>
+<p class="mt-4 mb-8 text-base font-light text-zinc-500">{data.recipe.description}</p>
 
 <div class="flex flex-row items-start justify-between gap-12">
 	<div>
 		<div class="block md:hidden">
-			<div class="flex flex-row gap-1">
-				<h3>Ingredients</h3>
-				<IngredientsSheet recipeId={data.recipe.id} ingredients={data.recipe.ingredients}>
-					<Button variant="ghost" slot="trigger"><PenIcon /></Button>
-				</IngredientsSheet>
-			</div>
-			<IngredientsListComponent ingredients={data.recipe.ingredients} />
+			{@render ingredientsBlock()}
 		</div>
 
 		<div>
-			<h3>Instructions</h3>
+			<h3 class="pb-2">Instructions</h3>
 		</div>
 	</div>
 	<div class="hidden md:block">
-		<div class="flex flex-row gap-1">
-			<h3>Ingredients</h3>
-			<IngredientsSheet recipeId={data.recipe.id} ingredients={data.recipe.ingredients}>
-				<Button variant="ghost" slot="trigger"><PenIcon /></Button>
-			</IngredientsSheet>
-		</div>
-		<IngredientsListComponent ingredients={data.recipe.ingredients} />
+		{@render ingredientsBlock()}
 	</div>
 </div>
