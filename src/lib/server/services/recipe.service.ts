@@ -54,8 +54,3 @@ export const updateRecipe = async (id: number, data: Partial<NewRecipe>): Promis
 export const deleteRecipe = async (id: number): Promise<void> => {
 	await db.delete(recipes).where(eq(recipes.id, id));
 };
-
-export const createRecipeWithoutIngredients = async (data: NewRecipe): Promise<Recipe> => {
-	const [newRecipe] = await db.insert(recipes).values(data).returning();
-	return newRecipe;
-};

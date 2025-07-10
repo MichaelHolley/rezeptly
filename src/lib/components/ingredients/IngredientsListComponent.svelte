@@ -8,11 +8,11 @@
 </script>
 
 <div class={className}>
-	<div class="flex flex-col gap-2">
+	<ul class="max-w-sm space-y-2">
 		{#each ingredients as ingredient}
-			<div class="flex flex-row items-center justify-between gap-6">
-				<span class="grow text-sm font-medium">{ingredient.name}</span>
-			</div>
+			<li class="flex flex-row items-center justify-between gap-6">
+				<span class="grow text-sm font-medium text-wrap">{ingredient.name}</span>
+			</li>
 		{/each}
-	</div>
+	</ul>
 </div>

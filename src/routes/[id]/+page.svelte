@@ -8,16 +8,6 @@
 	const { data } = $props();
 </script>
 
-{#snippet ingredientsBlock()}
-	<div class="flex flex-row gap-1 pb-2">
-		<h3>Ingredients</h3>
-		<IngredientsSheet ingredients={data.recipe.ingredients}>
-			<Button variant="ghost" slot="trigger"><PenIcon /></Button>
-		</IngredientsSheet>
-	</div>
-	<IngredientsListComponent ingredients={data.recipe.ingredients} />
-{/snippet}
-
 <div class="flex flex-row justify-between">
 	<h2>{data.recipe.name}</h2>
 	<form method="POST" action="?/delete">
@@ -33,7 +23,7 @@
 
 <div class="flex flex-row items-start justify-between gap-12">
 	<div>
-		<div class="block md:hidden">
+		<div class="mb-8 block md:hidden">
 			{@render ingredientsBlock()}
 		</div>
 
@@ -45,3 +35,13 @@
 		{@render ingredientsBlock()}
 	</div>
 </div>
+
+{#snippet ingredientsBlock()}
+	<div class="flex flex-row gap-1 pb-2">
+		<h3>Ingredients</h3>
+		<IngredientsSheet ingredients={data.recipe.ingredients}>
+			<Button variant="ghost" slot="trigger"><PenIcon /></Button>
+		</IngredientsSheet>
+	</div>
+	<IngredientsListComponent ingredients={data.recipe.ingredients} />
+{/snippet}

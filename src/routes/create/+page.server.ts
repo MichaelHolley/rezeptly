@@ -1,13 +1,14 @@
-import { createRecipeWithoutIngredients } from '$lib/server/services/recipe.service.js';
+import { createRecipe } from '$lib/server/services/recipe.service.js';
 import { redirect } from '@sveltejs/kit';
 
 export const actions = {
 	default: async (event) => {
 		const formData = await event.request.formData();
 
-		const recipe = await createRecipeWithoutIngredients({
+		const recipe = await createRecipe({
 			name: formData.get('name') as string,
-			description: formData.get('description') as string
+			description: formData.get('description') as string,
+			ingredients: []
 		});
 
 		return redirect(302, `/${recipe.id}`);

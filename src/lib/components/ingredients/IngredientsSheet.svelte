@@ -6,6 +6,7 @@
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
+	import PlusIcon from '@lucide/svelte/icons/plus';
 
 	const { ingredients } = $props<{
 		ingredients: Ingredient[];
@@ -44,7 +45,7 @@
 			</div>
 			<form method="POST" action="?/addIngredient" class="mt-6 flex flex-row gap-2" use:enhance>
 				<Input type="text" name="name" required />
-				<Button type="submit">+</Button>
+				<Button type="submit"><PlusIcon /></Button>
 			</form>
 		</div>
 		<Sheet.Footer>

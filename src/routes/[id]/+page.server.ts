@@ -38,14 +38,14 @@ export const actions = {
 		}
 
 		const formData = await event.request.formData();
-		const name = formData.get('name');
+		const name = formData.get('name') as string;
 
 		if (!name) {
 			return { status: 400, message: 'Name is required' };
 		}
 
 		await createIngredient({
-			name: name as string,
+			name: name,
 			recipeId: Number(id)
 		});
 
