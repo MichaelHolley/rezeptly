@@ -24,7 +24,7 @@
 	<div>
 		<div class="block md:hidden">
 			<h3>Ingredients</h3>
-			<IngredientsListComponent ingredients={data.recipe.recipeIngredients} />
+			<IngredientsListComponent ingredients={data.recipe.ingredients} />
 		</div>
 
 		<div>
@@ -33,6 +33,6 @@
 	</div>
 	<div class="hidden md:block">
 		<h3>Ingredients</h3>
-		<IngredientsListComponent ingredients={data.recipe.recipeIngredients} />
+		<IngredientsListComponent ingredients={data.recipe.ingredients} />
 	</div>
 </div>

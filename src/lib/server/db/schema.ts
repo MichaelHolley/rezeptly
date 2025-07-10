@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { integer, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const recipes = pgTable('recipes', {
 	id: serial('id').primaryKey(),
@@ -9,37 +9,20 @@ export const recipes = pgTable('recipes', {
 });
 
 export const recipesRelations = relations(recipes, ({ many }) => ({
-	recipeIngredients: many(recipeIngredients)
+	ingredients: many(ingredients)
 }));
 
 export const ingredients = pgTable('ingredients', {
 	id: serial('id').primaryKey(),
-	name: text('name').notNull().unique()
-});
-
-export const ingredientsRelations = relations(ingredients, ({ many }) => ({
-	recipeIngredients: many(recipeIngredients)
-}));
-
-export const recipeIngredients = pgTable('recipe_ingredients', {
-	id: serial('id').primaryKey(),
+	name: text('name').notNull(),
 	recipeId: integer('recipe_id')
 		.notNull()
-		.references(() => recipes.id),
-	ingredientId: integer('ingredient_id')
-		.notNull()
-		.references(() => ingredients.id),
-	quantity: varchar('quantity', { length: 50 }).notNull(),
-	unit: varchar('unit', { length: 50 })
+		.references(() => recipes.id, { onDelete: 'cascade' })
 });
 
-export const recipeIngredientsRelations = relations(recipeIngredients, ({ one }) => ({
+export const ingredientsRelations = relations(ingredients, ({ one }) => ({
 	recipe: one(recipes, {
-		fields: [recipeIngredients.recipeId],
+		fields: [ingredients.recipeId],
 		references: [recipes.id]
-	}),
-	ingredient: one(ingredients, {
-		fields: [recipeIngredients.ingredientId],
-		references: [ingredients.id]
 	})
 }));

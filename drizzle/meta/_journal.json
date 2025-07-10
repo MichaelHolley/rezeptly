@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1751978600545,
-      "tag": "0000_init_recipes",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1751989902208,
-      "tag": "0001_remove_targeted_persons",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1751990408542,
-      "tag": "0002_ingredient",
+      "when": 1752134274082,
+      "tag": "0000_init",
       "breakpoints": true
     }
   ]

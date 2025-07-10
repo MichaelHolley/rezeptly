@@ -1,7 +1,5 @@
-import { db } from '$lib/server/db';
-import { recipes } from '$lib/server/db/schema.js';
+import { deleteRecipe, getRecipeById } from '$lib/server/services/recipe.service.js';
 import { redirect } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
 
 export const load = async ({ params }) => {
 	const { id } = params;
@@ -10,22 +8,13 @@ export const load = async ({ params }) => {
 		redirect(302, '/');
 	}
 
-	const result = await db.query.recipes.findFirst({
-		where: eq(recipes.id, Number(id)),
-		with: {
-			recipeIngredients: {
-				with: {
-					ingredient: true
-				}
-			}
-		}
-	});
+	const recipe = await getRecipeById(Number(id));
 
-	if (!result) {
+	if (!recipe) {
 		redirect(302, '/');
 	}
 
-	return { recipe: result };
+	return { recipe };
 };
 
 export const actions = {
@@ -36,7 +25,7 @@ export const actions = {
 			return { status: 400 };
 		}
 
-		await db.delete(recipes).where(eq(recipes.id, Number(id)));
+		await deleteRecipe(Number(id));
 
 		return redirect(302, '/');
 	}
