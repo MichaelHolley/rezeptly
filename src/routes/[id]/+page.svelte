@@ -17,7 +17,9 @@
 	</form>
 </div>
 
-<p class="mt-1 text-xs text-zinc-400">Created: {data.recipe.createdAt?.toLocaleDateString()}</p>
+<p class="mt-1 text-xs text-zinc-400">
+	Created: {data.recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
+</p>
 
 <p class="mt-4 mb-8 text-base font-light text-zinc-500">{data.recipe.description}</p>
 
