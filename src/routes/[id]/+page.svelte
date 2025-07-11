@@ -1,20 +1,16 @@
 <script lang="ts">
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsListComponent.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
+	import DeleteRecipeConfirmationModal from '$lib/components/recipes/DeleteRecipeConfirmationModal.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import PenIcon from '@lucide/svelte/icons/pen';
-	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
 	const { data } = $props();
 </script>
 
 <div class="flex flex-row justify-between">
 	<h2>{data.recipe.name}</h2>
-	<form method="POST" action="?/delete">
-		<Button class="btn btn-error" variant="destructive" type="submit">
-			<TrashIcon />
-		</Button>
-	</form>
+	<DeleteRecipeConfirmationModal />
 </div>
 
 <p class="mt-1 text-xs text-zinc-400">
