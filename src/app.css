@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 h1 {
-	@apply text-4xl font-bold;
+	@apply text-5xl;
 }
 
 h2 {
@@ -18,6 +18,10 @@ h3 {
 
 h4 {
 	@apply text-xl font-semibold;
+}
+
+.font-styled {
+	font-family: 'Modak';
 }
 
 :root {

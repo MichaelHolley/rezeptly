@@ -1,20 +1,19 @@
 <script lang="ts">
 	import '../app.css';
-	import CookingPotIcon from '@lucide/svelte/icons/cooking-pot';
+	import UtensilsIcon from '@lucide/svelte/icons/utensils';
 
 	let { children } = $props();
 </script>
 
 <nav class="bg-zinc-50 py-2 shadow-sm">
 	<div class="container mx-auto px-3 md:px-6">
-		<div class=" flex flex-row justify-between">
+		<div class=" flex flex-row justify-center">
 			<div>
-				<a href="/" class="flex flex-row items-center gap-2">
-					<CookingPotIcon class="h-8 w-8 stroke-orange-500 stroke-3" />
-					<h1 class="font-extralight! tracking-tighter!">Rezeptly</h1>
+				<a href="/" class="flex flex-row items-center gap-3">
+					<UtensilsIcon class="stroke-foreground h-8 w-8 stroke-3" />
+					<h1 class="font-styled pt-2 text-orange-500">Rezeptly</h1>
 				</a>
 			</div>
-			<div></div>
 		</div>
 	</div>
 </nav>
