@@ -4,26 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-h1 {
-	@apply text-5xl;
-}
-
-h2 {
-	@apply text-3xl font-bold;
-}
-
-h3 {
-	@apply text-2xl font-semibold;
-}
-
-h4 {
-	@apply text-xl font-semibold;
-}
-
-.font-styled {
-	font-family: 'Modak';
-}
-
 :root {
 	--radius: 0.625rem;
 	--background: oklch(1 0 0);
@@ -138,4 +118,30 @@ h4 {
 	body {
 		@apply bg-background text-foreground;
 	}
+}
+
+h1 {
+	@apply text-5xl;
+}
+
+h2 {
+	@apply text-3xl font-bold;
+}
+
+h3 {
+	@apply text-2xl font-semibold;
+}
+
+h4 {
+	@apply text-xl font-semibold;
+}
+
+.font-styled {
+	font-family: 'Modak';
+}
+
+.form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }

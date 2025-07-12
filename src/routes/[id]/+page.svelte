@@ -20,7 +20,7 @@
 	Created: {data.recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
 </p>
 
-<p class="mt-4 mb-8 text-base font-light text-zinc-500">{data.recipe.description}</p>
+<p class="mt-6 mb-8 text-base font-light text-zinc-500">{data.recipe.description}</p>
 
 <div class="flex flex-row items-start justify-between gap-12">
 	<div>

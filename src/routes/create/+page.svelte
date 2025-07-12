@@ -21,11 +21,3 @@
 		<Button type="submit">+ Create</Button>
 	</div>
 </form>
-
-<style>
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-</style>

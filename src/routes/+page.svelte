@@ -1,13 +1,10 @@
 <script lang="ts">
-	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
 </script>
-
-<BreadcrumbComponent />
 
 <div class="my-4 flex flex-row flex-wrap gap-4">
 	{#each data.recipes as recipe}
