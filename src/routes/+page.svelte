@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Breadcrumb from '$lib/components/ui/breadcrumb/';
+	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import type { PageProps } from './$types';
@@ -7,13 +7,7 @@
 	const { data }: PageProps = $props();
 </script>
 
-<Breadcrumb.Root class="mb-4">
-	<Breadcrumb.List>
-		<Breadcrumb.Item>
-			<Breadcrumb.Link href="/">Home</Breadcrumb.Link>
-		</Breadcrumb.Item>
-	</Breadcrumb.List>
-</Breadcrumb.Root>
+<BreadcrumbComponent />
 
 <div class="my-4 flex flex-row flex-wrap gap-4">
 	{#each data.recipes as recipe}

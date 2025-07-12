@@ -1,22 +1,12 @@
 <script>
-	import * as Breadcrumb from '$lib/components/ui/breadcrumb/';
+	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 </script>
 
-<Breadcrumb.Root class="mb-4">
-	<Breadcrumb.List>
-		<Breadcrumb.Item>
-			<Breadcrumb.Link href="/">Home</Breadcrumb.Link>
-		</Breadcrumb.Item>
-		<Breadcrumb.Separator />
-		<Breadcrumb.Item>
-			<Breadcrumb.Link href="/create">Create Recipe</Breadcrumb.Link>
-		</Breadcrumb.Item>
-	</Breadcrumb.List>
-</Breadcrumb.Root>
+<BreadcrumbComponent breadcrumbs={[{ name: 'Create Recipe', href: '/create' }]} />
 
 <form method="post" class="flex flex-col gap-4">
 	<div class="form-group">
