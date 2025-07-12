@@ -7,11 +7,6 @@
 	const { data }: PageProps = $props();
 </script>
 
-<div class="flex flex-row justify-start gap-4">
-	<h2>Recipes</h2>
-	<Button href="/create">+ Create</Button>
-</div>
-
 <div class="my-4 flex flex-row flex-wrap gap-4">
 	{#each data.recipes as recipe}
 		<a href="/{recipe.id}" class="w-full max-w-xs">
