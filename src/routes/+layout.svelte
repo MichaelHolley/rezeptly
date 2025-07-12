@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/';
 	import UtensilsIcon from '@lucide/svelte/icons/utensils';
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb/';
 	import '../app.css';
 
 	let { children } = $props();

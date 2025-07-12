@@ -1,11 +1,19 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/';
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb/';
 	import * as Card from '$lib/components/ui/card/';
-	import type { PageProps } from './$types';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
 </script>
+
+<Breadcrumb.Root class="mb-4">
+	<Breadcrumb.List>
+		<Breadcrumb.Item>
+			<Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+		</Breadcrumb.Item>
+	</Breadcrumb.List>
+</Breadcrumb.Root>
 
 <div class="my-4 flex flex-row flex-wrap gap-4">
 	{#each data.recipes as recipe}

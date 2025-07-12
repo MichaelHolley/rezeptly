@@ -2,11 +2,26 @@
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsListComponent.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import DeleteRecipeConfirmationModal from '$lib/components/recipes/DeleteRecipeConfirmationModal.svelte';
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb/';
 	import { Button } from '$lib/components/ui/button';
 	import PenIcon from '@lucide/svelte/icons/pen';
 
 	const { data } = $props();
 </script>
+
+<Breadcrumb.Root class="mb-4">
+	<Breadcrumb.List>
+		<Breadcrumb.Item>
+			<Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+		</Breadcrumb.Item>
+		<Breadcrumb.Separator />
+		<Breadcrumb.Item>
+			<Breadcrumb.Link href="/{data.recipe.id}" class="max-w-xs">
+				<p class="truncate">{data.recipe.name}</p>
+			</Breadcrumb.Link>
+		</Breadcrumb.Item>
+	</Breadcrumb.List>
+</Breadcrumb.Root>
 
 <div class="flex flex-row justify-between">
 	<h2>{data.recipe.name}</h2>
