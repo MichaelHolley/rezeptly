@@ -1,12 +1,20 @@
 <script lang="ts">
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
-	import IngredientsListComponent from '$lib/components/ingredients/IngredientsListComponent.svelte';
+	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
+	import InstructionsFormComponent, {
+		type Step
+	} from '$lib/components/instructions/InstructionsForm.svelte';
 	import DeleteRecipeConfirmationModal from '$lib/components/recipes/DeleteRecipeConfirmationModal.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import PenIcon from '@lucide/svelte/icons/pen';
 
 	const { data } = $props();
+
+	const instructions: Step[] = [
+		{ heading: 'Bierchen', description: 'Jetzt ein lecker Bierchen öffnen' },
+		{ heading: 'Noch ein Bierchen', description: 'Was ist besser als ein Bierchen? Richtig! Zwei!' }
+	];
 </script>
 
 <BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
@@ -30,6 +38,7 @@
 
 		<div>
 			<h3 class="pb-2">Instructions</h3>
+			<InstructionsFormComponent steps={instructions} />
 		</div>
 	</div>
 	<div class="hidden md:block">
