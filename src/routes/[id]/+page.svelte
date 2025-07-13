@@ -23,7 +23,7 @@
 <p class="mt-6 mb-8 text-base font-light text-zinc-500">{data.recipe.description}</p>
 
 <div class="flex flex-row items-start justify-between gap-12">
-	<div>
+	<div class="grow">
 		<div class="mb-8 block md:hidden">
 			{@render ingredientsBlock()}
 		</div>
