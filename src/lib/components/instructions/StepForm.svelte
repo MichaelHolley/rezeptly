@@ -7,12 +7,10 @@
 	let {
 		heading = $bindable(''),
 		description = $bindable(''),
-		step,
 		onRemove
 	} = $props<{
 		heading: string;
 		description: string;
-		step: number;
 		onRemove: () => void;
 	}>();
 </script>

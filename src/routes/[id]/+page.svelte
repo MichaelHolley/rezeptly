@@ -7,14 +7,15 @@
 	} from '$lib/components/instructions/InstructionsForm.svelte';
 	import DeleteRecipeConfirmationModal from '$lib/components/recipes/DeleteRecipeConfirmationModal.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
+	import CancelIcon from '@lucide/svelte/icons/x';
 
 	const { data } = $props();
 
-	const instructions = $state<Step[]>([
-		{ heading: 'Bierchen', description: 'Jetzt ein lecker Bierchen öffnen' },
-		{ heading: 'Noch ein Bierchen', description: 'Was ist besser als ein Bierchen? Richtig! Zwei!' }
-	]);
+	const instructions = $state<Step[]>([]);
+
+	$effect(() => {});
 </script>
 
 <BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
@@ -37,7 +38,18 @@
 		</div>
 
 		<div>
-			<h3 class="pb-2">Instructions</h3>
+			<div class="flex flex-row items-center justify-between gap-2 pb-2">
+				<h3>Instructions</h3>
+				<div class="flex flex-row items-center justify-end gap-1">
+					<Button onclick={() => {}} variant="outline">
+						<CancelIcon />
+					</Button>
+					<Button onclick={() => {}}>
+						<CheckIcon />
+						Save
+					</Button>
+				</div>
+			</div>
 			<InstructionsFormComponent steps={instructions} />
 		</div>
 	</div>
