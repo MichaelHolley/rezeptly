@@ -13,7 +13,7 @@
 
 	const { data } = $props();
 
-	const instructions = $state<Step[]>([]);
+	let instructions = $state<Step[]>([]);
 
 	$effect(() => {});
 </script>
@@ -50,7 +50,7 @@
 					</Button>
 				</div>
 			</div>
-			<InstructionsFormComponent steps={instructions} />
+			<InstructionsFormComponent bind:steps={instructions} />
 		</div>
 	</div>
 	<div class="hidden md:block">

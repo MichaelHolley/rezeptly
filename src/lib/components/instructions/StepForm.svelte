@@ -5,8 +5,8 @@
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
 	let {
-		heading = $bindable(''),
-		description = $bindable(''),
+		heading = $bindable(),
+		description = $bindable(),
 		onRemove
 	} = $props<{
 		heading: string;

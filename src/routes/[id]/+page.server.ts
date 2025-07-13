@@ -1,5 +1,5 @@
 import { createIngredient, deleteIngredient } from '$lib/server/services';
-import { deleteRecipe, getRecipeById } from '$lib/server/services/recipe.service.js';
+import { deleteRecipe, getRecipeById } from '$lib/server/services/recipe.service';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ params }) => {
