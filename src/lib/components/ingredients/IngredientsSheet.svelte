@@ -5,8 +5,8 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
-	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
 	const { ingredients } = $props<{
 		ingredients: Ingredient[];
@@ -34,7 +34,7 @@
 					>
 						<span class="px-1 text-sm">{ingr.name}</span>
 						<Input value={ingr.id} type="text" hidden name="id" />
-						<Button variant="secondary" type="submit" class="hover:cursor-pointer" size="sm">
+						<Button variant="secondary" type="submit" size="sm">
 							<TrashIcon />
 						</Button>
 					</form>

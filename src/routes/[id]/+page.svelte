@@ -11,10 +11,10 @@
 
 	const { data } = $props();
 
-	const instructions: Step[] = [
+	const instructions = $state<Step[]>([
 		{ heading: 'Bierchen', description: 'Jetzt ein lecker Bierchen öffnen' },
 		{ heading: 'Noch ein Bierchen', description: 'Was ist besser als ein Bierchen? Richtig! Zwei!' }
-	];
+	]);
 </script>
 
 <BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
