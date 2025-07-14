@@ -7,10 +7,12 @@
 	let {
 		heading = $bindable(),
 		description = $bindable(),
-		onRemove
+		onRemove,
+		key
 	} = $props<{
 		heading: string;
 		description: string;
+		key: string | number;
 		onRemove: () => void;
 	}>();
 </script>
@@ -21,8 +23,8 @@
 			type="text"
 			placeholder="Short, descriptive heading"
 			class="grow"
-			required
 			bind:value={heading}
+			name="{key}_heading"
 		/>
 		<Button variant="secondary" onclick={onRemove}><TrashIcon /></Button>
 	</div>
@@ -31,5 +33,6 @@
 		placeholder="Start by describing the step in detail..."
 		required
 		bind:value={description}
+		name="{key}_instructions"
 	/>
 </div>

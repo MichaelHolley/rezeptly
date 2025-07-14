@@ -6,7 +6,7 @@
 	import StepForm from './StepForm.svelte';
 
 	export interface Step {
-		heading: string;
+		heading: string | null;
 		description: string;
 	}
 
@@ -41,6 +41,7 @@
 					bind:heading={step.heading}
 					bind:description={step.description}
 					onRemove={() => removeStep(i)}
+					key={i}
 				/>
 			</div>
 			<div class="flex flex-col items-center justify-center gap-1">

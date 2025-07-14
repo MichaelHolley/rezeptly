@@ -15,20 +15,11 @@
 
 	let instructions = $state<Step[]>([]);
 
-	const saveInstructions = async () => {
-		console.log(instructions);
-
-		await fetch(`?/updateInstructions`, {
-			method: 'POST',
-			body: JSON.stringify(instructions),
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-	};
-
 	$effect(() => {
-		$inspect(instructions);
+		instructions = data.recipe.instructions.map((i) => ({
+			heading: i.heading,
+			description: i.instructions
+		}));
 	});
 </script>
 
@@ -51,21 +42,21 @@
 			{@render ingredientsBlock()}
 		</div>
 
-		<div>
+		<form method="POST" action="?/updateInstructions">
 			<div class="flex flex-row items-center justify-between gap-2 pb-2">
 				<h3>Instructions</h3>
 				<div class="flex flex-row items-center justify-end gap-1">
 					<Button onclick={() => {}} variant="outline">
 						<CancelIcon />
 					</Button>
-					<Button onclick={saveInstructions}>
+					<Button type="submit">
 						<CheckIcon />
 						Save
 					</Button>
 				</div>
 			</div>
 			<InstructionsFormComponent bind:steps={instructions} />
-		</div>
+		</form>
 	</div>
 	<div class="hidden md:block">
 		{@render ingredientsBlock()}
