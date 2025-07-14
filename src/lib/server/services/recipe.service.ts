@@ -1,30 +1,38 @@
 import { db } from '../db';
-import { recipes, ingredients } from '../db/schema';
+import { recipes, ingredients, instructions } from '../db/schema';
 import { eq } from 'drizzle-orm';
-import type { NewRecipe, Recipe, RecipeWithIngredients, NewIngredient } from '../types';
+import type {
+	NewRecipe,
+	Recipe,
+	RecipeWithDetails,
+	NewIngredient,
+	NewInstruction
+} from '../types';
 
-export const getRecipes = async (): Promise<RecipeWithIngredients[]> => {
+export const getRecipes = async (): Promise<RecipeWithDetails[]> => {
 	const result = await db.query.recipes.findMany({
 		with: {
-			ingredients: true
+			ingredients: true,
+			instructions: true
 		},
 		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
 	});
 	return result;
 };
 
-export const getRecipeById = async (id: number): Promise<RecipeWithIngredients | undefined> => {
+export const getRecipeById = async (id: number): Promise<RecipeWithDetails | undefined> => {
 	const result = await db.query.recipes.findFirst({
 		where: eq(recipes.id, id),
 		with: {
-			ingredients: true
+			ingredients: true,
+			instructions: true
 		}
 	});
 	return result;
 };
 
 export const createRecipe = async (
-	data: NewRecipe & { ingredients: NewIngredient[] }
+	data: NewRecipe & { ingredients: NewIngredient[]; instructions: NewInstruction[] }
 ): Promise<Recipe> => {
 	const newRecipe = await db.transaction(async (tx) => {
 		const [createdRecipe] = await tx
@@ -38,6 +46,14 @@ export const createRecipe = async (
 				recipeId: createdRecipe.id
 			}));
 			await tx.insert(ingredients).values(newIngredients);
+		}
+
+		if (data.instructions && data.instructions.length > 0) {
+			const newInstructions = data.instructions.map((instruction) => ({
+				...instruction,
+				recipeId: createdRecipe.id
+			}));
+			await tx.insert(instructions).values(newInstructions);
 		}
 
 		return createdRecipe;
