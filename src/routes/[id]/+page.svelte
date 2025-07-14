@@ -15,7 +15,21 @@
 
 	let instructions = $state<Step[]>([]);
 
-	$effect(() => {});
+	const saveInstructions = async () => {
+		console.log(instructions);
+
+		await fetch(`?/updateInstructions`, {
+			method: 'POST',
+			body: JSON.stringify(instructions),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	};
+
+	$effect(() => {
+		$inspect(instructions);
+	});
 </script>
 
 <BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
@@ -44,7 +58,7 @@
 					<Button onclick={() => {}} variant="outline">
 						<CancelIcon />
 					</Button>
-					<Button onclick={() => {}}>
+					<Button onclick={saveInstructions}>
 						<CheckIcon />
 						Save
 					</Button>
