@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
@@ -7,13 +8,14 @@
 	} from '$lib/components/instructions/InstructionsForm.svelte';
 	import DeleteRecipeConfirmationModal from '$lib/components/recipes/DeleteRecipeConfirmationModal.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
-	import CancelIcon from '@lucide/svelte/icons/x';
+	import XIcon from '@lucide/svelte/icons/x';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	const { data } = $props();
 
 	let instructions = $state<Step[]>([]);
+	let showInstructionsForm = $state(false);
 
 	$effect(() => {
 		instructions = data.recipe.instructions.map((i) => ({
@@ -21,6 +23,13 @@
 			description: i.instructions
 		}));
 	});
+
+	const instructionsSubmitHandler: SubmitFunction = () => {
+		return async ({ update }) => {
+			showInstructionsForm = false;
+			update();
+		};
+	};
 </script>
 
 <BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
@@ -41,22 +50,38 @@
 		<div class="mb-8 block md:hidden">
 			{@render ingredientsBlock()}
 		</div>
-
-		<form method="POST" action="?/updateInstructions">
-			<div class="flex flex-row items-center justify-between gap-2 pb-2">
+		<div>
+			<div class="flex flex-row gap-1 pb-2">
 				<h3>Instructions</h3>
-				<div class="flex flex-row items-center justify-end gap-1">
-					<Button onclick={() => {}} variant="outline">
-						<CancelIcon />
-					</Button>
-					<Button type="submit">
-						<CheckIcon />
-						Save
-					</Button>
-				</div>
+				<Button
+					variant="ghost"
+					onclick={() => {
+						showInstructionsForm = !showInstructionsForm;
+					}}
+					slot="trigger"
+				>
+					{#if showInstructionsForm}
+						<XIcon />
+					{:else}
+						<PenIcon />
+					{/if}
+				</Button>
 			</div>
-			<InstructionsFormComponent bind:steps={instructions} />
-		</form>
+			{#if showInstructionsForm}
+				<form method="POST" action="?/updateInstructions" use:enhance={instructionsSubmitHandler}>
+					<InstructionsFormComponent bind:steps={instructions} />
+				</form>
+			{:else}
+				<div class="flex flex-col gap-4">
+					{#each data.recipe.instructions as instr, i}
+						<div>
+							<h4>{i + 1}. {instr.heading}</h4>
+							<p>{instr.instructions}</p>
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</div>
 	</div>
 	<div class="hidden md:block">
 		{@render ingredientsBlock()}

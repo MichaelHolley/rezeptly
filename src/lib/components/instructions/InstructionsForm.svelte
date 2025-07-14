@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
+	import CheckIcon from '@lucide/svelte/icons/check';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -55,10 +56,16 @@
 			</div>
 		</div>
 	{/each}
-	<div class="flex flex-row justify-center gap-2">
-		<Button onclick={addStep}>
-			<PlusIcon />
-			Add Step
-		</Button>
-	</div>
+</div>
+
+<div class="mt-4 flex flex-row justify-between gap-2">
+	<div></div>
+	<Button onclick={addStep} variant="outline">
+		<PlusIcon />
+		Add Step
+	</Button>
+	<Button type="submit">
+		<CheckIcon />
+		Save
+	</Button>
 </div>
