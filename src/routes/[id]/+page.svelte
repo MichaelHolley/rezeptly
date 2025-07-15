@@ -14,21 +14,29 @@
 
 	const { data } = $props();
 
-	let instructions = $state<Step[]>([]);
+	let instructionFormSteps = $state<Step[]>([]);
 	let showInstructionsForm = $state(false);
 
-	$effect(() => {
-		instructions = data.recipe.instructions.map((i) => ({
-			heading: i.heading,
-			description: i.instructions
-		}));
-	});
+	const toggleEditInstructions = () => {
+		showInstructionsForm = !showInstructionsForm;
+
+		if (showInstructionsForm) {
+			updateInstructionFormSteps();
+		}
+	};
 
 	const instructionsSubmitHandler: SubmitFunction = () => {
 		return async ({ update }) => {
 			showInstructionsForm = false;
 			update();
 		};
+	};
+
+	const updateInstructionFormSteps = () => {
+		instructionFormSteps = data.recipe.instructions.map((i) => ({
+			heading: i.heading,
+			description: i.instructions
+		}));
 	};
 </script>
 
@@ -53,13 +61,7 @@
 		<div>
 			<div class="flex flex-row gap-1 pb-2">
 				<h3>Instructions</h3>
-				<Button
-					variant="ghost"
-					onclick={() => {
-						showInstructionsForm = !showInstructionsForm;
-					}}
-					slot="trigger"
-				>
+				<Button variant="ghost" onclick={toggleEditInstructions} slot="trigger">
 					{#if showInstructionsForm}
 						<XIcon />
 					{:else}
@@ -69,14 +71,16 @@
 			</div>
 			{#if showInstructionsForm}
 				<form method="POST" action="?/updateInstructions" use:enhance={instructionsSubmitHandler}>
-					<InstructionsFormComponent bind:steps={instructions} />
+					<InstructionsFormComponent bind:steps={instructionFormSteps} />
 				</form>
 			{:else}
 				<div class="flex flex-col gap-4">
 					{#each data.recipe.instructions as instr, i}
 						<div>
-							<h4>{i + 1}. {instr.heading}</h4>
-							<p>{instr.instructions}</p>
+							{#if instr.heading}
+								<h4>{i + 1}. {instr.heading}</h4>
+							{/if}
+							<p class="whitespace-pre-wrap">{instr.instructions}</p>
 						</div>
 					{/each}
 				</div>
