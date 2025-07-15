@@ -8,7 +8,8 @@ export const actions = {
 		const recipe = await createRecipe({
 			name: formData.get('name') as string,
 			description: formData.get('description') as string,
-			ingredients: []
+			ingredients: [],
+			instructions: []
 		});
 
 		return redirect(302, `/${recipe.id}`);
