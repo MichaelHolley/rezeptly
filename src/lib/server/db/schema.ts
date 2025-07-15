@@ -9,7 +9,8 @@ export const recipes = pgTable('recipes', {
 });
 
 export const recipesRelations = relations(recipes, ({ many }) => ({
-	ingredients: many(ingredients)
+	ingredients: many(ingredients),
+	instructions: many(instructions)
 }));
 
 export const ingredients = pgTable('ingredients', {
@@ -23,6 +24,23 @@ export const ingredients = pgTable('ingredients', {
 export const ingredientsRelations = relations(ingredients, ({ one }) => ({
 	recipe: one(recipes, {
 		fields: [ingredients.recipeId],
+		references: [recipes.id]
+	})
+}));
+
+export const instructions = pgTable('instructions', {
+	id: serial('id').primaryKey(),
+	heading: text('heading'),
+	instructions: text('instructions').notNull(),
+	stepOrder: integer('step_order').notNull(),
+	recipeId: integer('recipe_id')
+		.notNull()
+		.references(() => recipes.id, { onDelete: 'cascade' })
+});
+
+export const instructionsRelations = relations(instructions, ({ one }) => ({
+	recipe: one(recipes, {
+		fields: [instructions.recipeId],
 		references: [recipes.id]
 	})
 }));

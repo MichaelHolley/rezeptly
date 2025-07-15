@@ -1,4 +1,4 @@
-import type { ingredients, recipes } from './db/schema';
+import type { ingredients, recipes, instructions } from './db/schema';
 
 export type Recipe = typeof recipes.$inferSelect;
 export type NewRecipe = typeof recipes.$inferInsert;
@@ -6,6 +6,10 @@ export type NewRecipe = typeof recipes.$inferInsert;
 export type Ingredient = typeof ingredients.$inferSelect;
 export type NewIngredient = typeof ingredients.$inferInsert;
 
-export type RecipeWithIngredients = Recipe & {
+export type Instruction = typeof instructions.$inferSelect;
+export type NewInstruction = typeof instructions.$inferInsert;
+
+export type RecipeWithDetails = Recipe & {
 	ingredients: Ingredient[];
+	instructions: Instruction[];
 };
