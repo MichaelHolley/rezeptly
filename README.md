@@ -1,38 +1,96 @@
-# sv
+# Rezeptly
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Rezeptly is a modern, web-based application designed to help you discover, organize, and manage your favorite recipes with ease. Whether you're a seasoned chef or just starting your culinary journey, Rezeptly provides an intuitive and elegant interface for all your cooking needs.
 
-## Creating a project
+## ✨ Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Create & Manage Recipes:** Easily add, edit, and delete your own recipes.
+- **Detailed Instructions:** Add structured instructions with step-by-step guidance.
+- **Ingredient Lists:** Keep track of all the necessary ingredients for your recipes.
+- **Responsive Design:** Access your recipes from any device—desktop, tablet, or mobile.
+
+## 🚀 Getting Started
+
+Follow these instructions to get a local copy of Rezeptly up and running on your machine for development and testing purposes.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v22 or later)
+- [pnpm](https://pnpm.io/installation)
+- [Docker](https://www.docker.com/products/docker-desktop/)
+
+### Installation
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/your-username/rezeptly.git
+    cd rezeptly
+    ```
+
+2.  **Install dependencies:**
+
+    ```bash
+    pnpm install
+    ```
+
+3.  **Set up environment variables:**
+
+    Create a `.env` file by copying the example file:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    Update the `.env` file with your database credentials and other environment-specific settings.
+
+4.  **Start the database:**
+
+    Make sure Docker is running, then start the PostgreSQL database service:
+
+    ```bash
+    pnpm db:start
+    ```
+
+5.  **Apply database schema:**
+
+    Push the latest schema changes to your database:
+
+    ```bash
+    pnpm db:push
+    ```
+
+### Running the Development Server
+
+Once the setup is complete, you can start the development server:
 
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+pnpm dev
 ```
 
-## Developing
+The application will be available at `http://localhost:5173`.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## 📜 Available Scripts
 
-```bash
-npm run dev
+- `pnpm dev`: Starts the development server with hot-reloading.
+- `pnpm build`: Builds the application for production.
+- `pnpm preview`: Serves the production build locally for previewing.
+- `pnpm check`: Runs Svelte check for type-checking.
+- `pnpm lint`: Lints the codebase using ESLint and Prettier.
+- `pnpm format`: Formats the code using Prettier.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+### Database Management
 
-## Building
+- `pnpm db:start`: Starts the PostgreSQL database using Docker Compose.
+- `pnpm db:push`: Pushes the current Drizzle schema to the database.
+- `pnpm db:migrate`: Creates a new SQL migration file based on schema changes.
+- `pnpm db:studio`: Opens Drizzle Studio to browse and manage your data.
 
-To create a production version of your app:
+## 🛠️ Built With
 
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- [SvelteKit](https://kit.svelte.dev/) - The core web framework.
+- [Drizzle ORM](https://orm.drizzle.team/) - TypeScript ORM for database access.
+- [PostgreSQL](https://www.postgresql.org/) - The relational database.
+- [Tailwind CSS](https://tailwindcss.com/) - For styling the user interface.
+- [TypeScript](https://www.typescriptlang.org/) - For type-safe code.
+- [Vite](https.vitejs.dev/) - The build tool and development server.
