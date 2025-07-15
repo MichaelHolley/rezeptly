@@ -1,6 +1,6 @@
 import { AUTH_PASSWORD } from '$env/static/private';
 import * as auth from '$lib/server/auth';
-import { json, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const actions = {
 	default: async (event) => {
@@ -8,7 +8,7 @@ export const actions = {
 		const password = formData.get('password') as string;
 
 		if (password !== AUTH_PASSWORD) {
-			return json({ error: 'Invalid password' }, { status: 401 });
+			return fail(401, { message: 'Incorrect password' });
 		}
 
 		const { token, expires } = auth.generateSessionToken();
