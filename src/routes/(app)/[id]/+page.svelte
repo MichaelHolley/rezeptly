@@ -28,7 +28,7 @@
 	const instructionsSubmitHandler: SubmitFunction = () => {
 		return async ({ update }) => {
 			showInstructionsForm = false;
-			update();
+			await update();
 		};
 	};
 
