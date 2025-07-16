@@ -17,7 +17,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 
 	try {
 		jwt.verify(sessionToken, JWT_SECRET);
-	} catch (err) {
+	} catch {
 		auth.deleteSessionTokenCookie(event);
 		return redirect(302, `/auth`);
 	}
