@@ -2,6 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
+	import XIcon from '@lucide/svelte/icons/x';
 </script>
 
 <Dialog.Root>
@@ -19,7 +20,10 @@
 		</Dialog.Header>
 		<Dialog.Footer>
 			<Dialog.Close>
-				<Button variant="ghost">Cancel</Button>
+				<Button variant="secondary">
+					<XIcon />
+					Cancel
+				</Button>
 			</Dialog.Close>
 			<form method="POST" action="?/delete">
 				<Button class="btn btn-error" variant="destructive" type="submit">

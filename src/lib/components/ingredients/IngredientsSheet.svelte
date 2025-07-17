@@ -17,13 +17,17 @@
 	<Sheet.Trigger>
 		<slot name="trigger"></slot>
 	</Sheet.Trigger>
-	<Sheet.Content>
+	<Sheet.Content class="max-h-svh">
 		<Sheet.Header>
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
+			<form method="POST" action="?/addIngredient" class="mt-6 flex flex-row gap-2" use:enhance>
+				<Input type="text" name="name" required placeholder="Ingredient & Quantity" />
+				<Button type="submit"><PlusIcon /></Button>
+			</form>
 		</Sheet.Header>
 
-		<div class="px-4">
+		<div class="h-full overflow-y-auto px-4">
 			<div class="flex flex-col gap-2">
 				{#each ingredients as ingr, i}
 					<form
@@ -43,10 +47,6 @@
 					{/if}
 				{/each}
 			</div>
-			<form method="POST" action="?/addIngredient" class="mt-6 flex flex-row gap-2" use:enhance>
-				<Input type="text" name="name" required />
-				<Button type="submit"><PlusIcon /></Button>
-			</form>
 		</div>
 		<Sheet.Footer>
 			<Sheet.Close>
