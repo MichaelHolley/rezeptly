@@ -6,7 +6,7 @@
 	import InstructionsFormComponent, {
 		type Step
 	} from '$lib/components/instructions/InstructionsForm.svelte';
-	import RecipeDetailsComponent from '$lib/components/recipes/RecipeDetailsComponent.svelte';
+	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -42,7 +42,7 @@
 
 <BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
 
-<RecipeDetailsComponent recipe={data.recipe} />
+<RecipeDetails recipe={data.recipe} />
 
 <div class="flex flex-row items-start justify-between gap-12">
 	<div class="grow">

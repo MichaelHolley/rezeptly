@@ -62,6 +62,6 @@
 			Created: {recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
 		</p>
 
-		<p class="mt-6 text-base font-light text-zinc-500">{recipe.description}</p>
+		<p class="mt-4 text-base font-light text-zinc-500">{recipe.description}</p>
 	{/if}
 </div>
