@@ -24,7 +24,7 @@ export const actions = {
 				instructions: []
 			});
 			return redirect(302, `/${recipe.id}`);
-		} catch (e) {
+		} catch {
 			return fail(500, {
 				name,
 				description,
