@@ -6,7 +6,7 @@
 	import InstructionsFormComponent, {
 		type Step
 	} from '$lib/components/instructions/InstructionsForm.svelte';
-	import DeleteRecipeConfirmationModal from '$lib/components/recipes/DeleteRecipeConfirmationModal.svelte';
+	import RecipeDetailsComponent from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -42,16 +42,7 @@
 
 <BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
 
-<div class="flex flex-row justify-between">
-	<h2>{data.recipe.name}</h2>
-	<DeleteRecipeConfirmationModal />
-</div>
-
-<p class="mt-1 text-xs text-zinc-400">
-	Created: {data.recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
-</p>
-
-<p class="mt-6 mb-8 text-base font-light text-zinc-500">{data.recipe.description}</p>
+<RecipeDetailsComponent recipe={data.recipe} />
 
 <div class="flex flex-row items-start justify-between gap-12">
 	<div class="grow">
