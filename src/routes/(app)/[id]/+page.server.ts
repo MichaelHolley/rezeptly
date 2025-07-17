@@ -5,7 +5,7 @@ import {
 } from '$lib/server/services';
 import { deleteRecipe, getRecipeById, updateRecipe } from '$lib/server/services/recipe.service';
 import type { NewInstruction } from '$lib/server/types.js';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ params }) => {
 	const { id } = params;
@@ -28,7 +28,7 @@ export const actions = {
 		const { id } = event.params;
 
 		if (!id || isNaN(Number(id))) {
-			return { status: 400 };
+			return fail(400);
 		}
 
 		await deleteRecipe(Number(id));
@@ -39,14 +39,14 @@ export const actions = {
 		const { id } = event.params;
 
 		if (!id || isNaN(Number(id))) {
-			return { status: 400 };
+			return fail(400);
 		}
 
 		const formData = await event.request.formData();
 		const name = formData.get('name') as string;
 
 		if (!name) {
-			return { status: 400, message: 'Name is required' };
+			return fail(400, { message: 'Name is required' });
 		}
 
 		await createIngredient({
@@ -60,14 +60,14 @@ export const actions = {
 		const { id } = event.params;
 
 		if (!id || isNaN(Number(id))) {
-			return { status: 400 };
+			return fail(400);
 		}
 
 		const formData = await event.request.formData();
 		const ingrId = formData.get('id') as string;
 
 		if (!ingrId) {
-			return { status: 400 };
+			return fail(400);
 		}
 
 		await deleteIngredient(Number(ingrId));
@@ -78,7 +78,7 @@ export const actions = {
 		const { id } = event.params;
 
 		if (!id || isNaN(Number(id))) {
-			return { status: 400 };
+			return fail(400);
 		}
 
 		const formData = await event.request.formData();
@@ -111,7 +111,7 @@ export const actions = {
 		const { id } = event.params;
 
 		if (!id || isNaN(Number(id))) {
-			return { status: 400 };
+			return fail(400);
 		}
 
 		const formData = await event.request.formData();
@@ -119,7 +119,7 @@ export const actions = {
 		const description = formData.get('description') as string;
 
 		if (!name) {
-			return { status: 400, message: 'Name is required' };
+			return fail(400, { message: 'Name is required' });
 		}
 
 		await updateRecipe(Number(id), { name, description });
