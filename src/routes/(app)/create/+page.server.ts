@@ -16,20 +16,13 @@ export const actions = {
 			});
 		}
 
-		try {
-			const recipe = await createRecipe({
-				name,
-				description,
-				ingredients: [],
-				instructions: []
-			});
-			return redirect(302, `/${recipe.id}`);
-		} catch {
-			return fail(500, {
-				name,
-				description,
-				error: 'Failed to create recipe'
-			});
-		}
+		const recipe = await createRecipe({
+			name,
+			description,
+			ingredients: [],
+			instructions: []
+		});
+
+		return redirect(302, `/${recipe.id}`);
 	}
 };

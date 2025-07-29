@@ -1,4 +1,5 @@
 <script>
+	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
@@ -25,7 +26,7 @@
 					Cancel
 				</Button>
 			</Dialog.Close>
-			<form method="POST" action="?/delete">
+			<form method="POST" action="?/delete" use:enhance>
 				<Button class="btn btn-error" variant="destructive" type="submit">
 					<TrashIcon />
 					Delete

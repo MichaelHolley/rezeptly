@@ -1,13 +1,7 @@
-import { db } from '../db';
-import { recipes, ingredients, instructions } from '../db/schema';
 import { eq } from 'drizzle-orm';
-import type {
-	NewRecipe,
-	Recipe,
-	RecipeWithDetails,
-	NewIngredient,
-	NewInstruction
-} from '../types';
+import { db } from '../db';
+import { ingredients, instructions, recipes } from '../db/schema';
+import type { NewIngredient, NewInstruction, NewRecipe, Recipe, RecipeWithDetails } from '../types';
 
 export const getRecipes = async (): Promise<RecipeWithDetails[]> => {
 	const result = await db.query.recipes.findMany({
@@ -45,6 +39,7 @@ export const createRecipe = async (
 				...ingredient,
 				recipeId: createdRecipe.id
 			}));
+
 			await tx.insert(ingredients).values(newIngredients);
 		}
 
@@ -53,6 +48,7 @@ export const createRecipe = async (
 				...instruction,
 				recipeId: createdRecipe.id
 			}));
+
 			await tx.insert(instructions).values(newInstructions);
 		}
 
