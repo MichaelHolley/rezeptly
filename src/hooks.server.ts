@@ -12,14 +12,14 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	const sessionToken = event.cookies.get(auth.sessionCookieName);
 
 	if (!sessionToken) {
-		return redirect(302, `/auth`);
+		return redirect(303, `/auth`);
 	}
 
 	try {
 		jwt.verify(sessionToken, JWT_SECRET);
 	} catch {
 		auth.deleteSessionTokenCookie(event);
-		return redirect(302, `/auth`);
+		return redirect(303, `/auth`);
 	}
 
 	return await resolve(event);

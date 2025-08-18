@@ -14,6 +14,6 @@ export const actions = {
 		const { token, expires } = auth.generateSessionToken();
 		auth.setSessionTokenCookie(event, token, expires);
 
-		return redirect(302, `/`);
+		return redirect(303, `/`);
 	}
 };
