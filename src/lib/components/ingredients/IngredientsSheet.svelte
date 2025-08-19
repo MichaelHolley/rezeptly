@@ -7,10 +7,9 @@
 	import type { Ingredient } from '$lib/server/types';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
+	import { removeIngredient } from '../../../routes/(app)/[id]/page.remote';
 
-	const { ingredients } = $props<{
-		ingredients: Ingredient[];
-	}>();
+	const { recipeId, ingredients } = $props<{ recipeId: number; ingredients: Ingredient[] }>();
 </script>
 
 <Sheet.Root>
@@ -30,18 +29,23 @@
 		<div class="h-full overflow-y-auto px-4">
 			<div class="flex flex-col gap-2">
 				{#each ingredients as ingr, i}
-					<form
-						method="POST"
-						action="?/deleteIngredient"
-						class="flex flex-row items-center justify-between gap-2"
-						use:enhance
-					>
+					<div class="flex flex-row items-center justify-between gap-2">
 						<span class="px-1 text-sm">{ingr.name}</span>
-						<Input value={ingr.id} type="text" hidden name="id" />
-						<Button variant="secondary" type="submit" size="sm">
+						<Button
+							variant="secondary"
+							type="submit"
+							size="sm"
+							onclick={async () => {
+								try {
+									await removeIngredient({ recipeId, ingrId: ingr.id });
+								} catch (e) {
+									console.error(e);
+								}
+							}}
+						>
 							<TrashIcon />
 						</Button>
-					</form>
+					</div>
 					{#if i !== ingredients.length - 1}
 						<Separator />
 					{/if}

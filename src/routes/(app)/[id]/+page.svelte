@@ -12,7 +12,7 @@
 	import XIcon from '@lucide/svelte/icons/x';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
-	const { data } = $props();
+	const { data, params } = $props();
 
 	let instructionFormSteps = $state<Step[]>([]);
 	let showInstructionsForm = $state(false);
@@ -97,7 +97,7 @@
 {#snippet ingredientsBlock()}
 	<div class="flex flex-row gap-1 pb-2">
 		<h3>Ingredients</h3>
-		<IngredientsSheet ingredients={data.recipe.ingredients}>
+		<IngredientsSheet ingredients={data.recipe.ingredients} recipeId={Number(params.id)}>
 			<Button variant="ghost" slot="trigger"><PenIcon /></Button>
 		</IngredientsSheet>
 	</div>

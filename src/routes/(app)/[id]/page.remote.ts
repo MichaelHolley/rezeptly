@@ -1,6 +1,5 @@
-import { command } from '$app/server';
+import { command, query } from '$app/server';
 import * as recipeService from '$lib/server/services';
-import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const deleteRecipe = command(z.number(), async (id) => {
@@ -10,3 +9,12 @@ export const deleteRecipe = command(z.number(), async (id) => {
 
 	await recipeService.deleteRecipe(id);
 });
+
+export const removeIngredient = command(
+	z.object({ recipeId: z.number(), ingrId: z.number() }),
+	async ({ recipeId, ingrId }) => {
+		await recipeService.deleteIngredient(ingrId);
+
+		getRecipeById(recipeId).refresh();
+	}
+);
