@@ -11,6 +11,7 @@ export const getRecipes = async (): Promise<RecipeWithDetails[]> => {
 		},
 		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
 	});
+
 	return result;
 };
 
@@ -22,6 +23,7 @@ export const getRecipeById = async (id: number): Promise<RecipeWithDetails | und
 			instructions: true
 		}
 	});
+
 	return result;
 };
 

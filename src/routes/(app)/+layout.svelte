@@ -18,6 +18,7 @@
 		</div>
 	</div>
 </nav>
+
 <div class="container mx-auto my-6 px-3 md:px-6">
 	{@render children()}
 </div>
