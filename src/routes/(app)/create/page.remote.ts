@@ -1,8 +1,8 @@
 import { form } from '$app/server';
-import { createRecipe } from '$lib/server/services';
+import * as recipeService from '$lib/server/services';
 import { fail, redirect } from '@sveltejs/kit';
 
-export const createNewRecipe = form(async (data) => {
+export const createRecipe = form(async (data) => {
 	const name = data.get('name') as string;
 	const description = data.get('description') as string;
 
@@ -14,7 +14,7 @@ export const createNewRecipe = form(async (data) => {
 		});
 	}
 
-	const recipe = await createRecipe({
+	const recipe = await recipeService.createRecipe({
 		name: name.trim(),
 		description: description.trim(),
 		ingredients: [],

@@ -4,12 +4,12 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { createNewRecipe } from './page.remote';
+	import { createRecipe } from './page.remote';
 </script>
 
 <BreadcrumbComponent breadcrumbs={[{ name: 'Create Recipe', href: '/create' }]} />
 
-<form {...createNewRecipe} class="flex flex-col gap-4">
+<form {...createRecipe} class="flex flex-col gap-4">
 	<div class="form-group">
 		<Label for="name">Name</Label>
 		<Input name="name" type="text" placeholder="Name" required />

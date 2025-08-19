@@ -5,7 +5,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { deleteRecipeById } from '../../../routes/(app)/[id]/page.remote';
+	import { deleteRecipe } from '../../../routes/(app)/[id]/page.remote';
 </script>
 
 <Dialog.Root>
@@ -35,7 +35,7 @@
 				onclick={async () => {
 					try {
 						if (!page.params.id) return;
-						await deleteRecipeById(Number(page.params.id));
+						await deleteRecipe(Number(page.params.id));
 						await goto('/', { replaceState: true });
 					} catch (e) {
 						console.error(e);
