@@ -38,6 +38,17 @@
 			description: i.instructions
 		}));
 	};
+
+	const getStepOrderByIndex = (index: number) => {
+		let order = 1;
+		for (let i = 0; i < index; i++) {
+			if (data.recipe.instructions[i].heading) {
+				order++;
+			}
+		}
+
+		return order;
+	};
 </script>
 
 <BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
@@ -69,7 +80,7 @@
 					{#each data.recipe.instructions as instr, i}
 						<div>
 							{#if instr.heading}
-								<h4>{i + 1}. {instr.heading}</h4>
+								<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
 							{/if}
 							<p class="whitespace-pre-wrap">{instr.instructions}</p>
 						</div>
