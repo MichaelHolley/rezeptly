@@ -1,27 +1,7 @@
-import {
-	createIngredient,
-	deleteIngredient,
-	upsertInstructionsForRecipe
-} from '$lib/server/services';
-import { getRecipeById, updateRecipe } from '$lib/server/services/recipe.service';
+import { createIngredient, upsertInstructionsForRecipe } from '$lib/server/services';
+import { updateRecipe } from '$lib/server/services/recipe.service';
 import type { NewInstruction } from '$lib/server/types.js';
-import { fail, redirect } from '@sveltejs/kit';
-
-export const load = async ({ params }) => {
-	const { id } = params;
-
-	if (!id || isNaN(Number(id))) {
-		redirect(303, '/');
-	}
-
-	const recipe = await getRecipeById(Number(id));
-
-	if (!recipe) {
-		redirect(303, '/');
-	}
-
-	return { recipe };
-};
+import { fail } from '@sveltejs/kit';
 
 export const actions = {
 	addIngredient: async (event) => {
@@ -42,24 +22,6 @@ export const actions = {
 			name: name,
 			recipeId: Number(id)
 		});
-
-		return { status: 200 };
-	},
-	deleteIngredient: async (event) => {
-		const { id } = event.params;
-
-		if (!id || isNaN(Number(id))) {
-			return fail(400);
-		}
-
-		const formData = await event.request.formData();
-		const ingrId = formData.get('id') as string;
-
-		if (!ingrId) {
-			return fail(400);
-		}
-
-		await deleteIngredient(Number(ingrId));
 
 		return { status: 200 };
 	},

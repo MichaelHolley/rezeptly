@@ -8,11 +8,15 @@
 	} from '$lib/components/instructions/InstructionsForm.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import type { RecipeWithDetails } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { getRecipeById } from './page.remote';
 
-	const { data, params } = $props();
+	const { params } = $props();
+
+	const recipe = getRecipeById(Number(params.id));
 
 	let instructionFormSteps = $state<Step[]>([]);
 	let showInstructionsForm = $state(false);
@@ -20,8 +24,8 @@
 	const toggleEditInstructions = () => {
 		showInstructionsForm = !showInstructionsForm;
 
-		if (showInstructionsForm) {
-			updateInstructionFormSteps();
+		if (showInstructionsForm && !!recipe.current) {
+			updateInstructionFormSteps(recipe.current);
 		}
 	};
 
@@ -32,17 +36,22 @@
 		};
 	};
 
-	const updateInstructionFormSteps = () => {
-		instructionFormSteps = data.recipe.instructions.map((i) => ({
-			heading: i.heading,
-			description: i.instructions
-		}));
+	const updateInstructionFormSteps = (r: RecipeWithDetails) => {
+		instructionFormSteps =
+			r.instructions.map((i) => ({
+				heading: i.heading,
+				description: i.instructions
+			})) ?? [];
 	};
 
 	const getStepOrderByIndex = (index: number) => {
+		if (!recipe.current) {
+			return 0;
+		}
+
 		let order = 1;
 		for (let i = 0; i < index; i++) {
-			if (data.recipe.instructions[i].heading) {
+			if (recipe.current.instructions[i].heading) {
 				order++;
 			}
 		}
@@ -51,55 +60,63 @@
 	};
 </script>
 
-<BreadcrumbComponent breadcrumbs={[{ name: data.recipe.name, href: `/${data.recipe.id}` }]} />
+{#if recipe.current}
+	<BreadcrumbComponent
+		breadcrumbs={[{ name: recipe.current.name, href: `/${recipe.current.id}` }]}
+	/>
 
-<RecipeDetails recipe={data.recipe} />
+	<RecipeDetails recipe={recipe.current} />
 
-<div class="flex flex-row items-start justify-between gap-12">
-	<div class="grow">
-		<div class="mb-8 block md:hidden">
-			{@render ingredientsBlock()}
-		</div>
-		<div>
-			<div class="flex flex-row gap-1 pb-2">
-				<h3>Instructions</h3>
-				<Button variant="ghost" onclick={toggleEditInstructions} slot="trigger">
-					{#if showInstructionsForm}
-						<XIcon />
-					{:else}
-						<PenIcon />
-					{/if}
-				</Button>
+	<div class="flex flex-row items-start justify-between gap-12">
+		<div class="grow">
+			<div class="mb-8 block md:hidden">
+				{@render ingredientsBlock(recipe.current)}
 			</div>
-			{#if showInstructionsForm}
-				<form method="POST" action="?/updateInstructions" use:enhance={instructionsSubmitHandler}>
-					<InstructionsFormComponent bind:steps={instructionFormSteps} />
-				</form>
-			{:else}
-				<div class="flex flex-col gap-4">
-					{#each data.recipe.instructions as instr, i}
-						<div>
-							{#if instr.heading}
-								<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
-							{/if}
-							<p class="whitespace-pre-wrap">{instr.instructions}</p>
-						</div>
-					{/each}
+			<div>
+				<div class="flex flex-row gap-1 pb-2">
+					<h3>Instructions</h3>
+					<Button variant="ghost" onclick={toggleEditInstructions} slot="trigger">
+						{#if showInstructionsForm}
+							<XIcon />
+						{:else}
+							<PenIcon />
+						{/if}
+					</Button>
 				</div>
-			{/if}
+				{#if showInstructionsForm}
+					<form method="POST" action="?/updateInstructions" use:enhance={instructionsSubmitHandler}>
+						<InstructionsFormComponent bind:steps={instructionFormSteps} />
+					</form>
+				{:else}
+					<div class="flex flex-col gap-4">
+						{#each recipe.current.instructions as instr, i}
+							<div>
+								{#if instr.heading}
+									<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
+								{/if}
+								<p class="whitespace-pre-wrap">{instr.instructions}</p>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
+		</div>
+		<div class="hidden md:block">
+			{@render ingredientsBlock(recipe.current)}
 		</div>
 	</div>
-	<div class="hidden md:block">
-		{@render ingredientsBlock()}
-	</div>
-</div>
+{:else if recipe.error}
+	<p class="text-red-500">{recipe.error}</p>
+{:else}
+	<p>Loading...</p>
+{/if}
 
-{#snippet ingredientsBlock()}
+{#snippet ingredientsBlock(r: RecipeWithDetails)}
 	<div class="flex flex-row gap-1 pb-2">
 		<h3>Ingredients</h3>
-		<IngredientsSheet ingredients={data.recipe.ingredients} recipeId={Number(params.id)}>
+		<IngredientsSheet ingredients={r.ingredients} recipeId={Number(params.id)}>
 			<Button variant="ghost" slot="trigger"><PenIcon /></Button>
 		</IngredientsSheet>
 	</div>
-	<IngredientsListComponent ingredients={data.recipe.ingredients} />
+	<IngredientsListComponent ingredients={r.ingredients} />
 {/snippet}
