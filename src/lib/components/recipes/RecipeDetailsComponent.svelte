@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -8,6 +7,7 @@
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { updateRecipeDetails } from '../../../routes/(app)/[id]/page.remote';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
 
 	const { recipe } = $props<{ recipe: Recipe }>();
@@ -25,11 +25,19 @@
 <div class="mb-8">
 	{#if editDetails}
 		<form
-			method="POST"
-			action="?/updateDetails"
-			use:enhance={updateDetailsSubmitHandler}
+			{...updateRecipeDetails.enhance(async ({ form, data, submit }) => {
+				try {
+					await submit();
+
+					editDetails = false;
+					await form.reset();
+				} catch (error) {
+					console.error(error);
+				}
+			})}
 			class="flex flex-col gap-2"
 		>
+			<Input type="hidden" name="recipeId" value={recipe.id} />
 			<Input name="name" type="text" value={recipe.name} placeholder="Name" />
 			<Textarea
 				name="description"

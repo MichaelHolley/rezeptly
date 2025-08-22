@@ -32,3 +32,13 @@ export const removeIngredient = command(
 		await getRecipeById(recipeId).refresh();
 	}
 );
+
+export const updateRecipeDetails = form(async (data) => {
+	const recipeId = Number(data.get('recipeId'));
+	const name = data.get('name') as string;
+	const description = data.get('description') as string;
+
+	await recipeService.updateRecipe(recipeId, { name, description });
+
+	await getRecipeById(recipeId).refresh();
+});
