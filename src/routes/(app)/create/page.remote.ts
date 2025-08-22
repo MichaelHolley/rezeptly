@@ -21,5 +21,5 @@ export const createRecipe = form(async (data) => {
 		instructions: []
 	});
 
-	return redirect(303, `/${recipe.id}`);
+	redirect(303, `/${recipe.id}`);
 });

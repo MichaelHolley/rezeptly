@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import { getRecipes } from './data.remote';
+	import { getRecipes } from './page.remote';
 </script>
 
 <svelte:boundary>

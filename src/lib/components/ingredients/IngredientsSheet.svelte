@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
@@ -7,7 +6,7 @@
 	import type { Ingredient } from '$lib/server/types';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
-	import { removeIngredient } from '../../../routes/(app)/[id]/page.remote';
+	import { addIngredient, removeIngredient } from '../../../routes/(app)/[id]/page.remote';
 
 	const { recipeId, ingredients } = $props<{ recipeId: number; ingredients: Ingredient[] }>();
 </script>
@@ -20,7 +19,8 @@
 		<Sheet.Header>
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
-			<form method="POST" action="?/addIngredient" class="mt-6 flex flex-row gap-2" use:enhance>
+			<form {...addIngredient} class="mt-6 flex flex-row gap-2">
+				<Input type="hidden" name="recipeId" value={recipeId} />
 				<Input type="text" name="name" required placeholder="Ingredient & Quantity" />
 				<Button type="submit"><PlusIcon /></Button>
 			</form>
