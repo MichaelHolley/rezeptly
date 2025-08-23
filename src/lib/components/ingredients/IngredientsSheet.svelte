@@ -19,7 +19,17 @@
 		<Sheet.Header>
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
-			<form {...addIngredient} class="mt-6 flex flex-row gap-2">
+			<form
+				{...addIngredient.enhance(async ({ form, data, submit }) => {
+					try {
+						await submit();
+						await form.reset();
+					} catch (error) {
+						console.error(error);
+					}
+				})}
+				class="mt-6 flex flex-row gap-2"
+			>
 				<Input type="hidden" name="recipeId" value={recipeId} />
 				<Input type="text" name="name" required placeholder="Ingredient & Quantity" />
 				<Button type="submit"><PlusIcon /></Button>
