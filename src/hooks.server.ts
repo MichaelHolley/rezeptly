@@ -12,12 +12,14 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	const sessionToken = event.cookies.get(auth.sessionCookieName);
 
 	if (!sessionToken) {
+		console.warn('No session token found, redirecting to /auth');
 		return redirect(303, `/auth`);
 	}
 
 	try {
 		jwt.verify(sessionToken, JWT_SECRET);
 	} catch {
+		console.warn('Session token is invalid, deleting cookie and redirecting to /auth');
 		auth.deleteSessionTokenCookie(event);
 		return redirect(303, `/auth`);
 	}

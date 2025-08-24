@@ -1,4 +1,5 @@
 <script lang="ts">
+	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import { getRecipes } from './page.remote';
@@ -26,6 +27,8 @@
 	</div>
 
 	{#snippet pending()}
-		<div class="text-center text-neutral-400">Loading...</div>
+		<div class="flex flex-col items-center justify-center pt-32">
+			<LoadingComponent />
+		</div>
 	{/snippet}
 </svelte:boundary>

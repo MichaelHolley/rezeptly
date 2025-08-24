@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
+	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent, {
@@ -108,7 +109,9 @@
 {:else if recipe.error}
 	<p class="text-red-500">{recipe.error}</p>
 {:else}
-	<p>Loading...</p>
+	<div class="flex flex-col items-center justify-center pt-32">
+		<LoadingComponent />
+	</div>
 {/if}
 
 {#snippet ingredientsBlock(r: RecipeWithDetails)}
