@@ -6,26 +6,18 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
-	import type { SubmitFunction } from '@sveltejs/kit';
 	import { updateRecipeDetails } from '../../../routes/(app)/[id]/page.remote';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
 
 	const { recipe } = $props<{ recipe: Recipe }>();
 
 	let editDetails = $state(false);
-
-	const updateDetailsSubmitHandler: SubmitFunction = () => {
-		return async ({ update }) => {
-			editDetails = false;
-			await update();
-		};
-	};
 </script>
 
 <div class="mb-8">
 	{#if editDetails}
 		<form
-			{...updateRecipeDetails.enhance(async ({ form, data, submit }) => {
+			{...updateRecipeDetails.enhance(async ({ form, submit }) => {
 				try {
 					await submit();
 
