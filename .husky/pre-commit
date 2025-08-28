@@ -1,0 +1,10 @@
+echo "Running 'pnpm format'..."
+if ! pnpm format; then
+  echo "❌ 'pnpm format' failed. Please investigate."
+  exit 1
+fi
+
+# Re-add any files that were formatted to the staging area
+git add -u
+
+echo "✅ Pre-commit checks passed!"
