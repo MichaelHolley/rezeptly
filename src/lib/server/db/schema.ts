@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { integer, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const recipes = pgTable('recipes', {
 	id: serial('id').primaryKey(),
@@ -10,7 +10,8 @@ export const recipes = pgTable('recipes', {
 
 export const recipesRelations = relations(recipes, ({ many }) => ({
 	ingredients: many(ingredients),
-	instructions: many(instructions)
+	instructions: many(instructions),
+	tags: many(recipesToTags)
 }));
 
 export const ingredients = pgTable('ingredients', {
@@ -42,5 +43,40 @@ export const instructionsRelations = relations(instructions, ({ one }) => ({
 	recipe: one(recipes, {
 		fields: [instructions.recipeId],
 		references: [recipes.id]
+	})
+}));
+
+export const tags = pgTable('tags', {
+	id: serial('id').primaryKey(),
+	name: text('name').notNull()
+});
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+	recipesToTags: many(recipesToTags)
+}));
+
+export const recipesToTags = pgTable(
+	'recipes_to_tags',
+	{
+		recipeId: integer('recipe_id')
+			.notNull()
+			.references(() => recipes.id),
+		tagId: integer('tag_id')
+			.notNull()
+			.references(() => tags.id)
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.recipeId, t.tagId] })
+	})
+);
+
+export const recipesToTagsRelations = relations(recipesToTags, ({ one }) => ({
+	recipe: one(recipes, {
+		fields: [recipesToTags.recipeId],
+		references: [recipes.id]
+	}),
+	tag: one(tags, {
+		fields: [recipesToTags.tagId],
+		references: [tags.id]
 	})
 }));
