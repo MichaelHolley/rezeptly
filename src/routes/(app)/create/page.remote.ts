@@ -5,6 +5,7 @@ import { fail, redirect } from '@sveltejs/kit';
 export const createRecipe = form(async (data) => {
 	const name = data.get('name') as string;
 	const description = data.get('description') as string;
+	const tags = data.getAll('tags[]') as string[];
 
 	if (!name) {
 		return fail(400, {
@@ -18,7 +19,8 @@ export const createRecipe = form(async (data) => {
 		name: name.trim(),
 		description: description.trim(),
 		ingredients: [],
-		instructions: []
+		instructions: [],
+		tags: tags.map((tag) => ({ name: tag.trim() }))
 	});
 
 	redirect(303, `/${recipe.id}`);

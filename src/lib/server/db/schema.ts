@@ -60,7 +60,7 @@ export const recipesToTags = pgTable(
 	{
 		recipeId: integer('recipe_id')
 			.notNull()
-			.references(() => recipes.id),
+			.references(() => recipes.id, { onDelete: 'cascade' }),
 		tagId: integer('tag_id')
 			.notNull()
 			.references(() => tags.id)
