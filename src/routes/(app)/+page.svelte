@@ -1,5 +1,6 @@
 <script lang="ts">
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import TagsContainer from '$lib/components/recipes/TagsContainerComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import { getRecipes } from './page.remote';
@@ -14,6 +15,7 @@
 						<Card.Title class="truncate">{recipe.name}</Card.Title>
 						<Card.Description class="line-clamp-3 pt-1">
 							{recipe.description}
+							<TagsContainer tags={recipe.tags.map((t: { name: string }) => t.name)} class="mt-2" />
 						</Card.Description>
 						<Card.Action>
 							<ArrowRightIcon

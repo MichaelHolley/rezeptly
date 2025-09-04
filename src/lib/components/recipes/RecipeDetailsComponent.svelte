@@ -2,12 +2,13 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import type { Recipe } from '$lib/server/types';
+	import type { Recipe, Tag } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { updateRecipeDetails } from '../../../routes/(app)/[id]/page.remote';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
+	import TagsContainer from './TagsContainerComponent.svelte';
 
 	const { recipe } = $props<{ recipe: Recipe }>();
 
@@ -58,9 +59,12 @@
 			</div>
 		</div>
 
-		<p class="mt-1 text-xs text-zinc-400">
-			Created: {recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
-		</p>
+		<div class="flex flex-row justify-between gap-3">
+			<TagsContainer tags={recipe.tags.map((t: Tag) => t.name)} class="my-2" />
+			<div class="mt-1 text-xs text-zinc-400">
+				Created: {recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
+			</div>
+		</div>
 
 		<p class="mt-4 text-base font-light text-zinc-500">{recipe.description}</p>
 	{/if}

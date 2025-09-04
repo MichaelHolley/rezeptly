@@ -25,7 +25,7 @@
 			<Dialog.Close>
 				<Button variant="secondary">
 					<XIcon />
-					Cancel {page.params.id}
+					Cancel
 				</Button>
 			</Dialog.Close>
 			<Button
