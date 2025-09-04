@@ -20,7 +20,7 @@
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
 			<form
-				{...addIngredient.enhance(async ({ form, data, submit }) => {
+				{...addIngredient.enhance(async ({ form, submit }) => {
 					try {
 						await submit();
 						await form.reset();
