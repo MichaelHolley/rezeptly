@@ -37,8 +37,13 @@ export const updateRecipeDetails = form(async (data) => {
 	const recipeId = Number(data.get('recipeId'));
 	const name = data.get('name') as string;
 	const description = data.get('description') as string;
+	const tags = data.getAll('tags[]') as string[];
 
-	await recipeService.updateRecipe(recipeId, { name, description });
+	await recipeService.updateRecipe(recipeId, {
+		name,
+		description,
+		tags: tags.map((tag) => ({ name: tag.trim() }))
+	});
 
 	await getRecipeById(recipeId).refresh();
 });

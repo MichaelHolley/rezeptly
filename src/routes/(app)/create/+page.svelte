@@ -57,8 +57,10 @@
 					class="hover:cursor-pointer"
 					onclick={() => {
 						tags = tags.filter((t) => t !== tag);
-					}}>{tag}</Badge
+					}}
 				>
+					{tag}
+				</Badge>
 			{/each}
 		</div>
 	</div>

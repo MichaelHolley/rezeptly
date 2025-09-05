@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { Recipe, Tag } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
@@ -13,6 +15,9 @@
 	const { recipe } = $props<{ recipe: Recipe }>();
 
 	let editDetails = $state(false);
+
+	let tagInputValue = $state('');
+	let tags = $state<string[]>([]);
 </script>
 
 <div class="mb-8">
@@ -37,8 +42,46 @@
 				value={recipe.description}
 				placeholder="Short Recipe Description"
 			/>
+			<div class="form-group">
+				<Label for="tags-input">Tags</Label>
+				<Input
+					name="tags-input"
+					type="text"
+					placeholder="Enter a tag-name and press enter"
+					bind:value={tagInputValue}
+					onkeydown={(e) => {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							if (tagInputValue) {
+								tags.push(tagInputValue.trim());
+								tagInputValue = '';
+							}
+						}
+					}}
+				/>
+				<div class="flex flex-row flex-wrap gap-2">
+					{#each tags as tag}
+						<Input type="hidden" name="tags[]" value={tag} />
+						<Badge
+							variant="secondary"
+							class="hover:cursor-pointer"
+							onclick={() => {
+								tags = tags.filter((t) => t !== tag);
+							}}
+						>
+							{tag}
+						</Badge>
+					{/each}
+				</div>
+			</div>
 			<div class="flex flex-row justify-end gap-2">
-				<Button variant="secondary" onclick={() => (editDetails = false)}>
+				<Button
+					variant="secondary"
+					onclick={() => {
+						editDetails = false;
+						tags = [];
+					}}
+				>
 					<XIcon />
 					Cancel
 				</Button>
@@ -52,15 +95,21 @@
 		<div class="flex flex-row justify-between">
 			<h2>{recipe.name}</h2>
 			<div class="flex flex-row justify-end gap-2">
-				<Button variant="secondary" onclick={() => (editDetails = !editDetails)}>
+				<Button
+					variant="secondary"
+					onclick={() => {
+						editDetails = true;
+						tags = recipe.tags.map((t: Tag) => t.name);
+					}}
+				>
 					<PenIcon />
 				</Button>
 				<DeleteRecipeConfirmationModal />
 			</div>
 		</div>
 
-		<div class="flex flex-row justify-between gap-3">
-			<TagsContainer tags={recipe.tags.map((t: Tag) => t.name)} class="my-2" />
+		<div class="mt-1 flex flex-row justify-between gap-3">
+			<TagsContainer tags={recipe.tags.map((t: Tag) => t.name)} />
 			<div class="mt-1 text-xs text-zinc-400">
 				Created: {recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
 			</div>
