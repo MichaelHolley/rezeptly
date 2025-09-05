@@ -13,9 +13,12 @@
 				<Card.Root class="group h-full">
 					<Card.Header>
 						<Card.Title class="truncate">{recipe.name}</Card.Title>
-						<Card.Description class="line-clamp-3 pt-1">
-							{recipe.description}
-							<TagsContainer tags={recipe.tags.map((t: { name: string }) => t.name)} class="mt-2" />
+						<Card.Description class="pt-1">
+							<TagsContainer
+								tags={recipe.tags.map((t: { name: string }) => t.name)}
+								class="-mx-1 mb-2"
+							/>
+							<p class="line-clamp-3">{recipe.description}</p>
 						</Card.Description>
 						<Card.Action>
 							<ArrowRightIcon
