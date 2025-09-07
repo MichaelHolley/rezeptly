@@ -14,7 +14,7 @@
 <BreadcrumbComponent breadcrumbs={[{ name: 'Create Recipe', href: '/create' }]} />
 
 <form
-	{...createRecipe.enhance(async ({ form, data, submit }) => {
+	{...createRecipe.enhance(async ({ form, submit }) => {
 		try {
 			await submit();
 			await form.reset();
