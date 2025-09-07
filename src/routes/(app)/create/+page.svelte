@@ -1,6 +1,6 @@
 <script lang="ts">
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -52,15 +52,12 @@
 		<div class="flex flex-row flex-wrap gap-2">
 			{#each tags as tag}
 				<Input type="hidden" name="tags[]" value={tag} />
-				<Badge
-					variant="secondary"
-					class="hover:cursor-pointer"
-					onclick={() => {
+				<TagComponent
+					{tag}
+					onClick={() => {
 						tags = tags.filter((t) => t !== tag);
 					}}
-				>
-					{tag}
-				</Badge>
+				/>
 			{/each}
 		</div>
 	</div>

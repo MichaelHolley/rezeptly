@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -10,6 +9,7 @@
 	import XIcon from '@lucide/svelte/icons/x';
 	import { updateRecipeDetails } from '../../../routes/(app)/[id]/page.remote';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
+	import TagComponent from './TagComponent.svelte';
 	import TagsContainer from './TagsContainerComponent.svelte';
 
 	const { recipe } = $props<{ recipe: Recipe }>();
@@ -62,15 +62,7 @@
 				<div class="flex flex-row flex-wrap gap-2">
 					{#each tags as tag}
 						<Input type="hidden" name="tags[]" value={tag} />
-						<Badge
-							variant="secondary"
-							class="hover:cursor-pointer"
-							onclick={() => {
-								tags = tags.filter((t) => t !== tag);
-							}}
-						>
-							{tag}
-						</Badge>
+						<TagComponent {tag} onClick={() => (tags = tags.filter((t) => t !== tag))} />
 					{/each}
 				</div>
 			</div>
