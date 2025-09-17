@@ -22,29 +22,31 @@
 			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer>
-			<Dialog.Close>
-				<Button variant="secondary">
-					<XIcon />
-					Cancel
+			<div class="flex flex-row justify-between gap-2 sm:justify-end">
+				<Dialog.Close>
+					<Button variant="secondary">
+						<XIcon />
+						Cancel
+					</Button>
+				</Dialog.Close>
+				<Button
+					class="btn btn-error"
+					variant="destructive"
+					type="submit"
+					onclick={async () => {
+						try {
+							if (!page.params.id) return;
+							await deleteRecipe(Number(page.params.id));
+							await goto('/', { replaceState: true });
+						} catch (e) {
+							console.error(e);
+						}
+					}}
+				>
+					<TrashIcon />
+					Delete
 				</Button>
-			</Dialog.Close>
-			<Button
-				class="btn btn-error"
-				variant="destructive"
-				type="submit"
-				onclick={async () => {
-					try {
-						if (!page.params.id) return;
-						await deleteRecipe(Number(page.params.id));
-						await goto('/', { replaceState: true });
-					} catch (e) {
-						console.error(e);
-					}
-				}}
-			>
-				<TrashIcon />
-				Delete
-			</Button>
+			</div>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
