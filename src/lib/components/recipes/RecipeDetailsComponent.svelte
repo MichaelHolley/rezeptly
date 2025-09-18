@@ -47,7 +47,7 @@
 				<Input
 					name="tags-input"
 					type="text"
-					placeholder="Enter a tag-name and press enter"
+					placeholder="Enter a tag-name and confirm with Enter-Key"
 					bind:value={tagInputValue}
 					onkeydown={(e) => {
 						if (e.key === 'Enter') {
