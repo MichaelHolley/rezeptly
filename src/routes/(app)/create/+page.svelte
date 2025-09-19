@@ -11,6 +11,10 @@
 	let tags = $state<string[]>([]);
 </script>
 
+<svelte:head>
+	<title>Rezeptly | New</title>
+</svelte:head>
+
 <BreadcrumbComponent breadcrumbs={[{ name: 'Create Recipe', href: '/create' }]} />
 
 <form

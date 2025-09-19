@@ -61,6 +61,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Rezeptly | {recipe.current?.name}</title>
+</svelte:head>
+
 {#if recipe.current}
 	<BreadcrumbComponent
 		breadcrumbs={[{ name: recipe.current.name, href: `/${recipe.current.id}` }]}

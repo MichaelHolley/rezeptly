@@ -49,6 +49,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Rezeptly</title>
+</svelte:head>
+
 {#if recipes.current}
 	<div class="my-4 flex flex-row justify-center">
 		<div class="w-full max-w-xs">
