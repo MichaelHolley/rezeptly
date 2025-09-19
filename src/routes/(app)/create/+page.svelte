@@ -30,16 +30,17 @@
 >
 	<div class="form-group">
 		<Label for="name">Name</Label>
-		<Input name="name" type="text" placeholder="Name" required />
+		<Input name="name" id="name" type="text" placeholder="Name" required />
 	</div>
 	<div class="form-group">
-		<Label>Description</Label>
-		<Textarea name="description" placeholder="Short Recipe Description" required />
+		<Label for="description">Description</Label>
+		<Textarea name="description" id="description" placeholder="Short Recipe Description" required />
 	</div>
 	<div class="form-group">
 		<Label for="tags-input">Tags</Label>
 		<Input
 			name="tags-input"
+			id="tags-input"
 			type="text"
 			placeholder="Enter a tag-name and confirm with Enter-Key"
 			bind:value={tagInputValue}
