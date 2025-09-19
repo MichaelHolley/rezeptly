@@ -84,19 +84,23 @@
 			</div>
 		</form>
 	{:else}
-		<div class="flex flex-row justify-between">
+		<div class="flex flex-row justify-between gap-2">
 			<h2>{recipe.name}</h2>
 			<div class="flex flex-row justify-end gap-2">
-				<Button
-					variant="secondary"
-					onclick={() => {
-						editDetails = true;
-						tags = recipe.tags.map((t: Tag) => t.name);
-					}}
-				>
-					<PenIcon />
-				</Button>
-				<DeleteRecipeConfirmationModal />
+				<div>
+					<Button
+						variant="secondary"
+						onclick={() => {
+							editDetails = true;
+							tags = recipe.tags.map((t: Tag) => t.name);
+						}}
+					>
+						<PenIcon />
+					</Button>
+				</div>
+				<div>
+					<DeleteRecipeConfirmationModal />
+				</div>
 			</div>
 		</div>
 
