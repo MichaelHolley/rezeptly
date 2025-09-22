@@ -43,9 +43,9 @@
 				placeholder="Short Recipe Description"
 			/>
 			<div class="form-group">
-				<Label for="tags-input">Tags</Label>
+				<Label for="tagsinput">Tags</Label>
 				<Input
-					name="tags-input"
+					name="tagsinput"
 					type="text"
 					placeholder="Enter a tag-name and confirm with Enter-Key"
 					bind:value={tagInputValue}

@@ -15,14 +15,17 @@ export const deleteRecipe = command(z.number(), async (id) => {
 	await recipeService.deleteRecipe(id);
 });
 
-export const addIngredient = form(async (data) => {
-	const recipeId = Number(data.get('recipeId'));
-	const name = data.get('name') as string;
+export const addIngredient = form(
+	z.object({
+		recipeId: z.transform(Number),
+		name: z.string().min(1, 'Name is required')
+	}),
+	async ({ recipeId, name }) => {
+		await recipeService.createIngredient({ name: name.trim(), recipeId });
 
-	await recipeService.createIngredient({ name, recipeId });
-
-	await getRecipeById(recipeId).refresh();
-});
+		await getRecipeById(recipeId).refresh();
+	}
+);
 
 export const removeIngredient = command(
 	z.object({ recipeId: z.number(), ingrId: z.number() }),
@@ -33,17 +36,20 @@ export const removeIngredient = command(
 	}
 );
 
-export const updateRecipeDetails = form(async (data) => {
-	const recipeId = Number(data.get('recipeId'));
-	const name = data.get('name') as string;
-	const description = data.get('description') as string;
-	const tags = data.getAll('tags[]') as string[];
+export const updateRecipeDetails = form(
+	z.object({
+		recipeId: z.transform(Number),
+		name: z.string().nonempty().nonoptional(),
+		description: z.string().nonempty().nonoptional(),
+		tags: z.array(z.string()).optional()
+	}),
+	async ({ recipeId, name, description, tags }) => {
+		await recipeService.updateRecipe(recipeId, {
+			name,
+			description,
+			tags: tags?.map((tag) => ({ name: tag.trim() })) ?? []
+		});
 
-	await recipeService.updateRecipe(recipeId, {
-		name,
-		description,
-		tags: tags.map((tag) => ({ name: tag.trim() }))
-	});
-
-	await getRecipeById(recipeId).refresh();
-});
+		await getRecipeById(recipeId).refresh();
+	}
+);
