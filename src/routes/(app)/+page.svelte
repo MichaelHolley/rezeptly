@@ -75,8 +75,8 @@
 			<a href="/{recipe.id}" class="w-full max-w-xs">
 				<Card.Root class="group h-full">
 					<Card.Header>
-						<Card.Title class="truncate">{recipe.name}</Card.Title>
-						<Card.Description class="pt-1">
+						<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
+						<Card.Description>
 							<TagsContainer
 								tags={recipe.tags.map((t: { name: string }) => t.name)}
 								class="-mx-1 mb-2"
