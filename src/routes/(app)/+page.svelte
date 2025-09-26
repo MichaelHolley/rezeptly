@@ -70,9 +70,9 @@
 			</div>
 		</div>
 	</div>
-	<div class="my-4 flex flex-row flex-wrap gap-4">
+	<div class="card-container my-4 grid gap-4">
 		{#each filteredRecipes as recipe}
-			<a href="/{recipe.id}" class="w-full max-w-xs">
+			<a href="/{recipe.id}">
 				<Card.Root class="group h-full">
 					<Card.Header>
 						<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
@@ -100,3 +100,9 @@
 		<LoadingComponent />
 	</div>
 {/if}
+
+<style>
+	.card-container {
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	}
+</style>
