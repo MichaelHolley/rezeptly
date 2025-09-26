@@ -111,6 +111,6 @@
 			</div>
 		</div>
 
-		<p class="mt-4 text-base font-light text-zinc-500">{recipe.description}</p>
+		<p class="mt-2 text-base font-light text-zinc-500">{recipe.description}</p>
 	{/if}
 </div>
