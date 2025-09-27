@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 export const sessionCookieName = 'auth-session';
 
 const SESSION_DURATION_IN_S = 60 * 60 * 24; // 1 day in seconds
+const SESSION_TOKEN_LIFETIME_IN_DAYS = 7;
 
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
 	event.cookies.set(sessionCookieName, token, {
@@ -23,7 +24,11 @@ export function deleteSessionTokenCookie(event: RequestEvent) {
 }
 
 export function generateSessionToken(): { token: string; expires: Date } {
-	const expires = new Date(Date.now() + SESSION_DURATION_IN_S * 1000);
+	// * 1000 to convert to ms
+	const expires = new Date(
+		Date.now() + SESSION_DURATION_IN_S * SESSION_TOKEN_LIFETIME_IN_DAYS * 1000
+	);
+
 	const token = jwt.sign({ app: 'rezeptly' }, JWT_SECRET, {
 		expiresIn: `${SESSION_DURATION_IN_S}s`,
 		issuer: 'rezeptly'
