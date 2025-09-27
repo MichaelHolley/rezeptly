@@ -30,7 +30,7 @@ export function generateSessionToken(): { token: string; expires: Date } {
 	);
 
 	const token = jwt.sign({ app: 'rezeptly' }, JWT_SECRET, {
-		expiresIn: `${SESSION_DURATION_IN_S}s`,
+		expiresIn: `${SESSION_DURATION_IN_S * SESSION_TOKEN_LIFETIME_IN_DAYS}s`,
 		issuer: 'rezeptly'
 	});
 	return { token, expires };
