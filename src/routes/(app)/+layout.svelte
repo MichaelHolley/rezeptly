@@ -13,7 +13,7 @@
 				<RezeptlyHeader />
 			</div>
 			<div class="flex flex-row items-center">
-				<Button href="/create">+ Create</Button>
+				<Button href="/create" variant="outline">+ Create</Button>
 			</div>
 		</div>
 	</div>
