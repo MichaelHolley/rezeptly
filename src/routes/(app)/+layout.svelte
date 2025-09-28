@@ -19,6 +19,6 @@
 	</div>
 </nav>
 
-<div class="container mx-auto my-6 px-3 md:px-6">
+<div class="container mx-auto my-6 mb-10 px-3 md:px-6">
 	{@render children()}
 </div>
