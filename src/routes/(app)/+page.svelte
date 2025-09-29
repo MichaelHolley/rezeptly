@@ -72,7 +72,7 @@
 	</div>
 	<div class="card-container my-4 grid gap-4">
 		{#each filteredRecipes as recipe}
-			<a href="/{recipe.id}">
+			<a href="/{recipe.id}" class="max-w-md">
 				<Card.Root class="group h-full">
 					<Card.Header>
 						<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
