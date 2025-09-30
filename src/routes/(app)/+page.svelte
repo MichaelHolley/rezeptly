@@ -72,7 +72,7 @@
 	</div>
 	<div class="card-container my-4 grid gap-4">
 		{#each filteredRecipes as recipe}
-			<a href="/{recipe.id}" class="max-w-md">
+			<a href="/{recipe.id}">
 				<Card.Root class="group h-full">
 					<Card.Header>
 						<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
@@ -103,6 +103,6 @@
 
 <style>
 	.card-container {
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 	}
 </style>
