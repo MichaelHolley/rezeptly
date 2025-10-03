@@ -2,7 +2,7 @@
 
 Rezeptly is a modern, web-based application designed to help you discover, organize, and manage your favorite recipes with ease. Whether you're a seasoned chef or just starting your culinary journey, Rezeptly provides an intuitive and elegant interface for all your cooking needs.
 
-<img width="776" height="633" alt="image" src="https://github.com/user-attachments/assets/b5271ee0-d470-4ac8-9811-395ef64d1ad3" />
+<img width="780" alt="image" src="https://github.com/user-attachments/assets/d176dfb6-6d88-430c-a765-53cd5817e6c1" />
 
 ## ✨ Features
 
