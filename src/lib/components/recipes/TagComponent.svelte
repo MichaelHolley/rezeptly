@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
+	import type { Snippet } from 'svelte';
 
-	const { tag, onClick, active } = $props<{
-		tag: string;
-		onClick?: () => void;
+	const { onClick, active, children } = $props<{
 		active?: boolean;
+		onClick?: () => void;
+		children?: Snippet;
 	}>();
 </script>
 
-{#if active}
-	<Badge class={onClick && 'hover:cursor-pointer'} onclick={onClick}>
-		{tag}
-	</Badge>
-{:else}
-	<Badge variant="secondary" class={onClick && 'hover:cursor-pointer'} onclick={onClick}>
-		{tag}
-	</Badge>
-{/if}
+<Badge
+	variant={active ? 'default' : 'secondary'}
+	class={onClick && 'hover:cursor-pointer'}
+	onclick={onClick}
+>
+	{#if children}
+		{@render children()}
+	{/if}
+</Badge>

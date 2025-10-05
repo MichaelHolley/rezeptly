@@ -58,11 +58,12 @@
 			{#each tags as tag}
 				<Input type="hidden" name="tags[]" value={tag} />
 				<TagComponent
-					{tag}
 					onClick={() => {
 						tags = tags.filter((t) => t !== tag);
 					}}
-				/>
+				>
+					{tag}
+				</TagComponent>
 			{/each}
 		</div>
 	</div>

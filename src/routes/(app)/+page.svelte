@@ -4,13 +4,18 @@
 	import TagsContainer from '$lib/components/recipes/TagsContainerComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import { favoritesStore } from '$lib/store/favorites';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+	import StarIcon from '@lucide/svelte/icons/star';
 	import { Debounced } from 'runed';
 	import { getRecipes } from './page.remote';
 
 	let searchTerm = $state('');
 	const debouncedSearchTerm = new Debounced(() => searchTerm, 250);
 	let activeTagFilter = $state('');
+	let filterFavorites = $state(false);
+
+	const favorites = favoritesStore;
 
 	const recipes = getRecipes();
 
@@ -38,8 +43,12 @@
 					.toLowerCase()
 					.includes(debouncedSearchTerm.current.toLowerCase());
 
-				const matchesTagFilter =
+				let matchesTagFilter =
 					!activeTagFilter || r.tags.some((t: { name: string }) => t.name === activeTagFilter);
+
+				if (filterFavorites) {
+					matchesTagFilter = matchesTagFilter && $favorites.includes(r.id);
+				}
 
 				return matchesSearchTerm && matchesTagFilter;
 			});
@@ -60,12 +69,13 @@
 				<Input placeholder="Search..." class="w-full" bind:value={searchTerm} />
 			</div>
 			<div class="flex flex-row flex-wrap justify-center gap-2">
+				<TagComponent onClick={() => (filterFavorites = !filterFavorites)} active={filterFavorites}>
+					<StarIcon class="h-5 w-5 fill-yellow-400 text-yellow-400" />
+				</TagComponent>
 				{#each allTags as tag}
-					<TagComponent
+					<TagComponent onClick={() => setActiveTagFilter(tag)} active={activeTagFilter === tag}>
 						{tag}
-						onClick={() => setActiveTagFilter(tag)}
-						active={activeTagFilter === tag}
-					/>
+					</TagComponent>
 				{/each}
 			</div>
 		</div>

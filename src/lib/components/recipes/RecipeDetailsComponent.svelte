@@ -4,8 +4,10 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { Recipe, Tag } from '$lib/server/types';
+	import { favoritesStore } from '$lib/store/favorites';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
+	import StarIcon from '@lucide/svelte/icons/star';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { updateRecipeDetails } from '../../../routes/(app)/[id]/page.remote';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
@@ -18,6 +20,22 @@
 
 	let tagInputValue = $state('');
 	let tags = $state<string[]>([]);
+
+	const favorites = favoritesStore;
+
+	const toggleFavorite = () => {
+		if (!recipe) {
+			return;
+		}
+
+		favorites.update((favs) => {
+			if (favs.includes(recipe.id)) {
+				return favs.filter((id: number) => id !== recipe.id);
+			} else {
+				return [...favs, recipe.id];
+			}
+		});
+	};
 </script>
 
 <div class="mb-8">
@@ -62,7 +80,9 @@
 				<div class="flex flex-row flex-wrap gap-2">
 					{#each tags as tag}
 						<Input type="hidden" name="tags[]" value={tag} />
-						<TagComponent {tag} onClick={() => (tags = tags.filter((t) => t !== tag))} />
+						<TagComponent onClick={() => (tags = tags.filter((t) => t !== tag))}>
+							{tag}
+						</TagComponent>
 					{/each}
 				</div>
 			</div>
@@ -87,6 +107,15 @@
 		<div class="flex flex-row justify-between gap-2">
 			<h2>{recipe.name}</h2>
 			<div class="flex flex-row justify-end gap-2">
+				<div>
+					<Button onclick={toggleFavorite} variant="outline">
+						{#if $favorites.includes(recipe.id)}
+							<StarIcon class="h-5 w-5 fill-yellow-400 text-yellow-400" />
+						{:else}
+							<StarIcon class="h-5 w-5 text-zinc-400" />
+						{/if}
+					</Button>
+				</div>
 				<div>
 					<Button
 						variant="secondary"
