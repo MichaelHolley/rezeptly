@@ -8,6 +8,8 @@
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import { Debounced } from 'runed';
+	import { useSearchParams } from 'runed/kit';
+	import z from 'zod';
 	import { getRecipes } from './page.remote';
 
 	let searchTerm = $state('');
@@ -16,6 +18,14 @@
 	let filterFavorites = $state(false);
 
 	const favorites = favoritesStore;
+
+	const recipeSearchSchema = z.object({
+		filterFavorites: z.boolean(),
+		searchTerm: z.string().min(0).max(100),
+		activeTagFilter: z.string().optional()
+	});
+
+	const searchParams = useSearchParams(recipeSearchSchema);
 
 	const recipes = getRecipes();
 
