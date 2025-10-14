@@ -1,12 +1,12 @@
 import { command, form, query } from '$app/server';
 import * as recipeService from '$lib/server/services';
-import { fail } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const getRecipeById = query(z.number(), async (id) => {
 	const recipe = await recipeService.getRecipeById(id);
 
-	if (!recipe) fail(404, 'Recipe not found');
+	if (!recipe) error(404, 'Recipe not found');
 
 	return recipe;
 });
