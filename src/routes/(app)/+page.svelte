@@ -8,14 +8,21 @@
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import { Debounced } from 'runed';
+	import { useSearchParams } from 'runed/kit';
+	import z from 'zod';
 	import { getRecipes } from './page.remote';
 
-	let searchTerm = $state('');
-	const debouncedSearchTerm = new Debounced(() => searchTerm, 250);
-	let activeTagFilter = $state('');
-	let filterFavorites = $state(false);
-
 	const favorites = favoritesStore;
+
+	const searchParams = useSearchParams(
+		z.object({
+			filterFavorites: z.boolean().default(false),
+			searchTerm: z.string().optional().default(''),
+			activeTagFilter: z.string().optional().default('')
+		})
+	);
+
+	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 100);
 
 	const recipes = getRecipes();
 
@@ -29,28 +36,27 @@
 	});
 
 	const setActiveTagFilter = (tag: string) => {
-		if (activeTagFilter === tag) {
-			activeTagFilter = '';
+		if (searchParams.activeTagFilter === tag) {
+			searchParams.activeTagFilter = '';
 		} else {
-			activeTagFilter = tag;
+			searchParams.activeTagFilter = tag;
 		}
 	};
 
 	const filteredRecipes = $derived.by(() => {
 		if (recipes.current) {
 			return recipes.current.filter((r) => {
-				const matchesSearchTerm = r.name
-					.toLowerCase()
-					.includes(debouncedSearchTerm.current.toLowerCase());
+				const matchesSearchTerm =
+					!searchParams.searchTerm ||
+					r.name.toLowerCase().includes(debouncedSearchTerm.current.toLowerCase());
 
-				let matchesTagFilter =
-					!activeTagFilter || r.tags.some((t: { name: string }) => t.name === activeTagFilter);
+				const matchesTagFilter =
+					!searchParams.activeTagFilter ||
+					r.tags.some((t: { name: string }) => t.name === searchParams.activeTagFilter);
 
-				if (filterFavorites) {
-					matchesTagFilter = matchesTagFilter && $favorites.includes(r.id);
-				}
+				const matchesFavoritesFilter = !searchParams.filterFavorites || $favorites.includes(r.id);
 
-				return matchesSearchTerm && matchesTagFilter;
+				return matchesSearchTerm && matchesTagFilter && matchesFavoritesFilter;
 			});
 		}
 
@@ -66,14 +72,20 @@
 	<div class="my-4 flex flex-row justify-center">
 		<div class="w-full max-w-xs">
 			<div class="mb-2 flex flex-row items-center gap-2">
-				<Input placeholder="Search..." class="w-full" bind:value={searchTerm} />
+				<Input placeholder="Search..." class="w-full" bind:value={searchParams.searchTerm} />
 			</div>
 			<div class="flex flex-row flex-wrap justify-center gap-2">
-				<TagComponent onClick={() => (filterFavorites = !filterFavorites)} active={filterFavorites}>
+				<TagComponent
+					onClick={() => (searchParams.filterFavorites = !searchParams.filterFavorites)}
+					active={searchParams.filterFavorites}
+				>
 					<StarIcon class="h-5 w-5 fill-yellow-400 text-yellow-400" />
 				</TagComponent>
 				{#each allTags as tag}
-					<TagComponent onClick={() => setActiveTagFilter(tag)} active={activeTagFilter === tag}>
+					<TagComponent
+						onClick={() => setActiveTagFilter(tag)}
+						active={searchParams.activeTagFilter === tag}
+					>
 						{tag}
 					</TagComponent>
 				{/each}

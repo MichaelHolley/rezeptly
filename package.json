@@ -55,7 +55,7 @@
 		"drizzle-orm": "^0.40.1",
 		"jsonwebtoken": "^9.0.2",
 		"postgres": "^3.4.7",
-		"runed": "^0.31.1"
+		"runed": "^0.35.1"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
