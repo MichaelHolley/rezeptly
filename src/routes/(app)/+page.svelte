@@ -20,9 +20,9 @@
 	const favorites = favoritesStore;
 
 	const recipeSearchSchema = z.object({
-		filterFavorites: z.boolean(),
-		searchTerm: z.string().min(0).max(100),
-		activeTagFilter: z.string().optional()
+		filterFavorites: z.boolean().default(false),
+		searchTerm: z.string().optional().default(''),
+		activeTagFilter: z.string().optional().default('')
 	});
 
 	const searchParams = useSearchParams(recipeSearchSchema);
