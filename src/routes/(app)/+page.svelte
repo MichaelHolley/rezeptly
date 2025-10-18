@@ -54,7 +54,8 @@
 					!searchParams.activeTagFilter ||
 					r.tags.some((t: { name: string }) => t.name === searchParams.activeTagFilter);
 
-				const matchesFavoritesFilter = !searchParams.filterFavorites || $favorites.includes(r.id);
+				const matchesFavoritesFilter =
+					!searchParams.filterFavorites || favorites.current.includes(r.id);
 
 				return matchesSearchTerm && matchesTagFilter && matchesFavoritesFilter;
 			});

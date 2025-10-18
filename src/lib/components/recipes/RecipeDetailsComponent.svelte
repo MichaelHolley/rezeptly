@@ -28,13 +28,11 @@
 			return;
 		}
 
-		favorites.update((favs) => {
-			if (favs.includes(recipe.id)) {
-				return favs.filter((id: number) => id !== recipe.id);
-			} else {
-				return [...favs, recipe.id];
-			}
-		});
+		if (favorites.current.includes(recipe.id)) {
+			favorites.current = favorites.current.filter((id) => id !== recipe.id);
+		} else {
+			favorites.current.push(recipe.id);
+		}
 	};
 </script>
 
@@ -109,7 +107,7 @@
 			<div class="flex flex-row justify-end gap-2">
 				<div>
 					<Button onclick={toggleFavorite} variant="outline">
-						{#if $favorites.includes(recipe.id)}
+						{#if favorites.current.includes(recipe.id)}
 							<StarIcon class="h-5 w-5 fill-yellow-400 text-yellow-400" />
 						{:else}
 							<StarIcon class="h-5 w-5 text-zinc-400" />
