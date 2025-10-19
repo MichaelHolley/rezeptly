@@ -1,9 +1,12 @@
+import { userCanWrite } from '$lib/server/auth.js';
 import { upsertInstructionsForRecipe } from '$lib/server/services';
 import type { NewInstruction } from '$lib/server/types.js';
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 
 export const actions = {
 	updateInstructions: async (event) => {
+		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
 		const { id } = event.params;
 
 		if (!id || isNaN(Number(id))) {

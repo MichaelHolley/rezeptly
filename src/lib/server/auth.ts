@@ -1,3 +1,4 @@
+import { getRequestEvent } from '$app/server';
 import { JWT_SECRET } from '$env/static/private';
 import { type RequestEvent } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
@@ -44,6 +45,16 @@ export function generateSessionToken(admin: boolean = false): { token: string; e
 	return { token, expires };
 }
 
-export function isAdmin(roles: ROLE[]): boolean {
+function isAdmin(roles: ROLE[]): boolean {
 	return roles.includes(ADMIN_ROLE);
+}
+
+function getRoles() {
+	const { locals } = getRequestEvent();
+	return locals.roles;
+}
+
+export function userCanWrite(): boolean {
+	const roles = getRoles();
+	return isAdmin(roles);
 }
