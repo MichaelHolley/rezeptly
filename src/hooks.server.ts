@@ -15,14 +15,16 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		console.warn('No session token found, redirecting to /auth');
 		return redirect(303, `/auth`);
 	}
-
+	let token;
 	try {
-		jwt.verify(sessionToken, JWT_SECRET);
+		token = jwt.verify(sessionToken, JWT_SECRET);
 	} catch {
 		console.warn('Session token is invalid, deleting cookie and redirecting to /auth');
 		auth.deleteSessionTokenCookie(event);
 		return redirect(303, `/auth`);
 	}
+
+	event.locals.roles = (token as { roles: auth.ROLE[] }).roles;
 
 	return await resolve(event);
 };
