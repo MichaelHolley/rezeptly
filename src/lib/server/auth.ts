@@ -49,7 +49,7 @@ function isAdmin(roles: ROLE[]): boolean {
 	return roles.includes(ADMIN_ROLE);
 }
 
-function getRoles() {
+export function getRoles() {
 	const { locals } = getRequestEvent();
 	return locals.roles;
 }
