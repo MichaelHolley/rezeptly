@@ -1,11 +1,11 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { deleteRecipe } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { deleteRecipe } from '../../../routes/(app)/[id]/page.remote';
 </script>
 
 <Dialog.Root>

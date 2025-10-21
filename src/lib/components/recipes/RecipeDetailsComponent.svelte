@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { updateRecipeDetails } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -9,7 +10,6 @@
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { updateRecipeDetails } from '../../../routes/(app)/[id]/page.remote';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
 	import TagComponent from './TagComponent.svelte';
 	import TagsContainer from './TagsContainerComponent.svelte';

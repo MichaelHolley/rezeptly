@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getRecipes } from '$lib/api/recipes.remote';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
 	import TagsContainer from '$lib/components/recipes/TagsContainerComponent.svelte';
@@ -10,7 +11,6 @@
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
 	import z from 'zod';
-	import { getRecipes } from './page.remote';
 
 	const favorites = favoritesStore;
 
