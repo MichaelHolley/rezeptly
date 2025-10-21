@@ -118,12 +118,18 @@
 	</div>
 {/if}
 
+{#snippet ingredientsTrigger()}
+	<Button variant="ghost" slot="trigger"><PenIcon /></Button>
+{/snippet}
+
 {#snippet ingredientsBlock(r: RecipeWithDetails)}
 	<div class="flex flex-row gap-1 pb-2">
 		<h3>Ingredients</h3>
-		<IngredientsSheet ingredients={r.ingredients} recipeId={Number(params.id)}>
-			<Button variant="ghost" slot="trigger"><PenIcon /></Button>
-		</IngredientsSheet>
+		<IngredientsSheet
+			ingredients={r.ingredients}
+			recipeId={Number(params.id)}
+			trigger={ingredientsTrigger}
+		/>
 	</div>
 	<IngredientsListComponent ingredients={r.ingredients} />
 {/snippet}
