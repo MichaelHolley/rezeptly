@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { addIngredient, removeIngredient } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
@@ -6,14 +7,20 @@
 	import type { Ingredient } from '$lib/server/types';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
-	import { addIngredient, removeIngredient } from '../../../routes/(app)/[id]/page.remote';
+	import type { Snippet } from 'svelte';
 
-	const { recipeId, ingredients } = $props<{ recipeId: number; ingredients: Ingredient[] }>();
+	const { recipeId, ingredients, trigger } = $props<{
+		recipeId: number;
+		ingredients: Ingredient[];
+		trigger: Snippet;
+	}>();
 </script>
 
 <Sheet.Root>
 	<Sheet.Trigger>
-		<slot name="trigger"></slot>
+		{#if trigger}
+			{@render trigger()}
+		{/if}
 	</Sheet.Trigger>
 	<Sheet.Content class="max-h-svh">
 		<Sheet.Header>

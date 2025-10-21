@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { updateRecipeDetails } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -8,8 +9,8 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
+	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { updateRecipeDetails } from '../../../routes/(app)/[id]/page.remote';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
 	import TagComponent from './TagComponent.svelte';
 	import TagsContainer from './TagsContainerComponent.svelte';
@@ -126,7 +127,7 @@
 					</Button>
 				</div>
 				<div>
-					<DeleteRecipeConfirmationModal />
+					<DeleteRecipeConfirmationModal trigger={deleteModalTrigger} />
 				</div>
 			</div>
 		</div>
@@ -141,3 +142,9 @@
 		<p class="mt-2 text-base font-light text-zinc-500">{recipe.description}</p>
 	{/if}
 </div>
+
+{#snippet deleteModalTrigger()}
+	<Button class="btn btn-error" variant="destructive" type="submit">
+		<TrashIcon />
+	</Button>
+{/snippet}

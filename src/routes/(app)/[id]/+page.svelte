@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { getRecipeById } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
@@ -13,7 +14,6 @@
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { getRecipeById } from './page.remote';
 
 	const { params } = $props();
 
@@ -118,12 +118,18 @@
 	</div>
 {/if}
 
+{#snippet ingredientsTrigger()}
+	<Button variant="ghost" slot="trigger"><PenIcon /></Button>
+{/snippet}
+
 {#snippet ingredientsBlock(r: RecipeWithDetails)}
 	<div class="flex flex-row gap-1 pb-2">
 		<h3>Ingredients</h3>
-		<IngredientsSheet ingredients={r.ingredients} recipeId={Number(params.id)}>
-			<Button variant="ghost" slot="trigger"><PenIcon /></Button>
-		</IngredientsSheet>
+		<IngredientsSheet
+			ingredients={r.ingredients}
+			recipeId={Number(params.id)}
+			trigger={ingredientsTrigger}
+		/>
 	</div>
 	<IngredientsListComponent ingredients={r.ingredients} />
 {/snippet}

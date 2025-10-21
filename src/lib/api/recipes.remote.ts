@@ -1,8 +1,12 @@
 import { command, form, query } from '$app/server';
 import { userCanWrite } from '$lib/server/auth';
 import * as recipeService from '$lib/server/services';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
+
+export const getRecipes = query(async () => {
+	return await recipeService.getRecipes();
+});
 
 export const getRecipeById = query(z.number(), async (id) => {
 	const recipe = await recipeService.getRecipeById(id);
@@ -60,5 +64,24 @@ export const updateRecipeDetails = form(
 		});
 
 		await getRecipeById(recipeId).refresh();
+	}
+);
+
+export const createRecipe = form(
+	z.object({
+		name: z.string().nonempty().nonoptional(),
+		description: z.string().nonempty().nonoptional(),
+		tags: z.array(z.string()).optional()
+	}),
+	async ({ name, description, tags }) => {
+		const recipe = await recipeService.createRecipe({
+			name: name.trim(),
+			description: description.trim(),
+			ingredients: [],
+			instructions: [],
+			tags: tags?.map((tag) => ({ name: tag.trim() })) ?? []
+		});
+
+		redirect(303, `/${recipe.id}`);
 	}
 );

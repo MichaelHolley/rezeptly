@@ -1,18 +1,23 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { deleteRecipe } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { deleteRecipe } from '../../../routes/(app)/[id]/page.remote';
+	import type { Snippet } from 'svelte';
+
+	const { trigger } = $props<{
+		trigger: Snippet;
+	}>();
 </script>
 
 <Dialog.Root>
 	<Dialog.Trigger>
-		<Button class="btn btn-error" variant="destructive" type="submit">
-			<TrashIcon />
-		</Button>
+		{#if trigger}
+			{@render trigger()}
+		{/if}
 	</Dialog.Trigger>
 	<Dialog.Content>
 		<Dialog.Header>
