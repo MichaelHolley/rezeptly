@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { getRecipeById } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
+	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
@@ -13,7 +14,7 @@
 	import type { RecipeWithDetails } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import type { HttpError, SubmitFunction } from '@sveltejs/kit';
 
 	const { params } = $props();
 
@@ -110,8 +111,8 @@
 			{@render ingredientsBlock(recipe.current)}
 		</div>
 	</div>
-{:else if recipe.error}
-	<p class="text-red-500">{recipe.error}</p>
+{:else if recipe.error as HttpError}
+	<ErrorComponent message={recipe.error.body.message} />
 {:else}
 	<div class="flex flex-col items-center justify-center pt-32">
 		<LoadingComponent />
