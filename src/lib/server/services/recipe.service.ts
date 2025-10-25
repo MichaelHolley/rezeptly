@@ -7,8 +7,27 @@ import type {
 	NewRecipe,
 	NewTag,
 	Recipe,
+	RecipeMetadata,
 	RecipeWithDetails
 } from '../types';
+
+export const getRecipesMetadata = async (): Promise<RecipeMetadata[]> => {
+	const result = await db.query.recipes.findMany({
+		with: {
+			tags: {
+				with: {
+					tag: true
+				}
+			}
+		},
+		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
+	});
+
+	return result.map((r) => ({
+		...r,
+		tags: r.tags.map((rt) => rt.tag)
+	}));
+};
 
 export const getRecipes = async (): Promise<RecipeWithDetails[]> => {
 	const result = await db.query.recipes.findMany({

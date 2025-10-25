@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getRecipes } from '$lib/api/recipes.remote';
+	import { getRecipesMetadata } from '$lib/api/recipes.remote';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
 	import TagsContainer from '$lib/components/recipes/TagsContainerComponent.svelte';
@@ -24,7 +24,7 @@
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 100);
 
-	const recipes = getRecipes();
+	const recipes = getRecipesMetadata();
 
 	const allTags = $derived.by(() => {
 		if (recipes.current) {

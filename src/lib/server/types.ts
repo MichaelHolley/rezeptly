@@ -1,4 +1,4 @@
-import type { ingredients, recipes, instructions, tags } from './db/schema';
+import type { ingredients, instructions, recipes, tags } from './db/schema';
 
 export type Recipe = typeof recipes.$inferSelect;
 export type NewRecipe = typeof recipes.$inferInsert;
@@ -15,5 +15,9 @@ export type NewTag = typeof tags.$inferInsert;
 export type RecipeWithDetails = Recipe & {
 	ingredients: Ingredient[];
 	instructions: Instruction[];
+	tags: Tag[];
+};
+
+export type RecipeMetadata = Recipe & {
 	tags: Tag[];
 };
