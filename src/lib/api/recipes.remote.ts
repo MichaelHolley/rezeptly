@@ -3,6 +3,10 @@ import * as recipeService from '$lib/server/services';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
+export const getRecipesMetadata = query(async () => {
+	return await recipeService.getRecipesMetadata();
+});
+
 export const getRecipes = query(async () => {
 	return await recipeService.getRecipes();
 });
