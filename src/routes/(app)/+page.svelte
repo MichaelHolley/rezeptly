@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { getRecipesMetadata } from '$lib/api/recipes.remote';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import SearchBar from '$lib/components/common/SearchBarComponent.svelte';
 	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
 	import TagsContainer from '$lib/components/recipes/TagsContainerComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
-	import Input from '$lib/components/ui/input/input.svelte';
 	import { favoritesStore } from '$lib/store/favorites';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import StarIcon from '@lucide/svelte/icons/star';
@@ -73,7 +73,7 @@
 	<div class="my-4 flex flex-row justify-center">
 		<div class="w-full max-w-xs">
 			<div class="mb-2 flex flex-row items-center gap-2">
-				<Input placeholder="Search..." class="w-full" bind:value={searchParams.searchTerm} />
+				<SearchBar bind:searchTerm={searchParams.searchTerm} />
 			</div>
 			<div class="flex flex-row flex-wrap justify-center gap-2">
 				<TagComponent
