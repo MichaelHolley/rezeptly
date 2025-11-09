@@ -2,8 +2,5 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": [
     "fra1"
-  ],
-  "functionFailoverRegions": [
-    "arn1"
   ]
 }
