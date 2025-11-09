@@ -1,5 +1,5 @@
 import { AUTH_PASSWORD } from '$env/static/private';
-import * as auth from '$lib/server/auth';
+import { generateSessionToken, setSessionTokenCookie } from '$lib/server/auth/auth';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const actions = {
@@ -11,9 +11,11 @@ export const actions = {
 			return fail(401, { message: 'Incorrect password' });
 		}
 
-		const { token, expires } = auth.generateSessionToken();
-		auth.setSessionTokenCookie(event, token, expires);
+		const { token, expires } = generateSessionToken();
+		setSessionTokenCookie(event, token, expires);
 
-		return redirect(303, `/`);
+		const returnTo = event.url.searchParams.get('returnTo') || '/';
+
+		return redirect(303, returnTo);
 	}
 };

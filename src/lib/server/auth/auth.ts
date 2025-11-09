@@ -1,6 +1,7 @@
 import { JWT_SECRET } from '$env/static/private';
-import type { RequestEvent } from '@sveltejs/kit';
+import { type RequestEvent } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
+import { ADMIN_ROLE } from './permissions';
 
 export const sessionCookieName = 'auth-session';
 
@@ -29,9 +30,10 @@ export function generateSessionToken(): { token: string; expires: Date } {
 		Date.now() + SESSION_DURATION_IN_S * SESSION_TOKEN_LIFETIME_IN_DAYS * 1000
 	);
 
-	const token = jwt.sign({ app: 'rezeptly' }, JWT_SECRET, {
+	const token = jwt.sign({ app: 'rezeptly', roles: [ADMIN_ROLE] }, JWT_SECRET, {
 		expiresIn: `${SESSION_DURATION_IN_S * SESSION_TOKEN_LIFETIME_IN_DAYS}s`,
 		issuer: 'rezeptly'
 	});
+
 	return { token, expires };
 }

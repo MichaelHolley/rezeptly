@@ -6,6 +6,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { Recipe, Tag } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
+	import { userCanWrite } from '$lib/store/roles';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
@@ -115,20 +116,23 @@
 						{/if}
 					</Button>
 				</div>
-				<div>
-					<Button
-						variant="secondary"
-						onclick={() => {
-							editDetails = true;
-							tags = recipe.tags.map((t: Tag) => t.name);
-						}}
-					>
-						<PenIcon />
-					</Button>
-				</div>
-				<div>
-					<DeleteRecipeConfirmationModal trigger={deleteModalTrigger} />
-				</div>
+
+				{#if $userCanWrite}
+					<div>
+						<Button
+							variant="secondary"
+							onclick={() => {
+								editDetails = true;
+								tags = recipe.tags.map((t: Tag) => t.name);
+							}}
+						>
+							<PenIcon />
+						</Button>
+					</div>
+					<div>
+						<DeleteRecipeConfirmationModal trigger={deleteModalTrigger} />
+					</div>
+				{/if}
 			</div>
 		</div>
 
