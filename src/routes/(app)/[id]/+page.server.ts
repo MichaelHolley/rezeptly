@@ -1,6 +1,6 @@
-import { userCanWrite } from '$lib/server/auth/auth.js';
+import { userCanWrite } from '$lib/server/auth/permissions';
 import { upsertInstructionsForRecipe } from '$lib/server/services';
-import type { NewInstruction } from '$lib/server/types.js';
+import type { NewInstruction } from '$lib/server/types';
 import { error, fail } from '@sveltejs/kit';
 
 export const actions = {

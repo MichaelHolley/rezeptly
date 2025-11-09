@@ -6,7 +6,7 @@ export type ROLE = typeof ADMIN_ROLE; // | typeof ANOTHER_ROLE
 
 export function getRoles() {
 	const { locals } = getRequestEvent();
-	return locals.roles;
+	return locals.roles as ROLE[];
 }
 
 export function userCanWrite(): boolean {

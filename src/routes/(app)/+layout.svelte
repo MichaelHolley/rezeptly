@@ -12,12 +12,12 @@
 
 	onMount(async () => {
 		const roles = await getUserRoles();
-		rolesStore.current = roles;
+		rolesStore.set(roles);
 	});
 
 	const logoutUser = async () => {
 		const res = await logout();
-		rolesStore.current = [];
+		rolesStore.reset();
 
 		if (res.redirect) goto('/auth');
 	};
@@ -31,10 +31,10 @@
 				<RezeptlyHeader />
 			</div>
 			<div class="flex flex-row items-center gap-2">
-				{#if rolesStore.current.includes('admin')}
+				{#if rolesStore.userCanWrite}
 					<Button href="/create" variant="outline">+ Create</Button>
 				{/if}
-				{#if rolesStore.current.length > 0}
+				{#if rolesStore.loggedIn}
 					<Button onclick={logoutUser} variant="outline"><LogoutIcon />Logout</Button>
 				{:else}
 					<Button href="/auth" variant="outline"><LoginIcon />Login</Button>

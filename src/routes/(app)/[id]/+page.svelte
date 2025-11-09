@@ -82,7 +82,7 @@
 			<div>
 				<div class="flex flex-row gap-1 pb-2">
 					<h3>Instructions</h3>
-					{#if rolesStore.current.includes('admin')}
+					{#if rolesStore.userCanWrite}
 						<Button variant="ghost" onclick={toggleEditInstructions}>
 							{#if showInstructionsForm}
 								<XIcon />
@@ -123,7 +123,7 @@
 {/if}
 
 {#snippet ingredientsTrigger()}
-	{#if rolesStore.current.includes('admin')}
+	{#if rolesStore.userCanWrite}
 		<Button variant="ghost" slot="trigger"><PenIcon /></Button>
 	{/if}
 {/snippet}

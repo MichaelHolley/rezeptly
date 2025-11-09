@@ -12,7 +12,7 @@
 	const { form } = $props<{ form: ActionData }>();
 
 	onMount(() => {
-		rolesStore.current = [];
+		rolesStore.reset();
 	});
 </script>
 
