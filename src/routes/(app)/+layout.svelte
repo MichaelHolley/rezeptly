@@ -34,7 +34,7 @@
 				{#if rolesStore.userCanWrite}
 					<Button href="/create" variant="outline">+ Create</Button>
 				{/if}
-				{#if rolesStore.loggedIn}
+				{#if !rolesStore.loggedIn}
 					<Button onclick={logoutUser} variant="outline"><LogoutIcon />Logout</Button>
 				{:else}
 					<Button href="/auth" variant="outline"><LoginIcon />Login</Button>
