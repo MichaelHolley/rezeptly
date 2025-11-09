@@ -11,7 +11,7 @@ export function getRoles() {
 		return undefined;
 	}
 
-	return locals.roles as ROLE[];
+	return locals.roles;
 }
 
 export function userCanWrite(): boolean {
