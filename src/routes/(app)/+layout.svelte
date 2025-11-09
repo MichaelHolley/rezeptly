@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { getUserRoles, logout } from '$lib/api/auth.remote';
 	import RezeptlyHeader from '$lib/components/common/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
@@ -23,18 +24,23 @@
 <nav class="bg-zinc-50 py-2 shadow-sm">
 	<div class="container mx-auto px-3 md:px-6">
 		<div class="flex flex-row justify-between gap-2">
-			<div></div>
 			<div>
 				<RezeptlyHeader />
 			</div>
-			<div class="flex flex-row items-center gap-2">
+			<div class="flex flex-row items-center gap-3">
 				{#if $userCanWrite}
-					<Button href="/create" variant="outline">+ Create</Button>
+					<Button href="/create" variant="default">+ Create</Button>
 				{/if}
 				{#if $loggedIn}
-					<Button onclick={logoutUser} variant="outline"><LogoutIcon />Logout</Button>
+					<Button onclick={logoutUser} variant="outline">
+						Logout
+						<LogoutIcon />
+					</Button>
 				{:else}
-					<Button href="/auth" variant="outline"><LoginIcon />Login</Button>
+					<Button href="/auth?returnTo={$page.url.pathname}" variant="outline">
+						Login
+						<LoginIcon />
+					</Button>
 				{/if}
 			</div>
 		</div>
