@@ -6,11 +6,21 @@ export type ROLE = typeof ADMIN_ROLE; // | typeof ANOTHER_ROLE
 
 export function getRoles() {
 	const { locals } = getRequestEvent();
+
+	if (!locals.roles) {
+		return undefined;
+	}
+
 	return locals.roles as ROLE[];
 }
 
 export function userCanWrite(): boolean {
 	const roles = getRoles();
+
+	if (roles === undefined) {
+		return false;
+	}
+
 	return roles.includes(ADMIN_ROLE);
 }
 

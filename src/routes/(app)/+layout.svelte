@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { getUserRoles, logout } from '$lib/api/auth.remote';
 	import RezeptlyHeader from '$lib/components/common/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
-	import { rolesStore } from '$lib/store/roles';
+	import { loggedIn, rolesStore, userCanWrite } from '$lib/store/roles';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
 	import { onMount } from 'svelte';
@@ -18,8 +17,6 @@
 	const logoutUser = async () => {
 		const res = await logout();
 		rolesStore.reset();
-
-		if (res.redirect) goto('/auth');
 	};
 </script>
 
@@ -31,10 +28,10 @@
 				<RezeptlyHeader />
 			</div>
 			<div class="flex flex-row items-center gap-2">
-				{#if rolesStore.userCanWrite}
+				{#if $userCanWrite}
 					<Button href="/create" variant="outline">+ Create</Button>
 				{/if}
-				{#if !rolesStore.loggedIn}
+				{#if $loggedIn}
 					<Button onclick={logoutUser} variant="outline"><LogoutIcon />Logout</Button>
 				{:else}
 					<Button href="/auth" variant="outline"><LoginIcon />Login</Button>

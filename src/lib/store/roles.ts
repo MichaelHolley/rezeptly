@@ -6,14 +6,16 @@ function createRolesStore() {
 	return {
 		subscribe,
 		set,
-		reset: () => set([]),
-		userCanWrite: derived({ subscribe }, ($roles) => {
-			return $roles.includes('admin');
-		}),
-		loggedIn: derived({ subscribe }, ($roles) => {
-			return $roles.length > 0;
-		})
+		reset: () => set([])
 	};
 }
 
 export const rolesStore = createRolesStore();
+
+export const loggedIn = derived(rolesStore, ($rolesStore) => {
+	return $rolesStore.length > 0;
+});
+
+export const userCanWrite = derived(rolesStore, ($rolesStore) => {
+	return $rolesStore.includes('admin');
+});

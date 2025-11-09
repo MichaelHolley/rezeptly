@@ -12,7 +12,7 @@
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { RecipeWithDetails } from '$lib/server/types';
-	import { rolesStore } from '$lib/store/roles';
+	import { userCanWrite } from '$lib/store/roles';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
 	import type { HttpError, SubmitFunction } from '@sveltejs/kit';
@@ -82,7 +82,7 @@
 			<div>
 				<div class="flex flex-row gap-1 pb-2">
 					<h3>Instructions</h3>
-					{#if rolesStore.userCanWrite}
+					{#if $userCanWrite}
 						<Button variant="ghost" onclick={toggleEditInstructions}>
 							{#if showInstructionsForm}
 								<XIcon />
@@ -123,7 +123,7 @@
 {/if}
 
 {#snippet ingredientsTrigger()}
-	{#if rolesStore.userCanWrite}
+	{#if $userCanWrite}
 		<Button variant="ghost" slot="trigger"><PenIcon /></Button>
 	{/if}
 {/snippet}
