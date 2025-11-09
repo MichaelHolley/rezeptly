@@ -5,6 +5,8 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import jwt from 'jsonwebtoken';
 
+const protectedRoutes = ['/create'];
+
 const handleAuth: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname === '/auth') {
 		return await resolve(event);
@@ -20,6 +22,10 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 			console.warn('Session token is invalid, deleting cookie and redirecting to /auth');
 			deleteSessionTokenCookie(event);
 			redirect(307, '/auth');
+		}
+	} else {
+		if (protectedRoutes.includes(event.url.pathname)) {
+			redirect(307, `/auth?returnTo=${encodeURIComponent(event.url.pathname)}`);
 		}
 	}
 

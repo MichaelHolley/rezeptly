@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { getUserRoles, logout } from '$lib/api/auth.remote';
 	import RezeptlyHeader from '$lib/components/common/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
@@ -37,7 +37,7 @@
 						<LogoutIcon />
 					</Button>
 				{:else}
-					<Button href="/auth?returnTo={$page.url.pathname}" variant="outline">
+					<Button href="/auth?returnTo={encodeURIComponent(page.url.pathname)}" variant="outline">
 						Login
 						<LoginIcon />
 					</Button>
