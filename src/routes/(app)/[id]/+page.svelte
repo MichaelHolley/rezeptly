@@ -12,6 +12,7 @@
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { RecipeWithDetails } from '$lib/server/types';
+	import { rolesStore } from '$lib/store/roles';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
 	import type { HttpError, SubmitFunction } from '@sveltejs/kit';
@@ -81,13 +82,15 @@
 			<div>
 				<div class="flex flex-row gap-1 pb-2">
 					<h3>Instructions</h3>
-					<Button variant="ghost" onclick={toggleEditInstructions} slot="trigger">
-						{#if showInstructionsForm}
-							<XIcon />
-						{:else}
-							<PenIcon />
-						{/if}
-					</Button>
+					{#if rolesStore.current.includes('admin')}
+						<Button variant="ghost" onclick={toggleEditInstructions}>
+							{#if showInstructionsForm}
+								<XIcon />
+							{:else}
+								<PenIcon />
+							{/if}
+						</Button>
+					{/if}
 				</div>
 				{#if showInstructionsForm}
 					<form method="POST" action="?/updateInstructions" use:enhance={instructionsSubmitHandler}>
@@ -120,7 +123,9 @@
 {/if}
 
 {#snippet ingredientsTrigger()}
-	<Button variant="ghost" slot="trigger"><PenIcon /></Button>
+	{#if rolesStore.current.includes('admin')}
+		<Button variant="ghost" slot="trigger"><PenIcon /></Button>
+	{/if}
 {/snippet}
 
 {#snippet ingredientsBlock(r: RecipeWithDetails)}

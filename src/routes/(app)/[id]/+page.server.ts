@@ -1,4 +1,4 @@
-import { userCanWrite } from '$lib/server/auth.js';
+import { userCanWrite } from '$lib/server/auth/auth.js';
 import { upsertInstructionsForRecipe } from '$lib/server/services';
 import type { NewInstruction } from '$lib/server/types.js';
 import { error, fail } from '@sveltejs/kit';

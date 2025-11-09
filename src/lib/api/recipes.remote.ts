@@ -1,5 +1,5 @@
 import { command, form, query } from '$app/server';
-import { userCanWrite } from '$lib/server/auth';
+import { userCanWrite } from '$lib/server/auth/permissions';
 import * as recipeService from '$lib/server/services';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -78,6 +78,8 @@ export const createRecipe = form(
 		tags: z.array(z.string()).optional()
 	}),
 	async ({ name, description, tags }) => {
+		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
 		const recipe = await recipeService.createRecipe({
 			name: name.trim(),
 			description: description.trim(),

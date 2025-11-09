@@ -1,5 +1,5 @@
-import { ADMIN_AUTH_PASSWORD, AUTH_PASSWORD } from '$env/static/private';
-import * as auth from '$lib/server/auth';
+import { AUTH_PASSWORD } from '$env/static/private';
+import { generateSessionToken, setSessionTokenCookie } from '$lib/server/auth/auth';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const actions = {
@@ -7,14 +7,12 @@ export const actions = {
 		const formData = await event.request.formData();
 		const password = formData.get('password') as string;
 
-		const isAdmin = password === ADMIN_AUTH_PASSWORD;
-
-		if (password !== AUTH_PASSWORD && !isAdmin) {
+		if (password !== AUTH_PASSWORD) {
 			return fail(401, { message: 'Incorrect password' });
 		}
 
-		const { token, expires } = auth.generateSessionToken(isAdmin);
-		auth.setSessionTokenCookie(event, token, expires);
+		const { token, expires } = generateSessionToken();
+		setSessionTokenCookie(event, token, expires);
 
 		return redirect(303, `/`);
 	}

@@ -4,7 +4,7 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			roles: import('$lib/server/auth').ROLE[];
+			roles: import('$lib/server/auth/auth').ROLE[];
 		}
 		// interface PageData {}
 		// interface PageState {}
