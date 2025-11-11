@@ -48,7 +48,7 @@ export const instructionsRelations = relations(instructions, ({ one }) => ({
 
 export const tags = pgTable('tags', {
 	id: serial('id').primaryKey(),
-	name: text('name').notNull()
+	name: text('name').notNull().unique()
 });
 
 export const tagsRelations = relations(tags, ({ many }) => ({

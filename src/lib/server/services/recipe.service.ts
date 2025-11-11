@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
 import type {
@@ -101,19 +101,39 @@ export const createRecipe = async (
 		}
 
 		if (data.tags && data.tags.length > 0) {
-			const newTags = await Promise.all(
-				data.tags.map(async (tag) => {
-					const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tag.name));
-					if (existingTag) {
-						return existingTag;
-					}
-					const [newTag] = await tx.insert(tags).values({ name: tag.name }).returning();
-					return newTag;
-				})
-			);
+			// 1. Deduplicate input (case-sensitive - preserves original case)
+			const uniqueTagNames = [...new Set(data.tags.map((t) => t.name.trim()))];
 
+			// 2. Batch fetch existing tags (single query)
+			const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
+
+			// 3. Create map for quick lookup (case-sensitive)
+			const existingTagMap = new Map(existingTags.map((t) => [t.name, t]));
+
+			// 4. Sequentially insert only missing tags with error handling
+			const allTags = [];
+			for (const tagName of uniqueTagNames) {
+				if (existingTagMap.has(tagName)) {
+					allTags.push(existingTagMap.get(tagName)!);
+				} else {
+					try {
+						const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
+						allTags.push(newTag);
+						existingTagMap.set(tagName, newTag);
+					} catch (error) {
+						// Handle unique constraint violation - fetch the tag that was just created
+						const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
+						if (existingTag) {
+							allTags.push(existingTag);
+							existingTagMap.set(tagName, existingTag);
+						}
+					}
+				}
+			}
+
+			// 5. Insert into junction table
 			await tx.insert(recipesToTags).values(
-				newTags.map((tag) => ({
+				allTags.map((tag) => ({
 					recipeId: createdRecipe.id,
 					tagId: tag.id
 				}))
@@ -140,19 +160,39 @@ export const updateRecipe = async (
 		await tx.delete(recipesToTags).where(eq(recipesToTags.recipeId, updatedRecipe.id));
 
 		if (data.tags && data.tags.length > 0) {
-			const newTags = await Promise.all(
-				data.tags.map(async (tag) => {
-					const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tag.name));
-					if (existingTag) {
-						return existingTag;
-					}
-					const [newTag] = await tx.insert(tags).values({ name: tag.name }).returning();
-					return newTag;
-				})
-			);
+			// 1. Deduplicate input (case-sensitive - preserves original case)
+			const uniqueTagNames = [...new Set(data.tags.map((t) => t.name.trim()))];
 
+			// 2. Batch fetch existing tags (single query)
+			const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
+
+			// 3. Create map for quick lookup (case-sensitive)
+			const existingTagMap = new Map(existingTags.map((t) => [t.name, t]));
+
+			// 4. Sequentially insert only missing tags with error handling
+			const allTags = [];
+			for (const tagName of uniqueTagNames) {
+				if (existingTagMap.has(tagName)) {
+					allTags.push(existingTagMap.get(tagName)!);
+				} else {
+					try {
+						const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
+						allTags.push(newTag);
+						existingTagMap.set(tagName, newTag);
+					} catch (error) {
+						// Handle unique constraint violation - fetch the tag that was just created
+						const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
+						if (existingTag) {
+							allTags.push(existingTag);
+							existingTagMap.set(tagName, existingTag);
+						}
+					}
+				}
+			}
+
+			// 5. Insert into junction table
 			await tx.insert(recipesToTags).values(
-				newTags.map((tag) => ({
+				allTags.map((tag) => ({
 					recipeId: updatedRecipe.id,
 					tagId: tag.id
 				}))
