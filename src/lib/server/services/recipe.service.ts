@@ -74,7 +74,11 @@ export const getRecipeById = async (id: number): Promise<RecipeWithDetails | und
 };
 
 export const createRecipe = async (
-	data: NewRecipe & { ingredients: NewIngredient[]; instructions: NewInstruction[]; tags: NewTag[] }
+	data: NewRecipe & {
+		ingredients: Omit<NewIngredient, 'recipeId'>[];
+		instructions: Omit<NewInstruction, 'recipeId'>[];
+		tags: NewTag[];
+	}
 ): Promise<Recipe> => {
 	const newRecipe = await db.transaction(async (tx) => {
 		const [createdRecipe] = await tx
@@ -120,7 +124,7 @@ export const createRecipe = async (
 						const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
 						allTags.push(newTag);
 						existingTagMap.set(tagName, newTag);
-					} catch (error) {
+					} catch {
 						// Handle unique constraint violation - fetch the tag that was just created
 						const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
 						if (existingTag) {
@@ -179,7 +183,7 @@ export const updateRecipe = async (
 						const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
 						allTags.push(newTag);
 						existingTagMap.set(tagName, newTag);
-					} catch (error) {
+					} catch {
 						// Handle unique constraint violation - fetch the tag that was just created
 						const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
 						if (existingTag) {
