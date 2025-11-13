@@ -18,12 +18,12 @@
 
 	const { recipe } = $props<{ recipe: Recipe }>();
 
+	const favorites = favoritesStore;
+
 	let editDetails = $state(false);
 
 	let tagInputValue = $state('');
 	let tags = $state<string[]>([]);
-
-	const favorites = favoritesStore;
 
 	const toggleFavorite = () => {
 		if (!recipe) {

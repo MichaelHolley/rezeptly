@@ -4,9 +4,13 @@
 	import SearchBar from '$lib/components/common/SearchBarComponent.svelte';
 	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
 	import TagsContainer from '$lib/components/recipes/TagsContainerComponent.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card/';
+	import * as Empty from '$lib/components/ui/empty/index.js';
 	import { favoritesStore } from '$lib/store/favorites';
+	import { userCanWrite } from '$lib/store/roles';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+	import CookingPot from '@lucide/svelte/icons/cooking-pot';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
@@ -70,52 +74,69 @@
 </svelte:head>
 
 {#if recipes.current}
-	<div class="my-4 flex flex-row justify-center">
-		<div class="w-full max-w-xs">
-			<div class="mb-2 flex flex-row items-center gap-2">
-				<SearchBar bind:searchTerm={searchParams.searchTerm} />
-			</div>
-			<div class="flex flex-row flex-wrap justify-center gap-2">
-				<TagComponent
-					onClick={() => (searchParams.filterFavorites = !searchParams.filterFavorites)}
-					active={searchParams.filterFavorites}
-				>
-					<StarIcon class="h-5 w-5 fill-yellow-400 text-yellow-400" />
-				</TagComponent>
-				{#each allTags as tag}
+	{#if filteredRecipes.length > 0}
+		<div class="my-4 flex flex-row justify-center">
+			<div class="w-full max-w-xs">
+				<div class="mb-2 flex flex-row items-center gap-2">
+					<SearchBar bind:searchTerm={searchParams.searchTerm} />
+				</div>
+				<div class="flex flex-row flex-wrap justify-center gap-2">
 					<TagComponent
-						onClick={() => setActiveTagFilter(tag)}
-						active={searchParams.activeTagFilter === tag}
+						onClick={() => (searchParams.filterFavorites = !searchParams.filterFavorites)}
+						active={searchParams.filterFavorites}
 					>
-						{tag}
+						<StarIcon class="h-5 w-5 fill-yellow-400 text-yellow-400" />
 					</TagComponent>
-				{/each}
+					{#each allTags as tag}
+						<TagComponent
+							onClick={() => setActiveTagFilter(tag)}
+							active={searchParams.activeTagFilter === tag}
+						>
+							{tag}
+						</TagComponent>
+					{/each}
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="card-container my-4 grid gap-4">
-		{#each filteredRecipes as recipe}
-			<a href="/{recipe.id}">
-				<Card.Root class="group h-full">
-					<Card.Header>
-						<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
-						<Card.Description>
-							<TagsContainer
-								tags={recipe.tags.map((t: { name: string }) => t.name)}
-								class="-mx-1 mb-2"
-							/>
-							<p class="line-clamp-3">{recipe.description}</p>
-						</Card.Description>
-						<Card.Action>
-							<ArrowRightIcon
-								class="h-4 w-4 text-zinc-400 transition-all group-hover:text-zinc-700"
-							/>
-						</Card.Action>
-					</Card.Header>
-				</Card.Root>
-			</a>
-		{/each}
-	</div>
+		<div class="card-container my-4 grid gap-4">
+			{#each filteredRecipes as recipe}
+				<a href="/{recipe.id}">
+					<Card.Root class="group h-full">
+						<Card.Header>
+							<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
+							<Card.Description>
+								<TagsContainer
+									tags={recipe.tags.map((t: { name: string }) => t.name)}
+									class="-mx-1 mb-2"
+								/>
+								<p class="line-clamp-3">{recipe.description}</p>
+							</Card.Description>
+							<Card.Action>
+								<ArrowRightIcon
+									class="h-4 w-4 text-zinc-400 transition-all group-hover:text-zinc-700"
+								/>
+							</Card.Action>
+						</Card.Header>
+					</Card.Root>
+				</a>
+			{/each}
+		</div>
+	{:else}
+		<Empty.Root>
+			<Empty.Header>
+				<Empty.Media variant="icon">
+					<CookingPot />
+				</Empty.Media>
+				<Empty.Title>No data</Empty.Title>
+				<Empty.Description>No Recipes found</Empty.Description>
+			</Empty.Header>
+			{#if $userCanWrite}
+				<Empty.Content>
+					<Button href="/create">+ Create Recipe</Button>
+				</Empty.Content>
+			{/if}
+		</Empty.Root>
+	{/if}
 {:else if recipes.error}
 	<p class="text-red-500">{recipes.error}</p>
 {:else}
