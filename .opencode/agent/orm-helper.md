@@ -1,7 +1,6 @@
 ---
 description: Expert in Drizzle ORM relations, queries, and database schema design
 mode: subagent
-model: github-copilot/claude-sonnet-4.5
 temperature: 0.2
 tools:
   write: true
@@ -53,15 +52,15 @@ recipes (many:many) -> tags (via recipes_to_tags junction table)
 ```typescript
 // Use db.query API for eager loading
 const result = await db.query.recipes.findMany({
-	with: {
-		ingredients: true,
-		instructions: true,
-		tags: {
-			with: {
-				tag: true
-			}
-		}
-	}
+ with: {
+  ingredients: true,
+  instructions: true,
+  tags: {
+   with: {
+    tag: true
+   }
+  }
+ }
 });
 ```
 
@@ -75,9 +74,9 @@ Always use transactions for operations that:
 
 ```typescript
 await db.transaction(async (tx) => {
-	const [recipe] = await tx.insert(recipes).values(data).returning();
-	await tx.insert(ingredients).values(ingredientsData);
-	return recipe;
+ const [recipe] = await tx.insert(recipes).values(data).returning();
+ await tx.insert(ingredients).values(ingredientsData);
+ return recipe;
 });
 ```
 
@@ -87,7 +86,7 @@ await db.transaction(async (tx) => {
 import { eq, and, or, like, desc } from 'drizzle-orm';
 
 await db.query.recipes.findFirst({
-	where: eq(recipes.id, id)
+ where: eq(recipes.id, id)
 });
 ```
 
