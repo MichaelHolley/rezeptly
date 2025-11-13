@@ -11,6 +11,23 @@
 	const { trigger } = $props<{
 		trigger: Snippet;
 	}>();
+
+	let loading = $state(false);
+
+	const handleDelete = async () => {
+		try {
+			loading = true;
+
+			if (!page.params.id) return;
+
+			await deleteRecipe(Number(page.params.id));
+			await goto('/', { replaceState: true });
+		} catch (e) {
+			console.error(e);
+		} finally {
+			loading = false;
+		}
+	};
 </script>
 
 <Dialog.Root>
@@ -38,15 +55,8 @@
 					class="btn btn-error"
 					variant="destructive"
 					type="submit"
-					onclick={async () => {
-						try {
-							if (!page.params.id) return;
-							await deleteRecipe(Number(page.params.id));
-							await goto('/', { replaceState: true });
-						} catch (e) {
-							console.error(e);
-						}
-					}}
+					onclick={handleDelete}
+					disabled={loading}
 				>
 					<TrashIcon />
 					Delete

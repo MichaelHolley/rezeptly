@@ -110,9 +110,9 @@
 				<div>
 					<Button onclick={toggleFavorite} variant="outline">
 						{#if favorites.current.includes(recipe.id)}
-							<StarIcon class="h-5 w-5 fill-yellow-400 text-yellow-400" />
+							<StarIcon class="size-5 fill-yellow-400 text-yellow-400" />
 						{:else}
-							<StarIcon class="h-5 w-5 text-zinc-400" />
+							<StarIcon class="size-5 text-zinc-400" />
 						{/if}
 					</Button>
 				</div>

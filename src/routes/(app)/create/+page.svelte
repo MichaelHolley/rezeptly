@@ -9,6 +9,7 @@
 
 	let tagInputValue = $state('');
 	let tags = $state<string[]>([]);
+	let loading = $state(false);
 </script>
 
 <svelte:head>
@@ -20,10 +21,13 @@
 <form
 	{...createRecipe.enhance(async ({ form, submit }) => {
 		try {
+			loading = true;
 			await submit();
 			await form.reset();
 		} catch (error) {
 			console.error(error);
+		} finally {
+			loading = false;
 		}
 	})}
 	class="flex flex-col gap-4"
@@ -68,6 +72,6 @@
 		</div>
 	</div>
 	<div class="flex flex-row justify-end">
-		<Button type="submit">+ Create</Button>
+		<Button type="submit" disabled={loading}>+ Create</Button>
 	</div>
 </form>

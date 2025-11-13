@@ -1,9 +1,26 @@
 <script lang="ts">
-	const { message } = $props<{ message: string }>();
+	import { Button } from '$lib/components/ui/button';
+	import * as Empty from '$lib/components/ui/empty/';
+	import OrigamiIcon from '@lucide/svelte/icons/origami';
+	import RepeatIcon from '@lucide/svelte/icons/repeat-2';
+
+	const { message, onRetry } = $props<{
+		message: string;
+		onRetry?: () => void;
+	}>();
 </script>
 
-<div class="mt-12 flex flex-col items-center justify-center">
-	<h2 class="text-2xl text-red-500">ooops... :/</h2>
-	<h3 class="text-redh300 mt-4 text-xl">We ran into an issue.</h3>
-	<p class="mt-2">Reason: {message}</p>
-</div>
+<Empty.Root>
+	<Empty.Header>
+		<Empty.Media variant="icon">
+			<OrigamiIcon />
+		</Empty.Media>
+		<Empty.Title>ooops...</Empty.Title>
+		<Empty.Description>Reason: {message}</Empty.Description>
+	</Empty.Header>
+	{#if onRetry}
+		<Empty.Content>
+			<Button onclick={onRetry}><RepeatIcon />Retry</Button>
+		</Empty.Content>
+	{/if}
+</Empty.Root>
