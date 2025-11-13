@@ -1,5 +1,9 @@
 {
-	"editor.codeActionsOnSave": {
-		"source.organizeImports": "explicit"
-	}
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "prettier.requireConfig": true,
+  "prettier.useEditorConfig": false
 }
