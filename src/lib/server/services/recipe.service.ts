@@ -8,7 +8,8 @@ import type {
 	NewTag,
 	Recipe,
 	RecipeMetadata,
-	RecipeWithDetails
+	RecipeWithDetails,
+	Tag
 } from '../types';
 
 export const getRecipesMetadata = async (): Promise<RecipeMetadata[]> => {
@@ -211,4 +212,13 @@ export const updateRecipe = async (
 
 export const deleteRecipe = async (id: number): Promise<void> => {
 	await db.delete(recipes).where(eq(recipes.id, id));
+};
+
+export const getAllActiveTags = async (): Promise<Tag[]> => {
+	const result = await db.query.tags.findMany({
+		where: (tags, { exists }) =>
+			exists(db.select().from(recipesToTags).where(eq(recipesToTags.tagId, tags.id))),
+		orderBy: (tags, { asc }) => [asc(tags.name)]
+	});
+	return result;
 };

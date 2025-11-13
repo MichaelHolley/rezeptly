@@ -8,6 +8,10 @@ export const getRecipesMetadata = query(async () => {
 	return await recipeService.getRecipesMetadata();
 });
 
+export const getAvailableTags = query(async () => {
+	return await recipeService.getAllActiveTags();
+});
+
 export const getRecipes = query(async () => {
 	return await recipeService.getRecipes();
 });
