@@ -21,7 +21,6 @@
 	const favorites = favoritesStore;
 
 	let editDetails = $state(false);
-
 	let tagInputValue = $state('');
 	let tags = $state<string[]>([]);
 
@@ -41,24 +40,31 @@
 <div class="mb-8">
 	{#if editDetails}
 		<form
-			{...updateRecipeDetails.enhance(async ({ form, submit }) => {
+			{...updateRecipeDetails.enhance(async ({ submit }) => {
 				try {
 					await submit();
-
 					editDetails = false;
-					await form.reset();
 				} catch (error) {
 					console.error(error);
 				}
 			})}
 			class="flex flex-col gap-2"
 		>
-			<Input type="hidden" name="recipeId" value={recipe.id} />
-			<Input name="name" type="text" value={recipe.name} placeholder="Name" />
+			<Input
+				type="hidden"
+				name="recipeId"
+				{...updateRecipeDetails.fields.recipeId}
+				value={recipe.id}
+			/>
+			<Input
+				placeholder="Name"
+				{...updateRecipeDetails.fields.name.as('text')}
+				value={recipe.name}
+			/>
 			<Textarea
-				name="description"
-				value={recipe.description}
 				placeholder="Short Recipe Description"
+				{...updateRecipeDetails.fields.description.as('text')}
+				value={recipe.description}
 			/>
 			<div class="form-group">
 				<Label for="tagsinput">Tags</Label>

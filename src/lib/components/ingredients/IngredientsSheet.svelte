@@ -37,8 +37,12 @@
 				})}
 				class="mt-6 flex flex-row gap-2"
 			>
-				<Input type="hidden" name="recipeId" value={recipeId} />
-				<Input type="text" name="name" required placeholder="Ingredient & Quantity" />
+				<Input type="hidden" name="recipeId" {...addIngredient.fields.recipeId} value={recipeId} />
+				<Input
+					required
+					placeholder="Ingredient & Quantity"
+					{...addIngredient.fields.name.as('text')}
+				/>
 				<Button type="submit"><PlusIcon /></Button>
 			</form>
 		</Sheet.Header>
