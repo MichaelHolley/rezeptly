@@ -89,7 +89,7 @@ export const createRecipe = form(
 			description: description.trim(),
 			ingredients: [],
 			instructions: [],
-			tags: tags?.map((tag) => ({ name: tag.trim() })) ?? []
+			tags: tags?.flatMap((tag) => (tag.trim() ? [{ name: tag.trim() }] : [])) ?? []
 		});
 
 		redirect(303, `/${recipe.id}`);
