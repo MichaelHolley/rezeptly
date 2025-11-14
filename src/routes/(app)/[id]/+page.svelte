@@ -2,8 +2,6 @@
 	import { enhance } from '$app/forms';
 	import { getRecipeById } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
-	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent, {
@@ -15,11 +13,11 @@
 	import { userCanWrite } from '$lib/store/roles';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
-	import type { HttpError, SubmitFunction } from '@sveltejs/kit';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	const { params } = $props();
 
-	const recipe = getRecipeById(Number(params.id));
+	const recipe = $derived(await getRecipeById(Number(params.id)));
 
 	let instructionFormSteps = $state<Step[]>([]);
 	let showInstructionsForm = $state(false);
@@ -27,8 +25,8 @@
 	const toggleEditInstructions = () => {
 		showInstructionsForm = !showInstructionsForm;
 
-		if (showInstructionsForm && !!recipe.current) {
-			updateInstructionFormSteps(recipe.current);
+		if (showInstructionsForm && !!recipe) {
+			updateInstructionFormSteps(recipe);
 		}
 	};
 
@@ -48,13 +46,13 @@
 	};
 
 	const getStepOrderByIndex = (index: number) => {
-		if (!recipe.current) {
+		if (!recipe) {
 			return 0;
 		}
 
 		let order = 1;
 		for (let i = 0; i < index; i++) {
-			if (recipe.current.instructions[i].heading) {
+			if (recipe.instructions[i].heading) {
 				order++;
 			}
 		}
@@ -64,63 +62,53 @@
 </script>
 
 <svelte:head>
-	<title>Rezeptly | {recipe.current?.name}</title>
+	<title>Rezeptly | {recipe.name}</title>
 </svelte:head>
 
-{#if recipe.current}
-	<BreadcrumbComponent
-		breadcrumbs={[{ name: recipe.current.name, href: `/${recipe.current.id}` }]}
-	/>
+<BreadcrumbComponent breadcrumbs={[{ name: recipe.name, href: `/${recipe.id}` }]} />
 
-	<RecipeDetails recipe={recipe.current} />
+<RecipeDetails {recipe} />
 
-	<div class="flex flex-row items-start justify-between gap-12">
-		<div class="grow">
-			<div class="mb-8 block md:hidden">
-				{@render ingredientsBlock(recipe.current)}
-			</div>
-			<div>
-				<div class="flex flex-row gap-1 pb-2">
-					<h3>Instructions</h3>
-					{#if $userCanWrite}
-						<Button variant="ghost" onclick={toggleEditInstructions}>
-							{#if showInstructionsForm}
-								<XIcon />
-							{:else}
-								<PenIcon />
-							{/if}
-						</Button>
-					{/if}
-				</div>
-				{#if showInstructionsForm}
-					<form method="POST" action="?/updateInstructions" use:enhance={instructionsSubmitHandler}>
-						<InstructionsFormComponent bind:steps={instructionFormSteps} />
-					</form>
-				{:else}
-					<div class="flex flex-col gap-4">
-						{#each recipe.current.instructions as instr, i}
-							<div>
-								{#if instr.heading}
-									<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
-								{/if}
-								<p class="whitespace-pre-wrap">{instr.instructions}</p>
-							</div>
-						{/each}
-					</div>
+<div class="flex flex-row items-start justify-between gap-12">
+	<div class="grow">
+		<div class="mb-8 block md:hidden">
+			{@render ingredientsBlock(recipe)}
+		</div>
+		<div>
+			<div class="flex flex-row gap-1 pb-2">
+				<h3>Instructions</h3>
+				{#if $userCanWrite}
+					<Button variant="ghost" onclick={toggleEditInstructions}>
+						{#if showInstructionsForm}
+							<XIcon />
+						{:else}
+							<PenIcon />
+						{/if}
+					</Button>
 				{/if}
 			</div>
-		</div>
-		<div class="hidden md:block">
-			{@render ingredientsBlock(recipe.current)}
+			{#if showInstructionsForm}
+				<form method="POST" action="?/updateInstructions" use:enhance={instructionsSubmitHandler}>
+					<InstructionsFormComponent bind:steps={instructionFormSteps} />
+				</form>
+			{:else}
+				<div class="flex flex-col gap-4">
+					{#each recipe.instructions as instr, i}
+						<div>
+							{#if instr.heading}
+								<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
+							{/if}
+							<p class="whitespace-pre-wrap">{instr.instructions}</p>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		</div>
 	</div>
-{:else if recipe.error as HttpError}
-	<ErrorComponent message={recipe.error.body.message} />
-{:else}
-	<div class="flex flex-col items-center justify-center pt-32">
-		<LoadingComponent />
+	<div class="hidden md:block">
+		{@render ingredientsBlock(recipe)}
 	</div>
-{/if}
+</div>
 
 {#snippet ingredientsTrigger()}
 	{#if $userCanWrite}

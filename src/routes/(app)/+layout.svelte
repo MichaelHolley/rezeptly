@@ -10,13 +10,14 @@
 
 	let { children } = $props();
 
+	const roles = $derived(await getUserRoles());
+
 	onMount(async () => {
-		const roles = await getUserRoles();
 		rolesStore.set(roles);
 	});
 
 	const logoutUser = async () => {
-		const res = await logout();
+		await logout();
 		rolesStore.reset();
 	};
 </script>
