@@ -3,6 +3,7 @@
 	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
 	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
+	import type { RecipeMetadata } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import { Debounced } from 'runed';
@@ -21,8 +22,8 @@
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 100);
 
 	const recipes = $derived(await getRecipesMetadata());
-	const availableTags = $derived(await getAvailableTags());
-	const filteredRecipes = $derived.by(() => {
+
+	const filterRecipes = (recipes: RecipeMetadata[]) => {
 		if (!recipes) {
 			return [];
 		}
@@ -41,7 +42,7 @@
 
 			return matchesSearchTerm && matchesTagFilter && matchesFavoritesFilter;
 		});
-	});
+	};
 </script>
 
 <svelte:head>
@@ -52,25 +53,27 @@
 	bind:searchTerm={searchParams.searchTerm}
 	bind:selectedTag={searchParams.activeTagFilter}
 	bind:filterFavorites={searchParams.filterFavorites}
-	availableTags={availableTags.map((t) => t.name)}
+	availableTags={(await getAvailableTags()).map((t) => t.name)}
 />
 <div class="card-container my-4 grid gap-4">
-	{#each filteredRecipes as recipe}
+	{#each filterRecipes(recipes) as recipe}
 		<a href="/{recipe.id}">
-			<Card.Root class="group h-full">
+			<Card.Root class="group h-full gap-1">
 				<Card.Header>
 					<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
-					<Card.Description>
-						<TagsContainerComponent
-							tags={recipe.tags.map((t: { name: string }) => t.name)}
-							class="-mx-1 mb-2"
-						/>
-						<p class="line-clamp-3">{recipe.description}</p>
-					</Card.Description>
 					<Card.Action>
 						<ArrowRightIcon class="size-4 text-zinc-400 transition-all group-hover:text-zinc-700" />
 					</Card.Action>
 				</Card.Header>
+				<Card.Content>
+					<TagsContainerComponent
+						tags={recipe.tags.map((t: { name: string }) => t.name)}
+						class="-mx-1 mb-2"
+					/>
+					<p class="line-clamp-3! flex flex-col gap-0.5 text-sm text-neutral-500">
+						{recipe.description}
+					</p>
+				</Card.Content>
 			</Card.Root>
 		</a>
 	{/each}

@@ -5,21 +5,23 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
+	import { userCanWrite } from '$lib/store/roles';
+	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
-	import type { Snippet } from 'svelte';
 
-	const { recipeId, ingredients, trigger } = $props<{
+	const { recipeId, ingredients } = $props<{
 		recipeId: number;
 		ingredients: Ingredient[];
-		trigger: Snippet;
 	}>();
 </script>
 
 <Sheet.Root>
 	<Sheet.Trigger>
-		{#if trigger}
-			{@render trigger()}
+		{#if $userCanWrite}
+			<PenIcon
+				class="hover:text-primary ml-2 size-4 text-neutral-400 transition-all duration-200"
+			/>
 		{/if}
 	</Sheet.Trigger>
 	<Sheet.Content class="max-h-svh">

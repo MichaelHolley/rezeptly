@@ -84,8 +84,8 @@
 					}}
 				/>
 				<div class="flex flex-row flex-wrap gap-2">
-					{#each tags as tag}
-						<Input type="hidden" name="tags[]" value={tag} />
+					{#each tags as tag, i}
+						<Input {...updateRecipeDetails.fields.tags[i].as('hidden', tag)} value={tag} />
 						<TagComponent onClick={() => (tags = tags.filter((t) => t !== tag))}>
 							{tag}
 						</TagComponent>
@@ -99,11 +99,12 @@
 						editDetails = false;
 						tags = [];
 					}}
+					disabled={!!updateRecipeDetails.pending}
 				>
 					<XIcon />
 					Cancel
 				</Button>
-				<Button class="btn btn-primary" type="submit">
+				<Button class="btn btn-primary" type="submit" disabled={!!updateRecipeDetails.pending}>
 					<CheckIcon />
 					Save
 				</Button>
@@ -136,7 +137,7 @@
 						</Button>
 					</div>
 					<div>
-						<DeleteRecipeConfirmationModal trigger={deleteModalTrigger} />
+						<DeleteRecipeConfirmationModal trigger={deleteModalTrigger} recipeId={recipe.id} />
 					</div>
 				{/if}
 			</div>

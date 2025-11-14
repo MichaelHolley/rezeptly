@@ -24,15 +24,17 @@ export const getRecipeById = query(z.number(), async (id) => {
 	return recipe;
 });
 
-export const deleteRecipe = command(z.number(), async (id) => {
+export const deleteRecipe = form(z.object({ recipeId: z.number() }), async ({ recipeId }) => {
 	if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
-	await recipeService.deleteRecipe(id);
+	await recipeService.deleteRecipe(recipeId);
+
+	redirect(303, '/');
 });
 
 export const addIngredient = form(
 	z.object({
-		recipeId: z.transform(Number),
+		recipeId: z.number(),
 		name: z.string().min(1, 'Name is required')
 	}),
 	async ({ recipeId, name }) => {
@@ -57,7 +59,7 @@ export const removeIngredient = command(
 
 export const updateRecipeDetails = form(
 	z.object({
-		recipeId: z.transform(Number),
+		recipeId: z.number(),
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
 		tags: z.array(z.string()).optional()

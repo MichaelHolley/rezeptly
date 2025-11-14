@@ -72,7 +72,11 @@
 <div class="flex flex-row items-start justify-between gap-12">
 	<div class="grow">
 		<div class="mb-8 block md:hidden">
-			{@render ingredientsBlock(recipe)}
+			<div class="flex flex-row gap-1 pb-2">
+				<h3>Ingredients</h3>
+				<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
+			</div>
+			<IngredientsListComponent ingredients={recipe.ingredients} />
 		</div>
 		<div>
 			<div class="flex flex-row gap-1 pb-2">
@@ -106,24 +110,10 @@
 		</div>
 	</div>
 	<div class="hidden md:block">
-		{@render ingredientsBlock(recipe)}
+		<div class="flex flex-row gap-1 pb-2">
+			<h3>Ingredients</h3>
+			<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
+		</div>
+		<IngredientsListComponent ingredients={recipe.ingredients} />
 	</div>
 </div>
-
-{#snippet ingredientsTrigger()}
-	{#if $userCanWrite}
-		<Button variant="ghost" slot="trigger"><PenIcon /></Button>
-	{/if}
-{/snippet}
-
-{#snippet ingredientsBlock(r: RecipeWithDetails)}
-	<div class="flex flex-row gap-1 pb-2">
-		<h3>Ingredients</h3>
-		<IngredientsSheet
-			ingredients={r.ingredients}
-			recipeId={Number(params.id)}
-			trigger={ingredientsTrigger}
-		/>
-	</div>
-	<IngredientsListComponent ingredients={r.ingredients} />
-{/snippet}

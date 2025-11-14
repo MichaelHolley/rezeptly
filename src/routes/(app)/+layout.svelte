@@ -6,15 +6,16 @@
 	import { loggedIn, rolesStore, userCanWrite } from '$lib/store/roles';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
-	import { onMount } from 'svelte';
 
 	let { children } = $props();
 
-	const roles = $derived(await getUserRoles());
-
-	onMount(async () => {
-		rolesStore.set(roles);
-	});
+	getUserRoles()
+		.then((roles) => {
+			rolesStore.set(roles);
+		})
+		.catch((error) => {
+			console.error('Error fetching user roles:', error);
+		});
 
 	const logoutUser = async () => {
 		await logout();
