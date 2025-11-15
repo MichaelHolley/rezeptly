@@ -2,11 +2,15 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import type { Snippet } from 'svelte';
 
-	const { onClick, active, children } = $props<{
+	const {
+		onClick,
+		active,
+		children
+	}: {
 		active?: boolean;
 		onClick?: () => void;
 		children?: Snippet;
-	}>();
+	} = $props();
 </script>
 
 <Badge

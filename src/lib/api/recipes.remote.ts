@@ -24,17 +24,28 @@ export const getRecipeById = query(z.number(), async (id) => {
 	return recipe;
 });
 
-export const deleteRecipe = form(z.object({ recipeId: z.number() }), async ({ recipeId }) => {
-	if (!userCanWrite()) error(403, 'Insufficient Permissions');
+export const deleteRecipe = form(
+	z.object({
+		recipeId: z.pipe(
+			z.string(),
+			z.transform((id) => Number(id))
+		)
+	}),
+	async ({ recipeId }) => {
+		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
-	await recipeService.deleteRecipe(recipeId);
+		await recipeService.deleteRecipe(recipeId);
 
-	redirect(303, '/');
-});
+		redirect(303, '/');
+	}
+);
 
 export const addIngredient = form(
 	z.object({
-		recipeId: z.number(),
+		recipeId: z.pipe(
+			z.string(),
+			z.transform((id) => Number(id))
+		),
 		name: z.string().min(1, 'Name is required')
 	}),
 	async ({ recipeId, name }) => {
@@ -47,7 +58,10 @@ export const addIngredient = form(
 );
 
 export const removeIngredient = command(
-	z.object({ recipeId: z.number(), ingrId: z.number() }),
+	z.object({
+		recipeId: z.number(),
+		ingrId: z.number()
+	}),
 	async ({ recipeId, ingrId }) => {
 		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
@@ -59,7 +73,10 @@ export const removeIngredient = command(
 
 export const updateRecipeDetails = form(
 	z.object({
-		recipeId: z.number(),
+		recipeId: z.pipe(
+			z.string(),
+			z.transform((id) => Number(id))
+		),
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
 		tags: z.array(z.string()).optional()
@@ -98,6 +115,7 @@ export const createRecipe = form(
 	}
 );
 
+// TODO: move this to service clean up
 function cleanTags(tags: string[] | undefined) {
 	return tags?.flatMap((tag) => (tag.trim() ? [{ name: tag.trim() }] : [])) ?? [];
 }

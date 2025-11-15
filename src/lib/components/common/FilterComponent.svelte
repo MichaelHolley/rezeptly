@@ -8,12 +8,12 @@
 		selectedTag = $bindable(),
 		filterFavorites = $bindable(),
 		availableTags
-	} = $props<{
+	}: {
 		searchTerm: string;
 		selectedTag: string;
 		filterFavorites: boolean;
 		availableTags: string[];
-	}>();
+	} = $props();
 
 	const setActiveTagFilter = (tag: string) => {
 		if (selectedTag === tag) {

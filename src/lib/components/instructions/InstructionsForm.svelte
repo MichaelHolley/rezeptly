@@ -11,9 +11,11 @@
 		description: string;
 	}
 
-	let { steps = $bindable() } = $props<{
+	let {
+		steps = $bindable()
+	}: {
 		steps: Step[];
-	}>();
+	} = $props();
 
 	const addStep = () => (steps = [...steps, { heading: '', description: '' }]);
 

@@ -10,10 +10,13 @@
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
-	const { recipeId, ingredients } = $props<{
+	const {
+		recipeId,
+		ingredients
+	}: {
 		recipeId: number;
 		ingredients: Ingredient[];
-	}>();
+	} = $props();
 </script>
 
 <Sheet.Root>
@@ -39,7 +42,7 @@
 				})}
 				class="mt-6 flex flex-row gap-2"
 			>
-				<Input type="hidden" name="recipeId" {...addIngredient.fields.recipeId} value={recipeId} />
+				<Input {...addIngredient.fields.recipeId.as('hidden', String(recipeId))} />
 				<Input
 					required
 					placeholder="Ingredient & Quantity"

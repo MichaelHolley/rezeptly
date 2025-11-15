@@ -9,12 +9,12 @@
 		description = $bindable(),
 		onRemove,
 		key
-	} = $props<{
-		heading: string;
+	}: {
+		heading: string | null;
 		description: string;
 		key: string | number;
 		onRemove: () => void;
-	}>();
+	} = $props();
 </script>
 
 <div class="flex flex-col gap-2">

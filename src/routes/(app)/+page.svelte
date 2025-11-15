@@ -58,7 +58,7 @@
 <div class="card-container my-4 grid gap-4">
 	{#each filterRecipes(recipes) as recipe}
 		<a href="/{recipe.id}">
-			<Card.Root class="group h-full gap-1">
+			<Card.Root class="group h-full gap-0">
 				<Card.Header>
 					<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
 					<Card.Action>

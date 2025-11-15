@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 	import type { ActionData } from './$types';
 
-	const { form } = $props<{ form: ActionData }>();
+	const { form }: { form: ActionData } = $props();
 
 	onMount(() => {
 		rolesStore.reset();

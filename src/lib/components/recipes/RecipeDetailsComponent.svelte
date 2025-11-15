@@ -4,7 +4,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import type { Recipe, Tag } from '$lib/server/types';
+	import type { RecipeWithDetails, Tag } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { userCanWrite } from '$lib/store/roles';
 	import CheckIcon from '@lucide/svelte/icons/check';
@@ -16,7 +16,7 @@
 	import TagComponent from './TagComponent.svelte';
 	import TagsContainer from './TagsContainerComponent.svelte';
 
-	const { recipe } = $props<{ recipe: Recipe }>();
+	const { recipe }: { recipe: RecipeWithDetails } = $props();
 
 	const favorites = favoritesStore;
 
@@ -50,12 +50,7 @@
 			})}
 			class="flex flex-col gap-2"
 		>
-			<Input
-				type="hidden"
-				name="recipeId"
-				{...updateRecipeDetails.fields.recipeId}
-				value={recipe.id}
-			/>
+			<Input {...updateRecipeDetails.fields.recipeId.as('hidden', String(recipe.id))} />
 			<Input
 				placeholder="Name"
 				{...updateRecipeDetails.fields.name.as('text')}
