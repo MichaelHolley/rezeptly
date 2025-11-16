@@ -1,25 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { getUserRoles, logout } from '$lib/api/auth.remote';
+	import { logout } from '$lib/api/auth.remote';
 	import RezeptlyHeader from '$lib/components/common/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
-	import { loggedIn, rolesStore, userCanWrite } from '$lib/store/roles';
+	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
 
-	let { children } = $props();
+	let { children, data } = $props();
 
-	getUserRoles()
-		.then((roles) => {
-			rolesStore.set(roles);
-		})
-		.catch((error) => {
-			console.error('Error fetching user roles:', error);
-		});
+	PermissionsStore.roles = data.roles || [];
 
 	const logoutUser = async () => {
+		PermissionsStore.resetRoles();
 		await logout();
-		rolesStore.reset();
 	};
 </script>
 
@@ -30,10 +24,10 @@
 				<RezeptlyHeader />
 			</div>
 			<div class="flex flex-row items-center gap-3">
-				{#if $userCanWrite}
+				{#if PermissionsStore.canEdit()}
 					<Button href="/create" variant="default">+ Create</Button>
 				{/if}
-				{#if $loggedIn}
+				{#if PermissionsStore.isLoggedIn()}
 					<Button onclick={logoutUser} variant="outline">
 						Logout
 						<LogoutIcon />

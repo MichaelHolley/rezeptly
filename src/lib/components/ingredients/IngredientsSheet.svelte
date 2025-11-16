@@ -5,23 +5,17 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
-	import { userCanWrite } from '$lib/store/roles';
+	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
-	const {
-		recipeId,
-		ingredients
-	}: {
-		recipeId: number;
-		ingredients: Ingredient[];
-	} = $props();
+	const { recipeId, ingredients }: { recipeId: number; ingredients: Ingredient[] } = $props();
 </script>
 
 <Sheet.Root>
 	<Sheet.Trigger>
-		{#if $userCanWrite}
+		{#if PermissionsStore.canEdit()}
 			<PenIcon
 				class="hover:text-primary ml-2 size-4 text-neutral-400 transition-all duration-200"
 			/>
@@ -63,7 +57,7 @@
 							size="sm"
 							onclick={async () => {
 								try {
-									await removeIngredient({ recipeId, ingrId: ingr.id });
+									await removeIngredient({ recipeId: recipeId, ingrId: ingr.id });
 								} catch (e) {
 									console.error(e);
 								}

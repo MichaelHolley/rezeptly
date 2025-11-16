@@ -6,7 +6,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails, Tag } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
-	import { userCanWrite } from '$lib/store/roles';
+	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
@@ -119,7 +119,7 @@
 					</Button>
 				</div>
 
-				{#if $userCanWrite}
+				{#if PermissionsStore.canEdit()}
 					<div>
 						<Button
 							variant="secondary"

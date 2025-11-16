@@ -3,7 +3,7 @@
 	import RezeptlyHeader from '$lib/components/common/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { rolesStore } from '$lib/store/roles';
+	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import { onMount } from 'svelte';
@@ -12,7 +12,7 @@
 	const { form }: { form: ActionData } = $props();
 
 	onMount(() => {
-		rolesStore.reset();
+		PermissionsStore.resetRoles();
 	});
 </script>
 
