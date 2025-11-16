@@ -49,7 +49,7 @@
 			})}
 			class="flex flex-col gap-2"
 		>
-			<Input {...updateRecipeDetails.fields.recipeId.as('hidden', String(recipe.id))} />
+			<input {...updateRecipeDetails.fields.recipeId.as('hidden', String(recipe.id))} />
 			<Input
 				placeholder="Name"
 				{...updateRecipeDetails.fields.name.as('text')}
@@ -79,7 +79,7 @@
 				/>
 				<div class="flex flex-row flex-wrap gap-2">
 					{#each tags as tag, i}
-						<Input {...updateRecipeDetails.fields.tags[i].as('hidden', tag)} value={tag} />
+						<input {...updateRecipeDetails.fields.tags[i].as('hidden', tag)} value={tag} />
 						<TagComponent onClick={() => (tags = tags.filter((t) => t !== tag))}>
 							{tag}
 						</TagComponent>

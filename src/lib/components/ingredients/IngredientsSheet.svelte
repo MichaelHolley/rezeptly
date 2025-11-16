@@ -34,13 +34,13 @@
 				})}
 				class="mt-6 flex flex-row gap-2"
 			>
-				<Input {...addIngredient.fields.recipeId.as('hidden', String(recipeId))} />
+				<input {...addIngredient.fields.recipeId.as('hidden', String(recipeId))} />
 				<Input
 					required
 					placeholder="Ingredient & Quantity"
 					{...addIngredient.fields.name.as('text')}
 				/>
-				<Button type="submit"><PlusIcon /></Button>
+				<Button type="submit" disabled={!!addIngredient.pending}><PlusIcon /></Button>
 			</form>
 		</Sheet.Header>
 
@@ -55,7 +55,7 @@
 							size="sm"
 							onclick={async () => {
 								try {
-									await removeIngredient({ recipeId: recipeId, ingrId: ingr.id });
+									await removeIngredient({ recipeId, ingrId: ingr.id });
 								} catch (e) {
 									console.error(e);
 								}

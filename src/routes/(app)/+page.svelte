@@ -19,7 +19,7 @@
 		})
 	);
 
-	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 100);
+	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);
 
 	const recipes = $derived(await getRecipesMetadata());
 

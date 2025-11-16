@@ -3,9 +3,9 @@
 	import { cn } from '$lib/utils';
 
 	let {
+		searchTerm = $bindable(),
 		placeholder = 'Search...',
-		class: className,
-		searchTerm = $bindable()
+		class: className
 	}: { searchTerm: string; placeholder?: string; class?: string } = $props();
 </script>
 

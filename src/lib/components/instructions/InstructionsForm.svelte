@@ -68,60 +68,67 @@
 		}
 	})}
 >
-	<Input {...updateInstructions.fields.recipeId.as('hidden', String(recipe.id))} />
+	<input {...updateInstructions.fields.recipeId.as('hidden', String(recipe.id))} />
 
 	<div class="flex flex-col gap-8">
 		{#each steps as step, i}
-			<div class="flex flex-col gap-2">
-				<div class="flex flex-row gap-2">
-					<div class="flex grow flex-col gap-2">
-						<div class="flex flex-row items-center justify-between gap-2">
-							<Input
-								{...updateInstructions.fields.instructions[i].heading.as('text')}
-								value={step.heading}
-								placeholder="Short, descriptive heading"
-							/>
-							<Button variant="secondary" onclick={() => removeStep(i)} title="Remove step">
-								<TrashIcon />
-							</Button>
-						</div>
-						<Textarea
-							placeholder="Start by describing the step in detail..."
-							required
-							{...updateInstructions.fields.instructions[i].instructions.as('text')}
-							value={step.description}
+			<div class="flex flex-row gap-2 **:gap-2">
+				<div class="flex grow flex-col">
+					<div class="flex flex-row items-center justify-between">
+						<Input
+							{...updateInstructions.fields.instructions[i].heading.as('text')}
+							value={step.heading}
+							placeholder="Short, descriptive heading"
 						/>
-					</div>
-					<div class="flex flex-col items-center justify-center gap-1">
 						<Button
-							variant="outline"
-							onclick={() => moveUp(i)}
-							disabled={i == 0}
-							title="Swap with previous step"
+							variant="secondary"
+							onclick={() => removeStep(i)}
+							title="Remove step"
+							disabled={!!updateInstructions.pending}
 						>
-							<ChevronUpIcon />
-						</Button>
-						{i + 1}
-						<Button
-							variant="outline"
-							onclick={() => moveDown(i)}
-							disabled={i == steps.length - 1}
-							title="Swap with next step"
-						>
-							<ChevronDownIcon />
+							<TrashIcon />
 						</Button>
 					</div>
+					<Textarea
+						placeholder="Start by describing the step in detail..."
+						required
+						{...updateInstructions.fields.instructions[i].instructions.as('text')}
+						value={step.description}
+					/>
+				</div>
+				<div class="flex flex-col items-center justify-center gap-1">
+					<Button
+						variant="outline"
+						onclick={() => moveUp(i)}
+						disabled={i == 0 || !!updateInstructions.pending}
+						title="Swap with previous step"
+					>
+						<ChevronUpIcon />
+					</Button>
+					{i + 1}
+					<Button
+						variant="outline"
+						onclick={() => moveDown(i)}
+						disabled={i == steps.length - 1 || !!updateInstructions.pending}
+						title="Swap with next step"
+					>
+						<ChevronDownIcon />
+					</Button>
 				</div>
 			</div>
 		{/each}
 
 		<div class="mt-4 flex flex-row justify-between gap-2">
-			<div></div>
-			<Button onclick={addStep} variant="outline" type="button">
+			<Button
+				onclick={addStep}
+				variant="outline"
+				type="button"
+				disabled={!!updateInstructions.pending}
+			>
 				<PlusIcon />
 				Add Step
 			</Button>
-			<Button type="submit">
+			<Button type="submit" disabled={!!updateInstructions.pending}>
 				<CheckIcon />
 				Save
 			</Button>
