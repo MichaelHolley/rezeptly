@@ -1,48 +1,23 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { getRecipeById } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
-	import InstructionsFormComponent, {
-		type Step
-	} from '$lib/components/instructions/InstructionsForm.svelte';
+	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import type { RecipeWithDetails } from '$lib/server/types';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import XIcon from '@lucide/svelte/icons/x';
-	import type { SubmitFunction } from '@sveltejs/kit';
 
 	const { params } = $props();
 
 	const recipe = $derived(await getRecipeById(Number(params.id)));
 
-	let instructionFormSteps = $state<Step[]>([]);
 	let showInstructionsForm = $state(false);
 
 	const toggleEditInstructions = () => {
 		showInstructionsForm = !showInstructionsForm;
-
-		if (showInstructionsForm && !!recipe) {
-			updateInstructionFormSteps(recipe);
-		}
-	};
-
-	const instructionsSubmitHandler: SubmitFunction = () => {
-		return async ({ update }) => {
-			showInstructionsForm = false;
-			await update();
-		};
-	};
-
-	const updateInstructionFormSteps = (r: RecipeWithDetails) => {
-		instructionFormSteps =
-			r.instructions.map((i) => ({
-				heading: i.heading,
-				description: i.instructions
-			})) ?? [];
 	};
 
 	const getStepOrderByIndex = (index: number) => {
@@ -82,7 +57,11 @@
 			<div class="flex flex-row gap-1 pb-2">
 				<h3>Instructions</h3>
 				{#if PermissionsStore.canEdit}
-					<Button variant="ghost" onclick={toggleEditInstructions}>
+					<Button
+						variant="ghost"
+						onclick={toggleEditInstructions}
+						title={showInstructionsForm ? 'Cancel editing instructions' : 'Edit instructions'}
+					>
 						{#if showInstructionsForm}
 							<XIcon />
 						{:else}
@@ -92,9 +71,7 @@
 				{/if}
 			</div>
 			{#if showInstructionsForm}
-				<form method="POST" action="?/updateInstructions" use:enhance={instructionsSubmitHandler}>
-					<InstructionsFormComponent bind:steps={instructionFormSteps} />
-				</form>
+				<InstructionsFormComponent {recipe} onSave={() => (showInstructionsForm = false)} />
 			{:else}
 				<div class="flex flex-col gap-4">
 					{#each recipe.instructions as instr, i}

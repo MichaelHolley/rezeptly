@@ -114,3 +114,32 @@ export const createRecipe = form(
 		redirect(303, `/${recipe.id}`);
 	}
 );
+
+export const updateInstructions = form(
+	z.object({
+		recipeId: z.pipe(
+			z.string(),
+			z.transform((id) => Number(id))
+		),
+		instructions: z.array(
+			z.object({
+				heading: z.string(),
+				instructions: z.string()
+			})
+		)
+	}),
+	async ({ recipeId, instructions }) => {
+		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
+		await recipeService.upsertInstructionsForRecipe(
+			recipeId,
+			instructions.map((item, i) => ({
+				...item,
+				stepOrder: i + 1,
+				recipeId
+			}))
+		);
+
+		await getRecipeById(recipeId).refresh();
+	}
+);

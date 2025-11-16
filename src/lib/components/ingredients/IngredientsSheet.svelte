@@ -15,7 +15,7 @@
 
 <Sheet.Root>
 	{#if PermissionsStore.canEdit}
-		<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })}>
+		<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })} title="Edit Ingredients">
 			<PenIcon />
 		</Sheet.Trigger>
 	{/if}

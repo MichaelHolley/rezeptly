@@ -13,7 +13,7 @@
 </script>
 
 <Dialog.Root>
-	<Dialog.Trigger class={buttonVariants({ variant: 'destructive' })}>
+	<Dialog.Trigger class={buttonVariants({ variant: 'destructive' })} title="Delete Recipe">
 		<TrashIcon />
 	</Dialog.Trigger>
 	<Dialog.Content>

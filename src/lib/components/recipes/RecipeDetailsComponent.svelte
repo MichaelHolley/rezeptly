@@ -108,7 +108,7 @@
 		<div class="flex flex-row justify-between gap-2">
 			<h2>{recipe.name}</h2>
 			<div class="flex flex-row justify-end gap-2">
-				<Button onclick={toggleFavorite} variant="outline">
+				<Button onclick={toggleFavorite} variant="outline" title="Toggle Favorite">
 					{#if favorites.current.includes(recipe.id)}
 						<StarIcon class="fill-yellow-400 text-yellow-400" />
 					{:else}
@@ -122,6 +122,7 @@
 							editDetails = true;
 							tags = recipe.tags.map((t: Tag) => t.name);
 						}}
+						title="Edit Recipe Details"
 					>
 						<PenIcon />
 					</Button>
