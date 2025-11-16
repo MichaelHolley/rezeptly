@@ -14,11 +14,11 @@
 </script>
 
 <Sheet.Root>
-	<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })}>
-		{#if PermissionsStore.canEdit()}
+	{#if PermissionsStore.canEdit}
+		<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })}>
 			<PenIcon />
-		{/if}
-	</Sheet.Trigger>
+		</Sheet.Trigger>
+	{/if}
 	<Sheet.Content class="max-h-svh">
 		<Sheet.Header>
 			<Sheet.Title>Edit Ingredients</Sheet.Title>

@@ -1,13 +1,8 @@
 class Permissions {
 	roles = $state<string[]>([]);
 
-	isLoggedIn() {
-		return this.roles.length > 0;
-	}
-
-	canEdit() {
-		return this.roles.includes('admin');
-	}
+	canEdit = $derived(this.roles.includes('admin'));
+	isLoggedIn = $derived(this.roles.length > 0);
 
 	resetRoles() {
 		this.roles = [];

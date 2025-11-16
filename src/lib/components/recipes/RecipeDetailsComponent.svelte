@@ -115,7 +115,7 @@
 						<StarIcon class="text-zinc-400" />
 					{/if}
 				</Button>
-				{#if PermissionsStore.canEdit()}
+				{#if PermissionsStore.canEdit}
 					<Button
 						variant="secondary"
 						onclick={() => {

@@ -81,7 +81,7 @@
 		<div>
 			<div class="flex flex-row gap-1 pb-2">
 				<h3>Instructions</h3>
-				{#if PermissionsStore.canEdit()}
+				{#if PermissionsStore.canEdit}
 					<Button variant="ghost" onclick={toggleEditInstructions}>
 						{#if showInstructionsForm}
 							<XIcon />

@@ -24,10 +24,10 @@
 				<RezeptlyHeader />
 			</div>
 			<div class="flex flex-row items-center gap-3">
-				{#if PermissionsStore.canEdit()}
+				{#if PermissionsStore.canEdit}
 					<Button href="/create" variant="default">+ Create</Button>
 				{/if}
-				{#if PermissionsStore.isLoggedIn()}
+				{#if PermissionsStore.isLoggedIn}
 					<Button onclick={logoutUser} variant="outline">
 						Logout
 						<LogoutIcon />
