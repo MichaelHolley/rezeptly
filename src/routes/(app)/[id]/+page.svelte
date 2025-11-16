@@ -117,11 +117,3 @@
 		<IngredientsListComponent ingredients={recipe.ingredients} />
 	</div>
 </div>
-
-{#snippet ingredientsBlock(r: RecipeWithDetails)}
-	<div class="flex flex-row gap-1 pb-2">
-		<h3>Ingredients</h3>
-		<IngredientsSheet ingredients={r.ingredients} recipeId={Number(params.id)} />
-	</div>
-	<IngredientsListComponent ingredients={r.ingredients} />
-{/snippet}
