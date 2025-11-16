@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { addIngredient, removeIngredient } from '$lib/api/recipes.remote';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
@@ -14,11 +14,9 @@
 </script>
 
 <Sheet.Root>
-	<Sheet.Trigger>
+	<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })}>
 		{#if PermissionsStore.canEdit()}
-			<PenIcon
-				class="hover:text-primary ml-2 size-4 text-neutral-400 transition-all duration-200"
-			/>
+			<PenIcon />
 		{/if}
 	</Sheet.Trigger>
 	<Sheet.Content class="max-h-svh">

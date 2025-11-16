@@ -10,7 +10,6 @@
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
-	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
 	import TagComponent from './TagComponent.svelte';
@@ -109,31 +108,25 @@
 		<div class="flex flex-row justify-between gap-2">
 			<h2>{recipe.name}</h2>
 			<div class="flex flex-row justify-end gap-2">
-				<div>
-					<Button onclick={toggleFavorite} variant="outline">
-						{#if favorites.current.includes(recipe.id)}
-							<StarIcon class="size-5 fill-yellow-400 text-yellow-400" />
-						{:else}
-							<StarIcon class="size-5 text-zinc-400" />
-						{/if}
-					</Button>
-				</div>
-
+				<Button onclick={toggleFavorite} variant="outline">
+					{#if favorites.current.includes(recipe.id)}
+						<StarIcon class="fill-yellow-400 text-yellow-400" />
+					{:else}
+						<StarIcon class="text-zinc-400" />
+					{/if}
+				</Button>
 				{#if PermissionsStore.canEdit()}
-					<div>
-						<Button
-							variant="secondary"
-							onclick={() => {
-								editDetails = true;
-								tags = recipe.tags.map((t: Tag) => t.name);
-							}}
-						>
-							<PenIcon />
-						</Button>
-					</div>
-					<div>
-						<DeleteRecipeConfirmationModal trigger={deleteModalTrigger} recipeId={recipe.id} />
-					</div>
+					<Button
+						variant="secondary"
+						onclick={() => {
+							editDetails = true;
+							tags = recipe.tags.map((t: Tag) => t.name);
+						}}
+					>
+						<PenIcon />
+					</Button>
+
+					<DeleteRecipeConfirmationModal recipeId={recipe.id} />
 				{/if}
 			</div>
 		</div>
@@ -148,9 +141,3 @@
 		<p class="mt-2 text-base font-light text-zinc-500">{recipe.description}</p>
 	{/if}
 </div>
-
-{#snippet deleteModalTrigger()}
-	<Button class="btn btn-error" variant="destructive" type="submit">
-		<TrashIcon />
-	</Button>
-{/snippet}

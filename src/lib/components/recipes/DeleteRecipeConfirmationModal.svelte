@@ -1,25 +1,20 @@
 <script lang="ts">
 	import { deleteRecipe } from '$lib/api/recipes.remote';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
-	import type { Snippet } from 'svelte';
 
 	const {
-		trigger,
 		recipeId
 	}: {
-		trigger: Snippet;
 		recipeId: number;
 	} = $props();
 </script>
 
 <Dialog.Root>
-	<Dialog.Trigger>
-		{#if trigger}
-			{@render trigger()}
-		{/if}
+	<Dialog.Trigger class={buttonVariants({ variant: 'destructive' })}>
+		<TrashIcon />
 	</Dialog.Trigger>
 	<Dialog.Content>
 		<form {...deleteRecipe}>
