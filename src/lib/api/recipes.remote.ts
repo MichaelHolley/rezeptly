@@ -87,7 +87,7 @@ export const updateRecipeDetails = form(
 		await recipeService.updateRecipe(recipeId, {
 			name,
 			description,
-			tags: cleanTags(tags)
+			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
 		await getRecipeById(recipeId).refresh();
@@ -108,14 +108,9 @@ export const createRecipe = form(
 			description: description.trim(),
 			ingredients: [],
 			instructions: [],
-			tags: cleanTags(tags)
+			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
 		redirect(303, `/${recipe.id}`);
 	}
 );
-
-// TODO: move this to service clean up
-function cleanTags(tags: string[] | undefined) {
-	return tags?.flatMap((tag) => (tag.trim() ? [{ name: tag.trim() }] : [])) ?? [];
-}

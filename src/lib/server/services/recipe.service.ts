@@ -107,7 +107,9 @@ export const createRecipe = async (
 
 		if (data.tags && data.tags.length > 0) {
 			// 1. Deduplicate input (case-sensitive - preserves original case)
-			const uniqueTagNames = [...new Set(data.tags.map((t) => t.name.trim()))];
+			const uniqueTagNames = [
+				...new Set(data.tags.map((t) => t.name.trim()).filter((name) => name !== ''))
+			];
 
 			// 2. Batch fetch existing tags (single query)
 			const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
@@ -166,7 +168,9 @@ export const updateRecipe = async (
 
 		if (data.tags && data.tags.length > 0) {
 			// 1. Deduplicate input (case-sensitive - preserves original case)
-			const uniqueTagNames = [...new Set(data.tags.map((t) => t.name.trim()))];
+			const uniqueTagNames = [
+				...new Set(data.tags.map((t) => t.name.trim()).filter((name) => name !== ''))
+			];
 
 			// 2. Batch fetch existing tags (single query)
 			const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
