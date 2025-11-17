@@ -4,10 +4,13 @@
 	import OrigamiIcon from '@lucide/svelte/icons/origami';
 	import RepeatIcon from '@lucide/svelte/icons/repeat-2';
 
-	const { message, onRetry } = $props<{
+	const {
+		message,
+		onRetry
+	}: {
 		message: string;
 		onRetry?: () => void;
-	}>();
+	} = $props();
 </script>
 
 <Empty.Root>

@@ -1,19 +1,34 @@
 <script lang="ts">
+	import { updateInstructions } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import type { RecipeWithDetails } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import PlusIcon from '@lucide/svelte/icons/plus';
-	import StepForm from './StepForm.svelte';
+	import TrashIcon from '@lucide/svelte/icons/trash-2';
+	import { onMount } from 'svelte';
+	import { Textarea } from '../ui/textarea';
 
 	export interface Step {
 		heading: string | null;
 		description: string;
 	}
 
-	let { steps = $bindable() } = $props<{
-		steps: Step[];
-	}>();
+	const {
+		recipe,
+		onSave
+	}: {
+		recipe: RecipeWithDetails;
+		onSave?: () => void;
+	} = $props();
+
+	let steps = $state<Step[]>([]);
+
+	onMount(() => {
+		steps = getStepsFromRecipe();
+	});
 
 	const addStep = () => (steps = [...steps, { heading: '', description: '' }]);
 
@@ -32,40 +47,92 @@
 
 		[steps[i + 1], steps[i]] = [steps[i], steps[i + 1]];
 	};
+
+	const getStepsFromRecipe = () => {
+		return [...recipe.instructions]
+			.sort((a, b) => a.stepOrder - b.stepOrder)
+			.map((instruction) => ({
+				heading: instruction.heading,
+				description: instruction.instructions
+			}));
+	};
 </script>
 
-<div class="flex flex-col gap-8">
-	{#each steps as step, i}
-		<div class="flex flex-row gap-2">
-			<div class="grow">
-				<StepForm
-					bind:heading={step.heading}
-					bind:description={step.description}
-					onRemove={() => removeStep(i)}
-					key={i}
-				/>
-			</div>
-			<div class="flex flex-col items-center justify-center gap-1">
-				<Button variant="outline" onclick={() => moveUp(i)} disabled={i == 0}>
-					<ChevronUpIcon />
-				</Button>
-				{i + 1}
-				<Button variant="outline" onclick={() => moveDown(i)} disabled={i == steps.length - 1}>
-					<ChevronDownIcon />
-				</Button>
-			</div>
-		</div>
-	{/each}
-</div>
+<form
+	{...updateInstructions.enhance(async ({ submit }) => {
+		try {
+			await submit();
+			onSave?.();
+		} catch (error) {
+			console.error(error);
+		}
+	})}
+>
+	<input {...updateInstructions.fields.recipeId.as('hidden', String(recipe.id))} />
 
-<div class="mt-4 flex flex-row justify-between gap-2">
-	<div></div>
-	<Button onclick={addStep} variant="outline">
-		<PlusIcon />
-		Add Step
-	</Button>
-	<Button type="submit">
-		<CheckIcon />
-		Save
-	</Button>
-</div>
+	<div class="flex flex-col gap-8">
+		{#each steps as step, i}
+			<div class="flex flex-row gap-2 **:gap-2">
+				<div class="flex grow flex-col">
+					<div class="flex flex-row items-center justify-between">
+						<Input
+							{...updateInstructions.fields.instructions[i].heading.as('text')}
+							value={step.heading}
+							placeholder="Short, descriptive heading"
+						/>
+						<Button
+							variant="secondary"
+							onclick={() => removeStep(i)}
+							title="Remove step"
+							disabled={!!updateInstructions.pending}
+						>
+							<TrashIcon />
+						</Button>
+					</div>
+					<Textarea
+						placeholder="Start by describing the step in detail..."
+						required
+						{...updateInstructions.fields.instructions[i].instructions.as('text')}
+						value={step.description}
+					/>
+				</div>
+				<div class="flex flex-col items-center justify-center gap-1">
+					<Button
+						variant="outline"
+						onclick={() => moveUp(i)}
+						disabled={i == 0 || !!updateInstructions.pending}
+						title="Swap with previous step"
+					>
+						<ChevronUpIcon />
+					</Button>
+					{i + 1}
+					<Button
+						variant="outline"
+						onclick={() => moveDown(i)}
+						disabled={i == steps.length - 1 || !!updateInstructions.pending}
+						title="Swap with next step"
+					>
+						<ChevronDownIcon />
+					</Button>
+				</div>
+			</div>
+		{/each}
+
+		<div class="mt-4 flex flex-row justify-between gap-2">
+			<div />
+			<Button
+				onclick={addStep}
+				variant="outline"
+				type="button"
+				disabled={!!updateInstructions.pending}
+			>
+				<PlusIcon />
+				Add Step
+			</Button>
+			<Button type="submit" disabled={!!updateInstructions.pending}>
+				<CheckIcon />
+				Save
+			</Button>
+		</div>
+	</div>
+</form>

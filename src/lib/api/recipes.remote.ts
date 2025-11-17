@@ -8,6 +8,10 @@ export const getRecipesMetadata = query(async () => {
 	return await recipeService.getRecipesMetadata();
 });
 
+export const getAvailableTags = query(async () => {
+	return await recipeService.getAllActiveTags();
+});
+
 export const getRecipes = query(async () => {
 	return await recipeService.getRecipes();
 });
@@ -20,15 +24,28 @@ export const getRecipeById = query(z.number(), async (id) => {
 	return recipe;
 });
 
-export const deleteRecipe = command(z.number(), async (id) => {
-	if (!userCanWrite()) error(403, 'Insufficient Permissions');
+export const deleteRecipe = form(
+	z.object({
+		recipeId: z.pipe(
+			z.string(),
+			z.transform((id) => Number(id))
+		)
+	}),
+	async ({ recipeId }) => {
+		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
-	await recipeService.deleteRecipe(id);
-});
+		await recipeService.deleteRecipe(recipeId);
+
+		redirect(303, '/');
+	}
+);
 
 export const addIngredient = form(
 	z.object({
-		recipeId: z.transform(Number),
+		recipeId: z.pipe(
+			z.string(),
+			z.transform((id) => Number(id))
+		),
 		name: z.string().min(1, 'Name is required')
 	}),
 	async ({ recipeId, name }) => {
@@ -41,7 +58,10 @@ export const addIngredient = form(
 );
 
 export const removeIngredient = command(
-	z.object({ recipeId: z.number(), ingrId: z.number() }),
+	z.object({
+		recipeId: z.number(),
+		ingrId: z.number()
+	}),
 	async ({ recipeId, ingrId }) => {
 		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
@@ -53,7 +73,10 @@ export const removeIngredient = command(
 
 export const updateRecipeDetails = form(
 	z.object({
-		recipeId: z.transform(Number),
+		recipeId: z.pipe(
+			z.string(),
+			z.transform((id) => Number(id))
+		),
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
 		tags: z.array(z.string()).optional()
@@ -64,7 +87,7 @@ export const updateRecipeDetails = form(
 		await recipeService.updateRecipe(recipeId, {
 			name,
 			description,
-			tags: tags?.map((tag) => ({ name: tag.trim() })) ?? []
+			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
 		await getRecipeById(recipeId).refresh();
@@ -85,9 +108,38 @@ export const createRecipe = form(
 			description: description.trim(),
 			ingredients: [],
 			instructions: [],
-			tags: tags?.map((tag) => ({ name: tag.trim() })) ?? []
+			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
 		redirect(303, `/${recipe.id}`);
+	}
+);
+
+export const updateInstructions = form(
+	z.object({
+		recipeId: z.pipe(
+			z.string(),
+			z.transform((id) => Number(id))
+		),
+		instructions: z.array(
+			z.object({
+				heading: z.string(),
+				instructions: z.string()
+			})
+		)
+	}),
+	async ({ recipeId, instructions }) => {
+		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
+		await recipeService.upsertInstructionsForRecipe(
+			recipeId,
+			instructions.map((item, i) => ({
+				...item,
+				stepOrder: i + 1,
+				recipeId
+			}))
+		);
+
+		await getRecipeById(recipeId).refresh();
 	}
 );

@@ -1,27 +1,24 @@
 <script lang="ts">
 	import { addIngredient, removeIngredient } from '$lib/api/recipes.remote';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
+	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
-	import type { Snippet } from 'svelte';
 
-	const { recipeId, ingredients, trigger } = $props<{
-		recipeId: number;
-		ingredients: Ingredient[];
-		trigger: Snippet;
-	}>();
+	const { recipeId, ingredients }: { recipeId: number; ingredients: Ingredient[] } = $props();
 </script>
 
 <Sheet.Root>
-	<Sheet.Trigger>
-		{#if trigger}
-			{@render trigger()}
-		{/if}
-	</Sheet.Trigger>
+	{#if PermissionsStore.canEdit}
+		<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })} title="Edit Ingredients">
+			<PenIcon />
+		</Sheet.Trigger>
+	{/if}
 	<Sheet.Content class="max-h-svh">
 		<Sheet.Header>
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
@@ -37,9 +34,13 @@
 				})}
 				class="mt-6 flex flex-row gap-2"
 			>
-				<Input type="hidden" name="recipeId" value={recipeId} />
-				<Input type="text" name="name" required placeholder="Ingredient & Quantity" />
-				<Button type="submit"><PlusIcon /></Button>
+				<input {...addIngredient.fields.recipeId.as('hidden', String(recipeId))} />
+				<Input
+					required
+					placeholder="Ingredient & Quantity"
+					{...addIngredient.fields.name.as('text')}
+				/>
+				<Button type="submit" disabled={!!addIngredient.pending}><PlusIcon /></Button>
 			</form>
 		</Sheet.Header>
 

@@ -9,7 +9,6 @@
 
 	let tagInputValue = $state('');
 	let tags = $state<string[]>([]);
-	let loading = $state(false);
 </script>
 
 <svelte:head>
@@ -18,27 +17,19 @@
 
 <BreadcrumbComponent breadcrumbs={[{ name: 'Create Recipe', href: '/create' }]} />
 
-<form
-	{...createRecipe.enhance(async ({ form, submit }) => {
-		try {
-			loading = true;
-			await submit();
-			await form.reset();
-		} catch (error) {
-			console.error(error);
-		} finally {
-			loading = false;
-		}
-	})}
-	class="flex flex-col gap-4"
->
+<form {...createRecipe} class="flex flex-col gap-4">
 	<div class="form-group">
 		<Label for="name">Name</Label>
-		<Input name="name" id="name" type="text" placeholder="Name" required />
+		<Input id="name" placeholder="Name" required {...createRecipe.fields.name.as('text')} />
 	</div>
 	<div class="form-group">
 		<Label for="description">Description</Label>
-		<Textarea name="description" id="description" placeholder="Short Recipe Description" required />
+		<Textarea
+			id="description"
+			placeholder="Short Recipe Description"
+			required
+			{...createRecipe.fields.description.as('text')}
+		/>
 	</div>
 	<div class="form-group">
 		<Label for="tagsinput">Tags</Label>
@@ -59,10 +50,10 @@
 			}}
 		/>
 		<div class="flex flex-row flex-wrap gap-2">
-			{#each tags as tag}
-				<Input type="hidden" name="tags[]" value={tag} />
+			{#each tags as tag, i}
+				<input {...createRecipe.fields.tags[i].as('hidden', tag)} value={tag} />
 				<TagComponent
-					onClick={() => {
+					onSelect={() => {
 						tags = tags.filter((t) => t !== tag);
 					}}
 				>
@@ -72,6 +63,6 @@
 		</div>
 	</div>
 	<div class="flex flex-row justify-end">
-		<Button type="submit" disabled={loading}>+ Create</Button>
+		<Button type="submit" disabled={!!createRecipe.pending}>+ Create</Button>
 	</div>
 </form>

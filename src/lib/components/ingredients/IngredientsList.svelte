@@ -1,10 +1,13 @@
 <script lang="ts">
 	import type { Ingredient } from '$lib/server/types';
 
-	const { ingredients, class: className } = $props<{
+	const {
+		ingredients,
+		class: className
+	}: {
 		ingredients: Ingredient[];
 		class?: string;
-	}>();
+	} = $props();
 </script>
 
 <div class={className}>

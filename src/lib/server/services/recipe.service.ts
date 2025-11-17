@@ -8,7 +8,8 @@ import type {
 	NewTag,
 	Recipe,
 	RecipeMetadata,
-	RecipeWithDetails
+	RecipeWithDetails,
+	Tag
 } from '../types';
 
 export const getRecipesMetadata = async (): Promise<RecipeMetadata[]> => {
@@ -106,7 +107,9 @@ export const createRecipe = async (
 
 		if (data.tags && data.tags.length > 0) {
 			// 1. Deduplicate input (case-sensitive - preserves original case)
-			const uniqueTagNames = [...new Set(data.tags.map((t) => t.name.trim()))];
+			const uniqueTagNames = [
+				...new Set(data.tags.map((t) => t.name.trim()).filter((name) => name !== ''))
+			];
 
 			// 2. Batch fetch existing tags (single query)
 			const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
@@ -165,7 +168,9 @@ export const updateRecipe = async (
 
 		if (data.tags && data.tags.length > 0) {
 			// 1. Deduplicate input (case-sensitive - preserves original case)
-			const uniqueTagNames = [...new Set(data.tags.map((t) => t.name.trim()))];
+			const uniqueTagNames = [
+				...new Set(data.tags.map((t) => t.name.trim()).filter((name) => name !== ''))
+			];
 
 			// 2. Batch fetch existing tags (single query)
 			const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
@@ -211,4 +216,13 @@ export const updateRecipe = async (
 
 export const deleteRecipe = async (id: number): Promise<void> => {
 	await db.delete(recipes).where(eq(recipes.id, id));
+};
+
+export const getAllActiveTags = async (): Promise<Tag[]> => {
+	const result = await db.query.tags.findMany({
+		where: (tags, { exists }) =>
+			exists(db.select().from(recipesToTags).where(eq(recipesToTags.tagId, tags.id))),
+		orderBy: (tags, { asc }) => [asc(tags.name)]
+	});
+	return result;
 };
