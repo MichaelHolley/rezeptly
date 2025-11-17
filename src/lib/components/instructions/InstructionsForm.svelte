@@ -119,6 +119,7 @@
 		{/each}
 
 		<div class="mt-4 flex flex-row justify-between gap-2">
+			<div />
 			<Button
 				onclick={addStep}
 				variant="outline"
