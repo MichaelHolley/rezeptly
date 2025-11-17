@@ -53,7 +53,7 @@
 			{#each tags as tag, i}
 				<input {...createRecipe.fields.tags[i].as('hidden', tag)} value={tag} />
 				<TagComponent
-					onClick={() => {
+					onSelect={() => {
 						tags = tags.filter((t) => t !== tag);
 					}}
 				>

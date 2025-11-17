@@ -3,20 +3,20 @@
 	import type { Snippet } from 'svelte';
 
 	const {
-		onClick,
+		onSelect,
 		active,
 		children
 	}: {
 		active?: boolean;
-		onClick?: () => void;
+		onSelect?: () => void;
 		children?: Snippet;
 	} = $props();
 </script>
 
 <Badge
 	variant={active ? 'default' : 'secondary'}
-	class={onClick && 'hover:cursor-pointer'}
-	onclick={onClick}
+	class={onSelect && 'hover:cursor-pointer'}
+	onclick={onSelect}
 >
 	{#if children}
 		{@render children()}

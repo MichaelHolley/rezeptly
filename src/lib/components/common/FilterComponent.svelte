@@ -15,7 +15,7 @@
 		availableTags: string[];
 	} = $props();
 
-	const setActiveTagFilter = (tag: string) => {
+	const setSelectedTag = (tag: string) => {
 		if (selectedTag === tag) {
 			selectedTag = '';
 		} else {
@@ -30,11 +30,11 @@
 			<SearchBarComponent bind:searchTerm />
 		</div>
 		<div class="flex flex-row flex-wrap justify-center gap-2">
-			<TagComponent onClick={() => (filterFavorites = !filterFavorites)} active={filterFavorites}>
+			<TagComponent onSelect={() => (filterFavorites = !filterFavorites)} active={filterFavorites}>
 				<StarIcon class="size-5 fill-yellow-400 text-yellow-400" />
 			</TagComponent>
 			{#each availableTags as tag}
-				<TagComponent onClick={() => setActiveTagFilter(tag)} active={selectedTag === tag}>
+				<TagComponent onSelect={() => setSelectedTag(tag)} active={selectedTag === tag}>
 					{tag}
 				</TagComponent>
 			{/each}
