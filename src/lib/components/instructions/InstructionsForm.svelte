@@ -2,6 +2,7 @@
 	import { updateInstructions } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
@@ -9,7 +10,6 @@
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import { onMount } from 'svelte';
-	import { Textarea } from '../ui/textarea';
 
 	export interface Step {
 		heading: string | null;
