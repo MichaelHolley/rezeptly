@@ -21,7 +21,7 @@
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);
 
-	const recipes = $derived(await getRecipesMetadata());
+	const recipes = await getRecipesMetadata();
 
 	const filterRecipes = (recipes: RecipeMetadata[]) => {
 		if (!recipes) {
