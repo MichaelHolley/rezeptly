@@ -5,7 +5,6 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
-	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
@@ -14,11 +13,9 @@
 </script>
 
 <Sheet.Root>
-	{#if PermissionsStore.canEdit}
-		<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })} title="Edit Ingredients">
-			<PenIcon />
-		</Sheet.Trigger>
-	{/if}
+	<Sheet.Trigger class={buttonVariants({ variant: 'ghost' }) + ' hidden!'} title="Edit Ingredients">
+		<PenIcon />
+	</Sheet.Trigger>
 	<Sheet.Content class="max-h-svh">
 		<Sheet.Header>
 			<Sheet.Title>Edit Ingredients</Sheet.Title>

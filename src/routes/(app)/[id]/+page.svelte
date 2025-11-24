@@ -49,7 +49,9 @@
 		<div class="mb-8">
 			<div class="flex flex-row gap-1 pb-2">
 				<h3>Ingredients</h3>
-				<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
+				{#if PermissionsStore.canEdit}
+					<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
+				{/if}
 			</div>
 			<IngredientsListComponent ingredients={recipe.ingredients} />
 		</div>
