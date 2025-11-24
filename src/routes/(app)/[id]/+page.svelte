@@ -46,7 +46,7 @@
 
 <div class="flex flex-row items-start justify-between gap-12">
 	<div class="grow">
-		<div class="mb-8 block md:hidden">
+		<div class="mb-8">
 			<div class="flex flex-row gap-1 pb-2">
 				<h3>Ingredients</h3>
 				<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
@@ -85,12 +85,5 @@
 				</div>
 			{/if}
 		</div>
-	</div>
-	<div class="hidden md:block">
-		<div class="flex flex-row gap-1 pb-2">
-			<h3>Ingredients</h3>
-			<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
-		</div>
-		<IngredientsListComponent ingredients={recipe.ingredients} />
 	</div>
 </div>

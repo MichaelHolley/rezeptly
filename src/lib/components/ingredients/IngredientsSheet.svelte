@@ -51,7 +51,7 @@
 						<span class="px-1 text-sm">{ingr.name}</span>
 						<Button
 							variant="secondary"
-							type="submit"
+							type="button"
 							size="sm"
 							onclick={async () => {
 								try {
