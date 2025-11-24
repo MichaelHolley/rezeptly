@@ -16,13 +16,16 @@ export const getRecipes = query(async () => {
 	return await recipeService.getRecipes();
 });
 
-export const getRecipeById = query(z.number(), async (id) => {
-	const recipe = await recipeService.getRecipeById(id);
+export const getRecipeById = query(
+	z.number().or(z.string().transform((id) => Number(id))),
+	async (id) => {
+		const recipe = await recipeService.getRecipeById(id);
 
-	if (!recipe) error(404, 'Recipe not found');
+		if (!recipe) error(404, 'Recipe not found');
 
-	return recipe;
-});
+		return recipe;
+	}
+);
 
 export const deleteRecipe = form(
 	z.object({

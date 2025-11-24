@@ -12,7 +12,7 @@
 
 	const { params } = $props();
 
-	const recipe = $derived(await getRecipeById(Number(params.id)));
+	const recipe = $derived(await getRecipeById(params.id));
 
 	let showInstructionsForm = $state(false);
 
