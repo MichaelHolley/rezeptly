@@ -10,6 +10,8 @@
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
 	const { recipeId, ingredients }: { recipeId: number; ingredients: Ingredient[] } = $props();
+
+	let addIngredientInput = $state('');
 </script>
 
 <Sheet.Root>
@@ -21,22 +23,14 @@
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
 			<form
-				{...addIngredient.enhance(async ({ form, submit }) => {
-					try {
-						await submit();
-						await form.reset();
-					} catch (error) {
-						console.error(error);
-					}
-				})}
+				onsubmit={async (event) => {
+					event.preventDefault();
+					await addIngredient({ recipeId: String(recipeId), name: addIngredientInput });
+					addIngredientInput = '';
+				}}
 				class="mt-6 flex flex-row gap-2"
 			>
-				<input {...addIngredient.fields.recipeId.as('hidden', String(recipeId))} />
-				<Input
-					required
-					placeholder="Ingredient & Quantity"
-					{...addIngredient.fields.name.as('text')}
-				/>
+				<Input required placeholder="Ingredient & Quantity" bind:value={addIngredientInput} />
 				<Button type="submit" disabled={!!addIngredient.pending}><PlusIcon /></Button>
 			</form>
 		</Sheet.Header>
