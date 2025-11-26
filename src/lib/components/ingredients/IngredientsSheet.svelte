@@ -13,7 +13,7 @@
 </script>
 
 <Sheet.Root>
-	<Sheet.Trigger class={buttonVariants({ variant: 'ghost' }) + ' hidden!'} title="Edit Ingredients">
+	<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })} title="Edit Ingredients">
 		<PenIcon />
 	</Sheet.Trigger>
 	<Sheet.Content class="max-h-svh">
