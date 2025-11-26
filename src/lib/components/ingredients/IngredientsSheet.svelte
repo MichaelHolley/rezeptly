@@ -5,41 +5,32 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
-	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
 	const { recipeId, ingredients }: { recipeId: number; ingredients: Ingredient[] } = $props();
+
+	let addIngredientInput = $state('');
 </script>
 
 <Sheet.Root>
-	{#if PermissionsStore.canEdit}
-		<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })} title="Edit Ingredients">
-			<PenIcon />
-		</Sheet.Trigger>
-	{/if}
+	<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })} title="Edit Ingredients">
+		<PenIcon />
+	</Sheet.Trigger>
 	<Sheet.Content class="max-h-svh">
 		<Sheet.Header>
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
 			<form
-				{...addIngredient.enhance(async ({ form, submit }) => {
-					try {
-						await submit();
-						await form.reset();
-					} catch (error) {
-						console.error(error);
-					}
-				})}
+				onsubmit={async (event) => {
+					event.preventDefault();
+					await addIngredient({ recipeId: recipeId, name: addIngredientInput });
+					addIngredientInput = '';
+				}}
 				class="mt-6 flex flex-row gap-2"
 			>
-				<input {...addIngredient.fields.recipeId.as('hidden', String(recipeId))} />
-				<Input
-					required
-					placeholder="Ingredient & Quantity"
-					{...addIngredient.fields.name.as('text')}
-				/>
+				<Input required placeholder="Ingredient & Quantity" bind:value={addIngredientInput} />
 				<Button type="submit" disabled={!!addIngredient.pending}><PlusIcon /></Button>
 			</form>
 		</Sheet.Header>
@@ -51,8 +42,9 @@
 						<span class="px-1 text-sm">{ingr.name}</span>
 						<Button
 							variant="secondary"
-							type="submit"
+							type="button"
 							size="sm"
+							disabled={!!removeIngredient.pending}
 							onclick={async () => {
 								try {
 									await removeIngredient({ recipeId, ingrId: ingr.id });

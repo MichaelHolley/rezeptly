@@ -18,7 +18,7 @@
 	</Dialog.Trigger>
 	<Dialog.Content>
 		<form {...deleteRecipe}>
-			<input {...deleteRecipe.fields.recipeId.as('hidden', String(recipeId))} />
+			<input {...deleteRecipe.fields.recipeId.as('hidden', recipeId)} />
 			<Dialog.Header>
 				<Dialog.Title>Are you sure you want to delete this recipe?</Dialog.Title>
 				<Dialog.Description>

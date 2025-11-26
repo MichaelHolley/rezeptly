@@ -26,10 +26,12 @@ export const getRecipeById = query(z.number(), async (id) => {
 
 export const deleteRecipe = form(
 	z.object({
-		recipeId: z.pipe(
-			z.string(),
-			z.transform((id) => Number(id))
-		)
+		recipeId: z
+			.pipe(
+				z.string(),
+				z.transform((id) => Number(id))
+			)
+			.or(z.number())
 	}),
 	async ({ recipeId }) => {
 		if (!userCanWrite()) error(403, 'Insufficient Permissions');
@@ -40,12 +42,14 @@ export const deleteRecipe = form(
 	}
 );
 
-export const addIngredient = form(
+export const addIngredient = command(
 	z.object({
-		recipeId: z.pipe(
-			z.string(),
-			z.transform((id) => Number(id))
-		),
+		recipeId: z
+			.pipe(
+				z.string(),
+				z.transform((id) => Number(id))
+			)
+			.or(z.number()),
 		name: z.string().min(1, 'Name is required')
 	}),
 	async ({ recipeId, name }) => {
@@ -73,10 +77,12 @@ export const removeIngredient = command(
 
 export const updateRecipeDetails = form(
 	z.object({
-		recipeId: z.pipe(
-			z.string(),
-			z.transform((id) => Number(id))
-		),
+		recipeId: z
+			.pipe(
+				z.string(),
+				z.transform((id) => Number(id))
+			)
+			.or(z.number()),
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
 		tags: z.array(z.string()).optional()
@@ -117,10 +123,12 @@ export const createRecipe = form(
 
 export const updateInstructions = form(
 	z.object({
-		recipeId: z.pipe(
-			z.string(),
-			z.transform((id) => Number(id))
-		),
+		recipeId: z
+			.pipe(
+				z.string(),
+				z.transform((id) => Number(id))
+			)
+			.or(z.number()),
 		instructions: z.array(
 			z.object({
 				heading: z.string(),

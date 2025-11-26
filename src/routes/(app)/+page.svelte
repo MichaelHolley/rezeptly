@@ -21,7 +21,10 @@
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);
 
-	const recipes = await getRecipesMetadata();
+	const recipes = $derived(await getRecipesMetadata());
+	const availableTags = $derived(await getAvailableTags());
+
+	const tagNames = $derived(availableTags.map((t) => t.name));
 
 	const filterRecipes = (recipes: RecipeMetadata[]) => {
 		if (!recipes) {
@@ -53,7 +56,7 @@
 	bind:searchTerm={searchParams.searchTerm}
 	bind:selectedTag={searchParams.activeTagFilter}
 	bind:filterFavorites={searchParams.filterFavorites}
-	availableTags={(await getAvailableTags()).map((t) => t.name)}
+	availableTags={tagNames}
 />
 <div class="card-container my-4 grid gap-4">
 	{#each filterRecipes(recipes) as recipe}

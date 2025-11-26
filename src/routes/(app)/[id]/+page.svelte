@@ -49,7 +49,9 @@
 		<div class="mb-8 block md:hidden">
 			<div class="flex flex-row gap-1 pb-2">
 				<h3>Ingredients</h3>
-				<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
+				{#if PermissionsStore.canEdit}
+					<IngredientsSheet ingredients={recipe.ingredients} recipeId={recipe.id} />
+				{/if}
 			</div>
 			<IngredientsListComponent ingredients={recipe.ingredients} />
 		</div>
@@ -89,7 +91,9 @@
 	<div class="hidden md:block">
 		<div class="flex flex-row gap-1 pb-2">
 			<h3>Ingredients</h3>
-			<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
+			{#if PermissionsStore.canEdit}
+				<IngredientsSheet ingredients={recipe.ingredients} recipeId={recipe.id} />
+			{/if}
 		</div>
 		<IngredientsListComponent ingredients={recipe.ingredients} />
 	</div>
