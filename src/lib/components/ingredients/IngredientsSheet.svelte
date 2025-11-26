@@ -44,6 +44,7 @@
 							variant="secondary"
 							type="button"
 							size="sm"
+							disabled={!!removeIngredient.pending}
 							onclick={async () => {
 								try {
 									await removeIngredient({ recipeId, ingrId: ingr.id });
