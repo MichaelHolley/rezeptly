@@ -25,7 +25,7 @@
 			<form
 				onsubmit={async (event) => {
 					event.preventDefault();
-					await addIngredient({ recipeId: String(recipeId), name: addIngredientInput });
+					await addIngredient({ recipeId: recipeId, name: addIngredientInput });
 					addIngredientInput = '';
 				}}
 				class="mt-6 flex flex-row gap-2"

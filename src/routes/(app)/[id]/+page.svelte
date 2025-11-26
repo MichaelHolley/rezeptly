@@ -50,7 +50,7 @@
 			<div class="flex flex-row gap-1 pb-2">
 				<h3>Ingredients</h3>
 				{#if PermissionsStore.canEdit}
-					<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
+					<IngredientsSheet ingredients={recipe.ingredients} recipeId={recipe.id} />
 				{/if}
 			</div>
 			<IngredientsListComponent ingredients={recipe.ingredients} />
@@ -92,7 +92,7 @@
 		<div class="flex flex-row gap-1 pb-2">
 			<h3>Ingredients</h3>
 			{#if PermissionsStore.canEdit}
-				<IngredientsSheet ingredients={recipe.ingredients} recipeId={Number(params.id)} />
+				<IngredientsSheet ingredients={recipe.ingredients} recipeId={recipe.id} />
 			{/if}
 		</div>
 		<IngredientsListComponent ingredients={recipe.ingredients} />
