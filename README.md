@@ -23,44 +23,70 @@ Follow these instructions to get a local copy of Rezeptly up and running on your
 
 ### Installation
 
-1.  **Clone the repository:**
+1. **Clone the repository:**
 
-    ```bash
-    git clone https://github.com/your-username/rezeptly.git
-    cd rezeptly
-    ```
+   ```bash
+   git clone https://github.com/your-username/rezeptly.git
+   cd rezeptly
+   ```
 
-2.  **Install dependencies:**
+2. **Install dependencies:**
 
-    ```bash
-    pnpm install
-    ```
+   ```bash
+   pnpm install
+   ```
 
-3.  **Set up environment variables:**
+3. **Set up environment variables:**
 
-    Create a `.env` file by copying the example file:
+   Create a `.env` file by copying the example file:
 
-    ```bash
-    cp .env.example .env
-    ```
+   ```bash
+   cp .env.example .env
+   ```
 
-    Update the `.env` file with your database credentials and other environment-specific settings.
+   Update the `.env` file with your database credentials and other environment-specific settings.
 
-4.  **Start the database:**
+4. **Start the database:**
 
-    Make sure Docker is running, then start the PostgreSQL database service:
+   Make sure Docker is running, then start the PostgreSQL database service:
 
-    ```bash
-    pnpm db:start
-    ```
+   ```bash
+   pnpm db:start
+   ```
 
-5.  **Apply database schema:**
+5. **Apply database schema:**
 
-    Push the latest schema changes to your database:
+   Push the latest schema changes to your database:
 
-    ```bash
-    pnpm db:push
-    ```
+   ```bash
+   pnpm db:push
+   ```
+
+6. **Seed the database (optional):**
+
+   Populate the database with sample recipes for development and testing. Run the interactive seed menu:
+
+   ```bash
+   pnpm db:seed
+   ```
+
+   The interactive menu will present you with the following options:
+   - **Option 1:** Seed database (keep existing data)
+   - **Option 2:** Clear database and seed with fresh data
+   - **Option 3:** Clear database only (no seeding)
+   - **Option 4:** Exit
+
+   Alternatively, you can use CLI flags for non-interactive mode:
+
+   ```bash
+   # Clear and seed the database
+   pnpm db:seed -- --clear
+
+   # Seed only (keep existing data)
+   pnpm db:seed -- --seed
+   ```
+
+   **Note:** You must run `pnpm db:start` and `pnpm db:push` before seeding the database.
 
 ### Running the Development Server
 
@@ -87,6 +113,9 @@ The application will be available at `http://localhost:5173`.
 - `pnpm db:push`: Pushes the current Drizzle schema to the database.
 - `pnpm db:migrate`: Creates a new SQL migration file based on schema changes.
 - `pnpm db:studio`: Opens Drizzle Studio to browse and manage your data.
+- `pnpm db:seed`: Opens an interactive menu to seed or clear the database (requires `db:start` and `db:push` first).
+  - Use `pnpm db:seed -- --clear` to clear and reseed without the interactive menu.
+  - Use `pnpm db:seed -- --seed` to seed without the interactive menu.
 
 ## 🛠️ Built With
 
