@@ -1,8 +1,9 @@
-import { del, put } from '@vercel/blob';
 import { env } from '$env/dynamic/private';
+import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$env/static/public';
+import { del, put } from '@vercel/blob';
 
 const getAllowedTypes = () => {
-	const types = env.UPLOAD_ALLOWED_TYPES || 'image/jpeg,image/png,image/webp';
+	const types = PUBLIC_UPLOAD_ALLOWED_TYPES || 'image/jpeg,image/png,image/webp';
 	return types.split(',');
 };
 
