@@ -11,6 +11,7 @@ import type {
 	RecipeWithDetails,
 	Tag
 } from '../types';
+import { deleteImage } from './image.service';
 
 export const getRecipesMetadata = async (): Promise<RecipeMetadata[]> => {
 	const result = await db.query.recipes.findMany({
@@ -84,7 +85,7 @@ export const createRecipe = async (
 	const newRecipe = await db.transaction(async (tx) => {
 		const [createdRecipe] = await tx
 			.insert(recipes)
-			.values({ name: data.name, description: data.description })
+			.values({ name: data.name, description: data.description, imageUrl: data.imageUrl })
 			.returning();
 
 		if (data.ingredients && data.ingredients.length > 0) {
@@ -158,11 +159,19 @@ export const updateRecipe = async (
 	data: Partial<NewRecipe> & { tags?: NewTag[] }
 ): Promise<Recipe> => {
 	const updatedRecipe = await db.transaction(async (tx) => {
+		// Get current recipe to check if image URL is changing
+		const [currentRecipe] = await tx.select().from(recipes).where(eq(recipes.id, id));
+
 		const [updatedRecipe] = await tx
 			.update(recipes)
-			.set({ name: data.name, description: data.description })
+			.set({ name: data.name, description: data.description, imageUrl: data.imageUrl })
 			.where(eq(recipes.id, id))
 			.returning();
+
+		// Delete old image if it's being replaced
+		if (currentRecipe?.imageUrl && data.imageUrl && currentRecipe.imageUrl !== data.imageUrl) {
+			await deleteImage(currentRecipe.imageUrl);
+		}
 
 		await tx.delete(recipesToTags).where(eq(recipesToTags.recipeId, updatedRecipe.id));
 
@@ -215,7 +224,17 @@ export const updateRecipe = async (
 };
 
 export const deleteRecipe = async (id: number): Promise<void> => {
+	// Get recipe to find image URL before deletion
+	const recipe = await db.query.recipes.findFirst({
+		where: eq(recipes.id, id)
+	});
+
 	await db.delete(recipes).where(eq(recipes.id, id));
+
+	// Delete associated image from Vercel Blob
+	if (recipe?.imageUrl) {
+		await deleteImage(recipe.imageUrl);
+	}
 };
 
 export const getAllActiveTags = async (): Promise<Tag[]> => {
