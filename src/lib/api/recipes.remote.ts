@@ -3,6 +3,7 @@ import { userCanWrite } from '$lib/server/auth/permissions';
 import * as recipeService from '$lib/server/services';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
+import { uploadImage, deleteImage } from '$lib/server/services/image.service';
 
 export const getRecipesMetadata = query(async () => {
 	return await recipeService.getRecipesMetadata();
@@ -10,6 +11,24 @@ export const getRecipesMetadata = query(async () => {
 
 export const getAvailableTags = query(async () => {
 	return await recipeService.getAllActiveTags();
+});
+
+export const uploadRecipeImage = command(z.instanceof(File), async (file) => {
+	if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
+	try {
+		const url = await uploadImage(file);
+		return { url };
+	} catch (err) {
+		const message = err instanceof Error ? err.message : 'Failed to upload image';
+		error(400, message);
+	}
+});
+
+export const deleteRecipeImage = command(z.string(), async (url) => {
+	if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
+	await deleteImage(url);
 });
 
 export const getRecipes = query(async () => {
@@ -85,14 +104,16 @@ export const updateRecipeDetails = form(
 			.or(z.number()),
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
-		tags: z.array(z.string()).optional()
+		tags: z.array(z.string()).optional(),
+		imageUrl: z.string().optional()
 	}),
-	async ({ recipeId, name, description, tags }) => {
+	async ({ recipeId, name, description, tags, imageUrl }) => {
 		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
 		await recipeService.updateRecipe(recipeId, {
 			name,
 			description,
+			imageUrl,
 			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
@@ -104,14 +125,16 @@ export const createRecipe = form(
 	z.object({
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
-		tags: z.array(z.string()).optional()
+		tags: z.array(z.string()).optional(),
+		imageUrl: z.string().optional()
 	}),
-	async ({ name, description, tags }) => {
+	async ({ name, description, tags, imageUrl }) => {
 		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
 		const recipe = await recipeService.createRecipe({
 			name: name.trim(),
 			description: description.trim(),
+			imageUrl,
 			ingredients: [],
 			instructions: [],
 			tags: tags?.map((t) => ({ name: t })) || []
