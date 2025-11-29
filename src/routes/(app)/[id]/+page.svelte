@@ -98,3 +98,11 @@
 		<IngredientsListComponent ingredients={recipe.ingredients} />
 	</div>
 </div>
+
+{#if recipe.imageUrl}
+	<div class="mt-12 flex flex-row gap-4">
+		<a href={recipe.imageUrl} target="_blank" rel="noopener noreferrer">
+			<img src={recipe.imageUrl} alt={`Image for ${recipe.name}`} class="h-52 rounded-sm" />
+		</a>
+	</div>
+{/if}
