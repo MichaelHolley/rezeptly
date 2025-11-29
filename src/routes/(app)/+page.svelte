@@ -63,19 +63,23 @@
 		<a href="/{recipe.id}">
 			<Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
 				<Card.Header class="p-0">
-					<div class="flex h-48 items-center justify-center overflow-hidden rounded-xs">
+					<div class="h-48 overflow-hidden rounded-xs">
 						{#if recipe.imageUrl}
-							<img src={recipe.imageUrl} alt={`Image for ${recipe.name}`} />
+							<img
+								src={recipe.imageUrl}
+								alt={`Image for ${recipe.name}`}
+								class="h-full w-full object-cover object-center"
+							/>
 						{:else}
 							<EmptyComponent />
 						{/if}
 					</div>
-					<Card.Title class="truncate px-5 py-2">{recipe.name}</Card.Title>
+					<Card.Title class="truncate px-6 py-2">{recipe.name}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<TagsContainerComponent
 						tags={recipe.tags.map((t: { name: string }) => t.name)}
-						class="-mx-1 mb-2"
+						class="-mx-1 mb-3"
 					/>
 					<p class="line-clamp-3! flex flex-col gap-0.5 text-sm text-neutral-500">
 						{recipe.description}
