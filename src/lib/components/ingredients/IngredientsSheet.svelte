@@ -30,7 +30,12 @@
 				}}
 				class="mt-6 flex flex-row gap-2"
 			>
-				<Input required placeholder="Ingredient & Quantity" bind:value={addIngredientInput} />
+				<Input
+					required
+					placeholder="Ingredient & Quantity"
+					bind:value={addIngredientInput}
+					disabled={!!addIngredient.pending}
+				/>
 				<Button type="submit" disabled={!!addIngredient.pending}><PlusIcon /></Button>
 			</form>
 		</Sheet.Header>
