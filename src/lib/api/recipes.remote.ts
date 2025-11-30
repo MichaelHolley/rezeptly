@@ -3,7 +3,6 @@ import { userCanWrite } from '$lib/server/auth/permissions';
 import * as recipeService from '$lib/server/services';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { uploadImage, deleteImage } from '$lib/server/services/image.service';
 
 export const getRecipesMetadata = query(async () => {
 	return await recipeService.getRecipesMetadata();
@@ -11,24 +10,6 @@ export const getRecipesMetadata = query(async () => {
 
 export const getAvailableTags = query(async () => {
 	return await recipeService.getAllActiveTags();
-});
-
-export const uploadRecipeImage = command(z.instanceof(File), async (file) => {
-	if (!userCanWrite()) error(403, 'Insufficient Permissions');
-
-	try {
-		const url = await uploadImage(file);
-		return { url };
-	} catch (err) {
-		const message = err instanceof Error ? err.message : 'Failed to upload image';
-		error(400, message);
-	}
-});
-
-export const deleteRecipeImage = command(z.string(), async (url) => {
-	if (!userCanWrite()) error(403, 'Insufficient Permissions');
-
-	await deleteImage(url);
 });
 
 export const getRecipes = query(async () => {
@@ -174,3 +155,52 @@ export const updateInstructions = form(
 		await getRecipeById(recipeId).refresh();
 	}
 );
+
+export const uploadRecipeImage = form(
+	z.object({
+		recipeId: z
+			.pipe(
+				z.string(),
+				z.transform((id) => Number(id))
+			)
+			.or(z.number()),
+		file: z.instanceof(File)
+	}),
+	async ({ recipeId, file }) => {
+		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
+		try {
+			const url = await recipeService.uploadImage(file);
+
+			await recipeService.updateRecipe(recipeId, { imageUrl: url });
+
+			await getRecipeById(recipeId).refresh();
+
+			return { url };
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Failed to upload image';
+			error(400, message);
+		}
+	}
+);
+
+export const deleteRecipeImage = command(z.number(), async (recipeId) => {
+	if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
+	const recipe = await recipeService.getRecipeById(recipeId);
+
+	if (!recipe) {
+		error(404, 'Recipe not found');
+	}
+
+	if (!recipe.imageUrl) {
+		error(400, 'Recipe does not have an image to delete');
+	}
+
+	await recipeService.deleteImage(recipe.imageUrl);
+	await recipeService.updateRecipe(recipeId, { imageUrl: null });
+
+	await getRecipeById(recipeId).refresh();
+
+	return { success: true };
+});
