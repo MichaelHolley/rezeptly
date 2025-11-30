@@ -71,7 +71,9 @@
 								class="h-full w-full object-cover object-center"
 							/>
 						{:else}
-							<EmptyComponent />
+							<div class="flex h-full justify-center">
+								<EmptyComponent />
+							</div>
 						{/if}
 					</div>
 					<Card.Title class="truncate px-6 py-2">{recipe.name}</Card.Title>
