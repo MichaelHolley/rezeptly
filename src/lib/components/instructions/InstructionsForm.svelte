@@ -68,7 +68,7 @@
 		}
 	})}
 >
-	<input {...updateInstructions.fields.recipeId.as('hidden', String(recipe.id))} />
+	<input {...updateInstructions.fields.recipeId.as('hidden', recipe.id)} />
 
 	<div class="flex flex-col gap-8">
 		{#each steps as step, i}

@@ -49,7 +49,7 @@
 			})}
 			class="flex flex-col gap-2"
 		>
-			<input {...updateRecipeDetails.fields.recipeId.as('hidden', String(recipe.id))} />
+			<input {...updateRecipeDetails.fields.recipeId.as('hidden', recipe.id)} />
 			<Input
 				placeholder="Name"
 				{...updateRecipeDetails.fields.name.as('text')}
