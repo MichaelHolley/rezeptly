@@ -12,6 +12,8 @@
 
 	const { params } = $props();
 
+	let fileUploadInput = $state<HTMLInputElement | null>(null);
+
 	const recipe = $derived(await getRecipeById(Number(params.id)));
 
 	let showInstructionsForm = $state(false);
@@ -97,4 +99,14 @@
 		</div>
 		<IngredientsListComponent ingredients={recipe.ingredients} />
 	</div>
+</div>
+
+<div class="mt-12">
+	{#if recipe.imageUrl}
+		<div class="flex flex-row gap-4">
+			<a href={recipe.imageUrl} target="_blank" rel="noopener noreferrer" class="relative">
+				<img src={recipe.imageUrl} alt={`Image for ${recipe.name}`} class="h-52 rounded-sm" />
+			</a>
+		</div>
+	{/if}
 </div>

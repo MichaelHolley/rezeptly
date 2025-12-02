@@ -85,14 +85,16 @@ export const updateRecipeDetails = form(
 			.or(z.number()),
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
-		tags: z.array(z.string()).optional()
+		tags: z.array(z.string()).optional(),
+		imageUrl: z.string().optional()
 	}),
-	async ({ recipeId, name, description, tags }) => {
+	async ({ recipeId, name, description, tags, imageUrl }) => {
 		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
 		await recipeService.updateRecipe(recipeId, {
 			name,
 			description,
+			imageUrl,
 			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
@@ -104,14 +106,16 @@ export const createRecipe = form(
 	z.object({
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
-		tags: z.array(z.string()).optional()
+		tags: z.array(z.string()).optional(),
+		imageUrl: z.string().optional()
 	}),
-	async ({ name, description, tags }) => {
+	async ({ name, description, tags, imageUrl }) => {
 		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
 		const recipe = await recipeService.createRecipe({
 			name: name.trim(),
 			description: description.trim(),
+			imageUrl,
 			ingredients: [],
 			instructions: [],
 			tags: tags?.map((t) => ({ name: t })) || []
@@ -151,3 +155,52 @@ export const updateInstructions = form(
 		await getRecipeById(recipeId).refresh();
 	}
 );
+
+export const uploadRecipeImage = form(
+	z.object({
+		recipeId: z
+			.pipe(
+				z.string(),
+				z.transform((id) => Number(id))
+			)
+			.or(z.number()),
+		file: z.instanceof(File)
+	}),
+	async ({ recipeId, file }) => {
+		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
+		try {
+			const url = await recipeService.uploadImage(file);
+
+			await recipeService.updateRecipe(recipeId, { imageUrl: url });
+
+			await getRecipeById(recipeId).refresh();
+
+			return { url };
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Failed to upload image';
+			error(400, message);
+		}
+	}
+);
+
+export const deleteRecipeImage = command(z.number(), async (recipeId) => {
+	if (!userCanWrite()) error(403, 'Insufficient Permissions');
+
+	const recipe = await recipeService.getRecipeById(recipeId);
+
+	if (!recipe) {
+		error(404, 'Recipe not found');
+	}
+
+	if (!recipe.imageUrl) {
+		error(400, 'Recipe does not have an image to delete');
+	}
+
+	await recipeService.deleteImage(recipe.imageUrl);
+	await recipeService.updateRecipe(recipeId, { imageUrl: null });
+
+	await getRecipeById(recipeId).refresh();
+
+	return { success: true };
+});

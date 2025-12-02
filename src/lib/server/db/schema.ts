@@ -5,6 +5,7 @@ export const recipes = pgTable('recipes', {
 	id: serial('id').primaryKey(),
 	name: text('name').notNull(),
 	description: text('description'),
+	imageUrl: text('image_url'),
 	createdAt: timestamp('created_at').defaultNow()
 });
 

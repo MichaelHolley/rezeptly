@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { getAvailableTags, getRecipesMetadata } from '$lib/api/recipes.remote';
+	import EmptyComponent from '$lib/components/common/EmptyComponent.svelte';
 	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
 	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import type { RecipeMetadata } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
-	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
 	import z from 'zod';
@@ -61,17 +61,27 @@
 <div class="card-container my-4 grid gap-4">
 	{#each filterRecipes(recipes) as recipe}
 		<a href="/{recipe.id}">
-			<Card.Root class="group h-full gap-0">
-				<Card.Header>
-					<Card.Title class="truncate pb-1">{recipe.name}</Card.Title>
-					<Card.Action>
-						<ArrowRightIcon class="size-4 text-zinc-400 transition-all group-hover:text-zinc-700" />
-					</Card.Action>
+			<Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
+				<Card.Header class="p-0">
+					<div class="h-48 overflow-hidden rounded-xs">
+						{#if recipe.imageUrl}
+							<img
+								src={recipe.imageUrl}
+								alt={`Image for ${recipe.name}`}
+								class="h-full w-full object-cover object-center"
+							/>
+						{:else}
+							<div class="flex h-full justify-center">
+								<EmptyComponent />
+							</div>
+						{/if}
+					</div>
+					<Card.Title class="truncate px-6 py-2">{recipe.name}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<TagsContainerComponent
 						tags={recipe.tags.map((t: { name: string }) => t.name)}
-						class="-mx-1 mb-2"
+						class="-mx-1 mb-3"
 					/>
 					<p class="line-clamp-3! flex flex-col gap-0.5 text-sm text-neutral-500">
 						{recipe.description}
