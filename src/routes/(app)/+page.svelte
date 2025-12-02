@@ -76,7 +76,7 @@
 							</div>
 						{/if}
 					</div>
-					<Card.Title class="truncate px-6 py-2">{recipe.name}</Card.Title>
+					<Card.Title class="truncate px-6 py-2" title={recipe.name}>{recipe.name}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<TagsContainerComponent
