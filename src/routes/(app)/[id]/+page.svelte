@@ -13,7 +13,7 @@
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 
-		const { params } = $props();
+	const { params } = $props();
 
 	let fileUploadInput = $state<HTMLInputElement | null>(null);
 
@@ -110,29 +110,41 @@
 			<a href={recipe.imageUrl} target="_blank" rel="noopener noreferrer" class="relative">
 				<img src={recipe.imageUrl} alt={`Image for ${recipe.name}`} class="h-52 rounded-sm" />
 				{#if PermissionsStore.canEdit}
-					<button class="absolute top-2 right-2" onclick={async  (e) => {
-e.preventDefault();
-					await deleteRecipeImage(recipe.id);
-				}}>
-					<div class="bg-neutral-200 p-1 rounded">
-						<TrashIcon />
-					</div>
-				</button>
+					<button
+						class="absolute top-2 right-2"
+						onclick={async (e) => {
+							e.preventDefault();
+							await deleteRecipeImage(recipe.id);
+						}}
+					>
+						<div class="rounded bg-neutral-200 p-1">
+							<TrashIcon />
+						</div>
+					</button>
 				{/if}
 			</a>
 		</div>
 	{:else if PermissionsStore.canEdit}
-		<button class="size-52 border rounded-sm bg-neutral-100 flex justify-center items-center hover:cursor-pointer" onclick={() => {
-			fileUploadInput?.click()
-		}}>
-			<PlusIcon class="text-neutral-300 size-8"  />
+		<button
+			class="flex size-52 items-center justify-center rounded-sm border bg-neutral-100 hover:cursor-pointer"
+			onclick={() => {
+				fileUploadInput?.click();
+			}}
+		>
+			<PlusIcon class="size-8 text-neutral-300" />
 		</button>
 		<form {...uploadRecipeImage} enctype="multipart/form-data" class="mt-4 flex flex-col gap-2">
-			<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)}  />
-			<input accept={PUBLIC_UPLOAD_ALLOWED_TYPES} hidden {...uploadRecipeImage.fields.file.as('file')} bind:this={fileUploadInput} oninput={(e) => {console.log(e);
-			}} />
-		<button type="submit">Save</button>
+			<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
+			<input
+				accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
+				hidden
+				{...uploadRecipeImage.fields.file.as('file')}
+				bind:this={fileUploadInput}
+				oninput={(e) => {
+					console.log(e);
+				}}
+			/>
+			<button type="submit">Save</button>
 		</form>
-
 	{/if}
 </div>
