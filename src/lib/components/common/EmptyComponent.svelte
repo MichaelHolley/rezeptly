@@ -8,5 +8,6 @@
 		<Empty.Media variant="icon">
 			<OrigamiIcon />
 		</Empty.Media>
+		<Empty.Description class="text-neutral-300">No preview</Empty.Description>
 	</Empty.Header>
 </Empty.Root>
