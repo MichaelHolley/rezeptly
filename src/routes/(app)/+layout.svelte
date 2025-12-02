@@ -9,7 +9,9 @@
 
 	let { children, data } = $props();
 
-	PermissionsStore.roles = data.roles || [];
+	$effect(() => {
+		PermissionsStore.roles = data.roles || [];
+	});
 
 	const logoutUser = async () => {
 		PermissionsStore.resetRoles();
