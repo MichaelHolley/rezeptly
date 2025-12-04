@@ -67,10 +67,5 @@
     "jsonwebtoken": "^9.0.2",
     "postgres": "^3.4.7",
     "runed": "^0.37.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
