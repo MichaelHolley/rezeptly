@@ -12,8 +12,6 @@
 
 	const { params } = $props();
 
-	let fileUploadInput = $state<HTMLInputElement | null>(null);
-
 	const recipe = $derived(await getRecipeById(Number(params.id)));
 
 	let showInstructionsForm = $state(false);
@@ -78,7 +76,7 @@
 				<InstructionsFormComponent {recipe} onSave={() => (showInstructionsForm = false)} />
 			{:else}
 				<div class="flex flex-col gap-4">
-					{#each recipe.instructions as instr, i}
+					{#each recipe.instructions as instr, i (instr.id)}
 						<div>
 							{#if instr.heading}
 								<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
