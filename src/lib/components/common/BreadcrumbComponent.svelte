@@ -9,7 +9,7 @@
 		<Breadcrumb.Item>
 			<Breadcrumb.Link href="/">Home</Breadcrumb.Link>
 		</Breadcrumb.Item>
-		{#each breadcrumbs as crumb}
+		{#each breadcrumbs as crumb (crumb.name)}
 			<Breadcrumb.Separator />
 			<Breadcrumb.Item>
 				<Breadcrumb.Link href={crumb.href} class="max-w-xs">

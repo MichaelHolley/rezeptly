@@ -71,7 +71,7 @@
 	<input {...updateInstructions.fields.recipeId.as('hidden', recipe.id)} />
 
 	<div class="flex flex-col gap-8">
-		{#each steps as step, i}
+		{#each steps as step, i (i)}
 			<div class="flex flex-row gap-2 **:gap-2">
 				<div class="flex grow flex-col">
 					<div class="flex flex-row items-center justify-between">
