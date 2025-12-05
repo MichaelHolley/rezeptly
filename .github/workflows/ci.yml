@@ -45,7 +45,6 @@ jobs:
         run: pnpm exec playwright install-deps chromium
 
   lint:
-    if: false
     name: Lint & Format
     runs-on: ubuntu-latest
     steps:
@@ -133,7 +132,7 @@ jobs:
   build:
     name: Build Check
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [lint, test]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
