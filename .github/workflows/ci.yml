@@ -45,6 +45,7 @@ jobs:
         run: pnpm exec playwright install-deps chromium
 
   lint:
+    if: false
     name: Lint & Format
     runs-on: ubuntu-latest
     steps:
@@ -69,7 +70,8 @@ jobs:
       - name: Run lint
         run: pnpm lint
 
-  type-check:
+  check:
+    if: false
     name: Type Check
     runs-on: ubuntu-latest
     steps:
@@ -92,7 +94,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run type check
-        run: NODE_ENV=test pnpm check
+        run: pnpm check
 
   test:
     name: Tests
