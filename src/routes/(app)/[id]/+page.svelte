@@ -2,6 +2,7 @@
 	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$env/static/public';
 	import { deleteRecipeImage, getRecipeById, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
+	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
@@ -14,6 +15,9 @@
 	import XIcon from '@lucide/svelte/icons/x';
 
 	const { params } = $props();
+
+	let fileUploadInput = $state<HTMLInputElement | null>(null);
+	let fileUploadFormSubmitButton = $state<HTMLButtonElement | null>(null);
 
 	const recipe = $derived(await getRecipeById(Number(params.id)));
 
@@ -114,9 +118,14 @@
 							e.preventDefault();
 							await deleteRecipeImage(recipe.id);
 						}}
+						disabled={!!deleteRecipeImage.pending}
 					>
-						<div class="rounded bg-neutral-200 p-1">
-							<TrashIcon />
+						<div class="rounded bg-neutral-200/70 p-1">
+							{#if !!deleteRecipeImage.pending}
+								<LoadingComponent class="size-4" />
+							{:else}
+								<TrashIcon class="stroke-neutral-600 size-4" />
+							{/if}
 						</div>
 					</button>
 				{/if}
@@ -124,25 +133,28 @@
 		</div>
 	{:else if PermissionsStore.canEdit}
 		<button
-			class="flex size-52 items-center justify-center rounded-sm border bg-neutral-100 hover:cursor-pointer"
+			class="flex size-32 items-center justify-center rounded-sm border bg-neutral-100 hover:cursor-pointer"
 			onclick={() => {
 				fileUploadInput?.click();
 			}}
+			disabled={!!uploadRecipeImage.pending}
 		>
-			<PlusIcon class="size-8 text-neutral-300" />
+			{#if !!uploadRecipeImage.pending}
+				<LoadingComponent />
+			{:else}
+				<PlusIcon class="size-8 text-neutral-300" />
+			{/if}
 		</button>
-		<form {...uploadRecipeImage} enctype="multipart/form-data" class="mt-4 flex flex-col gap-2">
+		<form {...uploadRecipeImage} enctype="multipart/form-data" class="hidden">
 			<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
 			<input
 				accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
 				hidden
 				{...uploadRecipeImage.fields.file.as('file')}
 				bind:this={fileUploadInput}
-				oninput={(e) => {
-					console.log(e);
-				}}
+				oninput={() => fileUploadFormSubmitButton?.click()}
 			/>
-			<button type="submit">Save</button>
+			<button type="submit" hidden bind:this={fileUploadFormSubmitButton}>Save</button>
 		</form>
 	{/if}
 </div>
