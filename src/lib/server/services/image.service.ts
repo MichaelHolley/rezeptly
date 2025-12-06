@@ -53,7 +53,8 @@ export const uploadImage = async (file: File): Promise<string> => {
 	const blob = await put(fileName, transformedBuffer, {
 		access: 'public',
 		token,
-		contentType: 'image/webp'
+		contentType: 'image/webp',
+		addRandomSuffix: true
 	});
 
 	return blob.url;
