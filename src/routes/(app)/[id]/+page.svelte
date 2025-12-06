@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { getRecipeById } from '$lib/api/recipes.remote';
+	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$env/static/public';
+	import { deleteRecipeImage, getRecipeById, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
@@ -8,6 +9,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
+	import PlusIcon from '@lucide/svelte/icons/plus';
+	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 
 	const { params } = $props();
@@ -104,7 +107,42 @@
 		<div class="flex flex-row gap-4">
 			<a href={recipe.imageUrl} target="_blank" rel="noopener noreferrer" class="relative">
 				<img src={recipe.imageUrl} alt={`Image for ${recipe.name}`} class="h-52 rounded-sm" />
+				{#if PermissionsStore.canEdit}
+					<button
+						class="absolute top-2 right-2"
+						onclick={async (e) => {
+							e.preventDefault();
+							await deleteRecipeImage(recipe.id);
+						}}
+					>
+						<div class="rounded bg-neutral-200 p-1">
+							<TrashIcon />
+						</div>
+					</button>
+				{/if}
 			</a>
 		</div>
+	{:else if PermissionsStore.canEdit}
+		<button
+			class="flex size-52 items-center justify-center rounded-sm border bg-neutral-100 hover:cursor-pointer"
+			onclick={() => {
+				fileUploadInput?.click();
+			}}
+		>
+			<PlusIcon class="size-8 text-neutral-300" />
+		</button>
+		<form {...uploadRecipeImage} enctype="multipart/form-data" class="mt-4 flex flex-col gap-2">
+			<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
+			<input
+				accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
+				hidden
+				{...uploadRecipeImage.fields.file.as('file')}
+				bind:this={fileUploadInput}
+				oninput={(e) => {
+					console.log(e);
+				}}
+			/>
+			<button type="submit">Save</button>
+		</form>
 	{/if}
 </div>
