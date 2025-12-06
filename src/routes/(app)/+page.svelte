@@ -64,6 +64,7 @@
 	bind:filterFavorites={searchParams.filterFavorites}
 	availableTags={availableTags.map((t) => t.name)}
 />
+
 <div class="card-container my-4 grid gap-4">
 	{#each filterRecipes(recipes) as recipe (recipe.id)}
 		<a href="/{recipe.id}">
@@ -90,10 +91,7 @@
 					<Card.Title class="truncate px-6 py-2" title={recipe.name}>{recipe.name}</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<TagsContainerComponent
-						tags={recipe.tags.map((t: { name: string }) => t.name)}
-						class="-mx-1 mb-3"
-					/>
+					<TagsContainerComponent tags={recipe.tags.map((t) => t.name)} class="-mx-1 mb-3" />
 					<p class="line-clamp-3! flex flex-col gap-0.5 text-sm text-neutral-500">
 						{recipe.description}
 					</p>

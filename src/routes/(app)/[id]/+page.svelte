@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$env/static/public';
+	import { env as publicEnv } from '$env/dynamic/public';
 	import { deleteRecipeImage, getRecipeById, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
@@ -148,7 +148,7 @@
 		<form {...uploadRecipeImage} enctype="multipart/form-data" class="hidden">
 			<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
 			<input
-				accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
+				accept={publicEnv.PUBLIC_UPLOAD_ALLOWED_TYPES}
 				hidden
 				{...uploadRecipeImage.fields.file.as('file')}
 				bind:this={fileUploadInput}
