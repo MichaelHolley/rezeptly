@@ -1,18 +1,12 @@
 <script lang="ts">
-	import { updateRecipeDetails } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails, Tag } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
-	import CheckIcon from '@lucide/svelte/icons/check';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
-	import XIcon from '@lucide/svelte/icons/x';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
-	import TagComponent from './TagComponent.svelte';
+	import RecipeDetailsFormComponent from './RecipeDetailsFormComponent.svelte';
 	import TagsContainer from './TagsContainerComponent.svelte';
 
 	const { recipe }: { recipe: RecipeWithDetails } = $props();
@@ -20,8 +14,6 @@
 	const favorites = favoritesStore;
 
 	let editDetails = $state(false);
-	let tagInputValue = $state('');
-	let tags = $state<string[]>([]);
 
 	const toggleFavorite = () => {
 		if (!recipe) {
@@ -34,76 +26,15 @@
 			favorites.current.push(recipe.id);
 		}
 	};
+
+	const closeForm = () => {
+		editDetails = false;
+	};
 </script>
 
 <div class="mb-8">
 	{#if editDetails}
-		<form
-			{...updateRecipeDetails.enhance(async ({ submit }) => {
-				try {
-					await submit();
-					editDetails = false;
-				} catch (error) {
-					console.error(error);
-				}
-			})}
-			class="flex flex-col gap-2"
-		>
-			<input {...updateRecipeDetails.fields.recipeId.as('hidden', recipe.id)} />
-			<Input
-				placeholder="Name"
-				{...updateRecipeDetails.fields.name.as('text')}
-				value={recipe.name}
-			/>
-			<Textarea
-				placeholder="Short Recipe Description"
-				{...updateRecipeDetails.fields.description.as('text')}
-				value={recipe.description}
-			/>
-			<div class="form-group">
-				<Label for="tagsinput">Tags</Label>
-				<Input
-					name="tagsinput"
-					type="text"
-					placeholder="Enter a tag-name and confirm with Enter-Key"
-					bind:value={tagInputValue}
-					onkeydown={(e) => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							if (tagInputValue) {
-								tags.push(tagInputValue.trim());
-								tagInputValue = '';
-							}
-						}
-					}}
-				/>
-				<div class="flex flex-row flex-wrap gap-2">
-					{#each tags as tag, i (tag)}
-						<input {...updateRecipeDetails.fields.tags[i].as('hidden', tag)} value={tag} />
-						<TagComponent onSelect={() => (tags = tags.filter((t) => t !== tag))}>
-							{tag}
-						</TagComponent>
-					{/each}
-				</div>
-			</div>
-			<div class="flex flex-row justify-end gap-2">
-				<Button
-					variant="secondary"
-					onclick={() => {
-						editDetails = false;
-						tags = [];
-					}}
-					disabled={!!updateRecipeDetails.pending}
-				>
-					<XIcon />
-					Cancel
-				</Button>
-				<Button class="btn btn-primary" type="submit" disabled={!!updateRecipeDetails.pending}>
-					<CheckIcon />
-					Save
-				</Button>
-			</div>
-		</form>
+		<RecipeDetailsFormComponent {recipe} onSave={closeForm} onCancel={closeForm} />
 	{:else}
 		<div class="flex flex-row justify-between gap-2">
 			<h2>{recipe.name}</h2>
@@ -120,7 +51,6 @@
 						variant="secondary"
 						onclick={() => {
 							editDetails = true;
-							tags = recipe.tags.map((t: Tag) => t.name);
 						}}
 						title="Edit Recipe Details"
 					>

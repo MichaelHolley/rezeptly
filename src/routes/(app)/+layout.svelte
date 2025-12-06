@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { logout } from '$lib/api/auth.remote';
-	import RezeptlyHeader from '$lib/components/common/RezeptlyHeaderComponent.svelte';
+	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import LoginIcon from '@lucide/svelte/icons/log-in';

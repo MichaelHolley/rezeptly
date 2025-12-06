@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import RezeptlyHeader from '$lib/components/common/RezeptlyHeaderComponent.svelte';
+	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { PermissionsStore } from '$lib/store/roles.svelte';

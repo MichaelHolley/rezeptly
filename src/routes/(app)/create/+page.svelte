@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createRecipe } from '$lib/api/recipes.remote';
-	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
+	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';

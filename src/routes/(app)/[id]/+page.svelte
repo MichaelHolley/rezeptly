@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { env as publicEnv } from '$env/dynamic/public';
 	import { deleteRecipeImage, getRecipeById, uploadRecipeImage } from '$lib/api/recipes.remote';
-	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
