@@ -1,6 +1,7 @@
 import { command, form, query } from '$app/server';
 import { userCanWrite } from '$lib/server/auth/permissions';
 import * as recipeService from '$lib/server/services';
+import { mapTags } from '$lib/server/utils';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -95,7 +96,7 @@ export const updateRecipeDetails = form(
 			name,
 			description,
 			imageUrl,
-			tags: tags?.map((t) => ({ name: t })) || []
+			tags: mapTags(tags)
 		});
 
 		await getRecipeById(recipeId).refresh();
@@ -118,7 +119,7 @@ export const createRecipe = form(
 			imageUrl,
 			ingredients: [],
 			instructions: [],
-			tags: tags?.map((t) => ({ name: t })) || []
+			tags: mapTags(tags)
 		});
 
 		redirect(303, `/${recipe.id}`);
