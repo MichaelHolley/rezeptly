@@ -78,7 +78,7 @@
 					}}
 				/>
 				<div class="flex flex-row flex-wrap gap-2">
-					{#each tags as tag, i}
+					{#each tags as tag, i (tag)}
 						<input {...updateRecipeDetails.fields.tags[i].as('hidden', tag)} value={tag} />
 						<TagComponent onSelect={() => (tags = tags.filter((t) => t !== tag))}>
 							{tag}

@@ -6,7 +6,7 @@
 </script>
 
 <div class={cn('flex flex-row flex-wrap gap-2', className)}>
-	{#each tags as tag}
+	{#each tags as tag (tag)}
 		<TagComponent>{tag}</TagComponent>
 	{/each}
 </div>

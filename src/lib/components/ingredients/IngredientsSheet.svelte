@@ -42,7 +42,7 @@
 
 		<div class="h-full overflow-y-auto px-4">
 			<div class="flex flex-col gap-2">
-				{#each ingredients as ingr, i}
+				{#each ingredients as ingr, i (ingr.id)}
 					<div class="flex flex-row items-center justify-between gap-2">
 						<span class="px-1 text-sm">{ingr.name}</span>
 						<Button

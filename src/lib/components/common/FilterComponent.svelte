@@ -33,7 +33,7 @@
 			<TagComponent onSelect={() => (filterFavorites = !filterFavorites)} active={filterFavorites}>
 				<StarIcon class="size-5 fill-yellow-400 text-yellow-400" />
 			</TagComponent>
-			{#each availableTags as tag}
+			{#each availableTags as tag (tag)}
 				<TagComponent onSelect={() => setSelectedTag(tag)} active={selectedTag === tag}>
 					{tag}
 				</TagComponent>

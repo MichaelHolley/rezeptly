@@ -59,7 +59,7 @@
 	availableTags={tagNames}
 />
 <div class="card-container my-4 grid gap-4">
-	{#each filterRecipes(recipes) as recipe}
+	{#each filterRecipes(recipes) as recipe (recipe.id)}
 		<a href="/{recipe.id}">
 			<Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
 				<Card.Header class="p-0">
