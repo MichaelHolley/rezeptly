@@ -27,7 +27,6 @@
 
 	const recipes = $derived(await getRecipesMetadata());
 	const availableTags = $derived(await getAvailableTags());
-	const tagNames = $derived(availableTags.map((t) => t.name));
 
 	const handleImageError = (recipeId: number) => {
 		brokenImages.add(recipeId);
@@ -63,7 +62,7 @@
 	bind:searchTerm={searchParams.searchTerm}
 	bind:selectedTag={searchParams.activeTagFilter}
 	bind:filterFavorites={searchParams.filterFavorites}
-	availableTags={tagNames}
+	availableTags={availableTags.map((t) => t.name)}
 />
 <div class="card-container my-4 grid gap-4">
 	{#each filterRecipes(recipes) as recipe (recipe.id)}
