@@ -66,6 +66,7 @@
     "drizzle-orm": "^0.44.7",
     "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.7",
-    "runed": "^0.37.0"
+    "runed": "^0.37.0",
+    "sharp": "^0.34.5"
   }
 }

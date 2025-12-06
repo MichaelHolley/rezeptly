@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { getRecipeById } from '$lib/api/recipes.remote';
+	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$env/static/public';
+	import { deleteRecipeImage, getRecipeById, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/BreadcrumbComponent.svelte';
+	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
@@ -8,9 +10,14 @@
 	import { Button } from '$lib/components/ui/button';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
+	import PlusIcon from '@lucide/svelte/icons/plus';
+	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 
 	const { params } = $props();
+
+	let fileUploadInput = $state<HTMLInputElement | null>(null);
+	let fileUploadFormSubmitButton = $state<HTMLButtonElement | null>(null);
 
 	const recipe = $derived(await getRecipeById(Number(params.id)));
 
@@ -104,7 +111,50 @@
 		<div class="flex flex-row gap-4">
 			<a href={recipe.imageUrl} target="_blank" rel="noopener noreferrer" class="relative">
 				<img src={recipe.imageUrl} alt={`Image for ${recipe.name}`} class="h-52 rounded-sm" />
+				{#if PermissionsStore.canEdit}
+					<button
+						class="absolute top-2 right-2"
+						onclick={async (e) => {
+							e.preventDefault();
+							await deleteRecipeImage(recipe.id);
+						}}
+						disabled={!!deleteRecipeImage.pending}
+					>
+						<div class="rounded bg-neutral-200/70 p-1">
+							{#if !!deleteRecipeImage.pending}
+								<LoadingComponent class="size-4" />
+							{:else}
+								<TrashIcon class="stroke-neutral-600 size-4" />
+							{/if}
+						</div>
+					</button>
+				{/if}
 			</a>
 		</div>
+	{:else if PermissionsStore.canEdit}
+		<button
+			class="flex size-32 items-center justify-center rounded-sm border bg-neutral-100 hover:cursor-pointer"
+			onclick={() => {
+				fileUploadInput?.click();
+			}}
+			disabled={!!uploadRecipeImage.pending}
+		>
+			{#if !!uploadRecipeImage.pending}
+				<LoadingComponent />
+			{:else}
+				<PlusIcon class="size-8 text-neutral-300" />
+			{/if}
+		</button>
+		<form {...uploadRecipeImage} enctype="multipart/form-data" class="hidden">
+			<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
+			<input
+				accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
+				hidden
+				{...uploadRecipeImage.fields.file.as('file')}
+				bind:this={fileUploadInput}
+				oninput={() => fileUploadFormSubmitButton?.click()}
+			/>
+			<button type="submit" hidden bind:this={fileUploadFormSubmitButton}>Save</button>
+		</form>
 	{/if}
 </div>

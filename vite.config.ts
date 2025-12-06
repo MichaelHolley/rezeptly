@@ -1,8 +1,8 @@
-import { defineConfig } from 'vitest/config';
-import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
+import { playwright } from '@vitest/browser-playwright';
 import { VitePWA } from 'vite-plugin-pwa';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig(({ mode }) => ({
 	plugins: [
@@ -46,6 +46,7 @@ export default defineConfig(({ mode }) => ({
 						provider: playwright(),
 						instances: [{ browser: 'chromium', headless: true }]
 					},
+					setupFiles: ['./src/test-setup.ts'],
 					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
 					exclude: ['src/lib/server/**']
 				}

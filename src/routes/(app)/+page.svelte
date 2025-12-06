@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { getAvailableTags, getRecipesMetadata } from '$lib/api/recipes.remote';
-	import EmptyComponent from '$lib/components/common/EmptyComponent.svelte';
+	import BrokenPreviewUrlComponent from '$lib/components/common/BrokenImagePreview.svelte';
 	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
+	import NoImagePreviewComponent from '$lib/components/common/NoImagePreviewComponent.svelte';
 	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import type { RecipeMetadata } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
+	import { SvelteSet } from 'svelte/reactivity';
 	import z from 'zod';
 
 	const favorites = favoritesStore;
@@ -21,10 +23,15 @@
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);
 
+	const brokenImages = new SvelteSet<number>();
+
 	const recipes = $derived(await getRecipesMetadata());
 	const availableTags = $derived(await getAvailableTags());
-
 	const tagNames = $derived(availableTags.map((t) => t.name));
+
+	const handleImageError = (recipeId: number) => {
+		brokenImages.add(recipeId);
+	};
 
 	const filterRecipes = (recipes: RecipeMetadata[]) => {
 		if (!recipes) {
@@ -64,15 +71,20 @@
 			<Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
 				<Card.Header class="p-0">
 					<div class="h-48 overflow-hidden rounded-xs">
-						{#if recipe.imageUrl}
+						{#if recipe.imageUrl && !brokenImages.has(recipe.id)}
 							<img
 								src={recipe.imageUrl}
 								alt={`Image for ${recipe.name}`}
 								class="h-full w-full object-cover object-center"
+								onerror={() => handleImageError(recipe.id)}
 							/>
+						{:else if recipe.imageUrl && brokenImages.has(recipe.id)}
+							<div class="flex h-full justify-center">
+								<BrokenPreviewUrlComponent />
+							</div>
 						{:else}
 							<div class="flex h-full justify-center">
-								<EmptyComponent />
+								<NoImagePreviewComponent />
 							</div>
 						{/if}
 					</div>

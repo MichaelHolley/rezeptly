@@ -1,7 +1,6 @@
 import { command, form, query } from '$app/server';
 import { userCanWrite } from '$lib/server/auth/permissions';
 import * as recipeService from '$lib/server/services';
-import { mapTags } from '$lib/server/utils';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -96,7 +95,7 @@ export const updateRecipeDetails = form(
 			name,
 			description,
 			imageUrl,
-			tags: mapTags(tags)
+			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
 		await getRecipeById(recipeId).refresh();
@@ -119,7 +118,7 @@ export const createRecipe = form(
 			imageUrl,
 			ingredients: [],
 			instructions: [],
-			tags: mapTags(tags)
+			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
 		redirect(303, `/${recipe.id}`);
@@ -170,6 +169,9 @@ export const uploadRecipeImage = form(
 	async ({ recipeId, file }) => {
 		if (!userCanWrite()) error(403, 'Insufficient Permissions');
 
+		const recipe = await recipeService.getRecipeById(recipeId);
+		if (!recipe) error(404, 'Recipe not found');
+
 		try {
 			const url = await recipeService.uploadImage(file);
 
@@ -190,13 +192,8 @@ export const deleteRecipeImage = command(z.number(), async (recipeId) => {
 
 	const recipe = await recipeService.getRecipeById(recipeId);
 
-	if (!recipe) {
-		error(404, 'Recipe not found');
-	}
-
-	if (!recipe.imageUrl) {
-		error(400, 'Recipe does not have an image to delete');
-	}
+	if (!recipe) error(404, 'Recipe not found');
+	if (!recipe.imageUrl) error(400, 'Recipe does not have an image to delete');
 
 	await recipeService.deleteImage(recipe.imageUrl);
 	await recipeService.updateRecipe(recipeId, { imageUrl: null });
