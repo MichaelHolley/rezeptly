@@ -63,7 +63,9 @@
 		</div>
 
 		<div class="mt-1 flex flex-row justify-between gap-3">
-			<TagsContainer tags={recipe.tags.map((t: Tag) => t.name)} />
+			{#if recipe.tags?.length > 0}
+				<TagsContainer tags={recipe.tags.map((tag: Tag) => tag.name)} />
+			{/if}
 			<div class="mt-1 text-xs text-zinc-400">
 				Created: {recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
 			</div>
