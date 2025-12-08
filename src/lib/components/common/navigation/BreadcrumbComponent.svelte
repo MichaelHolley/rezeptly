@@ -1,7 +1,12 @@
 <script lang="ts">
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/';
 
-	const { breadcrumbs }: { breadcrumbs?: { name: string; href?: string }[] } = $props();
+	type Breadcrumb = {
+		name: string;
+		href?: string;
+	};
+
+	const { breadcrumbs }: { breadcrumbs?: Breadcrumb[] } = $props();
 </script>
 
 <Breadcrumb.Root class="mb-4">
