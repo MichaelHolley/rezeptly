@@ -78,7 +78,7 @@
 			<XIcon />
 			Cancel
 		</Button>
-		<Button class="btn btn-primary" type="submit" disabled={!!updateRecipeDetails.pending}>
+		<Button type="submit" disabled={!!updateRecipeDetails.pending}>
 			<CheckIcon />
 			Save
 		</Button>

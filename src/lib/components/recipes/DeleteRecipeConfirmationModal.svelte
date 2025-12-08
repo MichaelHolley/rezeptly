@@ -33,12 +33,7 @@
 							Cancel
 						</Button>
 					</Dialog.Close>
-					<Button
-						class="btn btn-error"
-						variant="destructive"
-						type="submit"
-						disabled={!!deleteRecipe.pending}
-					>
+					<Button variant="destructive" type="submit" disabled={!!deleteRecipe.pending}>
 						<TrashIcon />
 						Delete
 					</Button>
