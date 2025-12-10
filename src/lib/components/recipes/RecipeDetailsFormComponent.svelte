@@ -16,11 +16,7 @@
 	}: { onSave?: () => void; onCancel?: () => void; recipe: RecipeWithDetails } = $props();
 
 	let tagInputValue = $state('');
-	let tags = $state<string[]>([]);
-
-	$effect(() => {
-		tags = recipe.tags.map((t) => t.name);
-	});
+	let tags = $state<string[]>(recipe.tags.map((t) => t.name));
 </script>
 
 <form
