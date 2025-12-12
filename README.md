@@ -6,7 +6,6 @@ Rezeptly is a modern, web-based application designed to help you discover, organ
    <img width="720" alt="Preview of rezeptly" src="https://github.com/user-attachments/assets/f15db478-c570-42e0-90e7-f75660aa8083" />
 </div>
 
-
 ## ✨ Features
 
 - **Create & Manage Recipes:** Easily add, edit, and delete your own recipes.
