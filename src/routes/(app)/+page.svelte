@@ -75,6 +75,7 @@
 							<img
 								src={recipe.imageUrl}
 								alt={`Image for ${recipe.name}`}
+								loading="lazy"
 								class="h-full w-full object-cover object-center"
 								onerror={() => handleImageError(recipe.id)}
 							/>
