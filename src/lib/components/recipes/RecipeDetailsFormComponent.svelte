@@ -7,6 +7,7 @@
 	import type { RecipeWithDetails } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
+	import { onMount } from 'svelte';
 	import TagComponent from './TagComponent.svelte';
 
 	const {
@@ -16,7 +17,11 @@
 	}: { onSave?: () => void; onCancel?: () => void; recipe: RecipeWithDetails } = $props();
 
 	let tagInputValue = $state('');
-	let tags = $state<string[]>(recipe.tags.map((t) => t.name));
+	let tags = $state<string[]>([]);
+
+	onMount(() => {
+		tags = recipe.tags.map((t) => t.name);
+	});
 </script>
 
 <form
