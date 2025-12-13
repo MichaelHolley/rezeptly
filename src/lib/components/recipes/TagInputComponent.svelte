@@ -49,7 +49,7 @@
 		/>
 		<InputGroup.Addon align="inline-start">
 			<div class="flex flex-row flex-wrap gap-2">
-				{#each tags as tag, i (tag)}
+				{#each tags as tag (tag)}
 					<TagComponent onSelect={() => removeTag(tag)}>
 						{tag}
 						<XIcon />
