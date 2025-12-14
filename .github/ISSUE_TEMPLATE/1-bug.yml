@@ -38,14 +38,6 @@ body:
       required: true
 
   - type: textarea
-    id: actual
-    attributes:
-      label: Actual Behavior
-      description: What actually happened?
-    validations:
-      required: true
-
-  - type: textarea
     id: additional
     attributes:
       label: Additional Context

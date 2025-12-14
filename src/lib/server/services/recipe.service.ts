@@ -1,3 +1,4 @@
+import { error } from '@sveltejs/kit';
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
@@ -162,6 +163,8 @@ export const updateRecipe = async (
 		// Get current recipe to check if image URL is changing
 		const [currentRecipe] = await tx.select().from(recipes).where(eq(recipes.id, id));
 
+		if (!currentRecipe) error(404, 'Recipe not found');
+
 		const [updatedRecipe] = await tx
 			.update(recipes)
 			.set({ name: data.name, description: data.description, imageUrl: data.imageUrl })
@@ -173,48 +176,51 @@ export const updateRecipe = async (
 			await deleteImage(currentRecipe.imageUrl);
 		}
 
-		await tx.delete(recipesToTags).where(eq(recipesToTags.recipeId, updatedRecipe.id));
+		// Only update tags if explicitly provided
+		if (data.tags !== undefined) {
+			await tx.delete(recipesToTags).where(eq(recipesToTags.recipeId, updatedRecipe.id));
 
-		if (data.tags && data.tags.length > 0) {
-			// 1. Deduplicate input (case-sensitive - preserves original case)
-			const uniqueTagNames = [
-				...new Set(data.tags.map((t) => t.name.trim()).filter((name) => name !== ''))
-			];
+			if (data.tags.length > 0) {
+				// 1. Deduplicate input (case-sensitive - preserves original case)
+				const uniqueTagNames = [
+					...new Set(data.tags.map((t) => t.name.trim()).filter((name) => name !== ''))
+				];
 
-			// 2. Batch fetch existing tags (single query)
-			const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
+				// 2. Batch fetch existing tags (single query)
+				const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
 
-			// 3. Create map for quick lookup (case-sensitive)
-			const existingTagMap = new Map(existingTags.map((t) => [t.name, t]));
+				// 3. Create map for quick lookup (case-sensitive)
+				const existingTagMap = new Map(existingTags.map((t) => [t.name, t]));
 
-			// 4. Sequentially insert only missing tags with error handling
-			const allTags = [];
-			for (const tagName of uniqueTagNames) {
-				if (existingTagMap.has(tagName)) {
-					allTags.push(existingTagMap.get(tagName)!);
-				} else {
-					try {
-						const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
-						allTags.push(newTag);
-						existingTagMap.set(tagName, newTag);
-					} catch {
-						// Handle unique constraint violation - fetch the tag that was just created
-						const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
-						if (existingTag) {
-							allTags.push(existingTag);
-							existingTagMap.set(tagName, existingTag);
+				// 4. Sequentially insert only missing tags with error handling
+				const allTags = [];
+				for (const tagName of uniqueTagNames) {
+					if (existingTagMap.has(tagName)) {
+						allTags.push(existingTagMap.get(tagName)!);
+					} else {
+						try {
+							const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
+							allTags.push(newTag);
+							existingTagMap.set(tagName, newTag);
+						} catch {
+							// Handle unique constraint violation - fetch the tag that was just created
+							const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
+							if (existingTag) {
+								allTags.push(existingTag);
+								existingTagMap.set(tagName, existingTag);
+							}
 						}
 					}
 				}
-			}
 
-			// 5. Insert into junction table
-			await tx.insert(recipesToTags).values(
-				allTags.map((tag) => ({
-					recipeId: updatedRecipe.id,
-					tagId: tag.id
-				}))
-			);
+				// 5. Insert into junction table
+				await tx.insert(recipesToTags).values(
+					allTags.map((tag) => ({
+						recipeId: updatedRecipe.id,
+						tagId: tag.id
+					}))
+				);
+			}
 		}
 
 		return updatedRecipe;
