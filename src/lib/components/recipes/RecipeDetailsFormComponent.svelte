@@ -34,11 +34,17 @@
 	class="flex flex-col gap-2"
 >
 	<input {...updateRecipeDetails.fields.recipeId.as('hidden', recipe.id)} />
-	<Input placeholder="Name" {...updateRecipeDetails.fields.name.as('text')} value={recipe.name} />
+	<Input
+		placeholder="Name"
+		{...updateRecipeDetails.fields.name.as('text')}
+		value={recipe.name}
+		required
+	/>
 	<Textarea
 		placeholder="Short Recipe Description"
 		{...updateRecipeDetails.fields.description.as('text')}
 		value={recipe.description}
+		required
 	/>
 	<TagInputComponent bind:tags />
 	{#each tags as tag, i (tag)}
