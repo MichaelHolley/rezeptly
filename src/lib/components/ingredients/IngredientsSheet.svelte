@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addIngredient, removeIngredient } from '$lib/api/recipes.remote';
+	import { addIngredient, getRecipeById, removeIngredient } from '$lib/api/recipes.remote';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
@@ -25,7 +25,15 @@
 			<form
 				onsubmit={async (event) => {
 					event.preventDefault();
-					await addIngredient({ recipeId: recipeId, name: addIngredientInput });
+					await addIngredient({ recipeId: recipeId, name: addIngredientInput }).updates(
+						getRecipeById(recipeId).withOverride((recipe) => ({
+							...recipe,
+							ingredients: [
+								...recipe.ingredients,
+								{ id: 0, name: addIngredientInput, recipeId: recipeId }
+							]
+						}))
+					);
 					addIngredientInput = '';
 				}}
 				class="mt-6 flex flex-row gap-2"
@@ -52,7 +60,12 @@
 							disabled={!!removeIngredient.pending}
 							onclick={async () => {
 								try {
-									await removeIngredient({ recipeId, ingrId: ingr.id });
+									await removeIngredient({ recipeId, ingrId: ingr.id }).updates(
+										getRecipeById(recipeId).withOverride((recipe) => ({
+											...recipe,
+											ingredients: recipe.ingredients.filter((i) => i.id !== ingr.id)
+										}))
+									);
 								} catch (e) {
 									console.error(e);
 								}
