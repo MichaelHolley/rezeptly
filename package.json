@@ -63,7 +63,7 @@
   },
   "dependencies": {
     "@vercel/blob": "^2.0.0",
-    "drizzle-orm": "^0.44.7",
+    "drizzle-orm": "^0.45.0",
     "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.7",
     "runed": "^0.37.0",
