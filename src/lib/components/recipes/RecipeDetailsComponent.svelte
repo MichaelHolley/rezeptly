@@ -37,7 +37,9 @@
 		<RecipeDetailsFormComponent {recipe} onSave={closeForm} onCancel={closeForm} />
 	{:else}
 		<div class="flex flex-row justify-between gap-2">
-			<h2 style:view-transition-name="recipe-title-{recipe.id}">{recipe.name}</h2>
+			<h2 style:view-transition-name="recipe-title-{recipe.id}" class="tracking-tight">
+				{recipe.name}
+			</h2>
 			<div class="flex flex-row justify-end gap-2">
 				<Button onclick={toggleFavorite} variant="outline" title="Toggle Favorite">
 					{#if favorites.current.includes(recipe.id)}
@@ -74,10 +76,7 @@
 			</div>
 		</div>
 
-		<p
-			class="mt-2 text-base font-light text-zinc-500"
-			style:view-transition-name="recipe-description-{recipe.id}"
-		>
+		<p class="mt-2 text-base font-light text-zinc-500 tracking-tight">
 			{recipe.description}
 		</p>
 	{/if}

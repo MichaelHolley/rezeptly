@@ -6,8 +6,8 @@
 <Empty.Root>
 	<Empty.Header>
 		<Empty.Media variant="icon">
-			<OrigamiIcon class="text-neutral-300" />
+			<OrigamiIcon class="text-zinc-300" />
 		</Empty.Media>
-		<Empty.Description class="text-neutral-300">No preview</Empty.Description>
+		<Empty.Description class="text-zinc-300">No preview</Empty.Description>
 	</Empty.Header>
 </Empty.Root>

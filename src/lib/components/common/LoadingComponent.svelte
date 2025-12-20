@@ -5,7 +5,4 @@
 	const { class: className }: { class?: string } = $props();
 </script>
 
-<LoaderIcon
-	class={cn('animate-spin text-neutral-400', className)}
-	style="animation-duration: 2s;"
-/>
+<LoaderIcon class={cn('animate-spin text-zinc-400', className)} style="animation-duration: 2s;" />

@@ -99,10 +99,7 @@
 						class="-mx-1 mb-3"
 						viewTransitionPrefix={`recipe-tag-${recipe.id}`}
 					/>
-					<p
-						class="line-clamp-3! flex flex-col gap-0.5 text-sm text-neutral-500"
-						style:view-transition-name="recipe-description-{recipe.id}"
-					>
+					<p class="line-clamp-3! text-sm text-zinc-500">
 						{recipe.description}
 					</p>
 				</Card.Content>
