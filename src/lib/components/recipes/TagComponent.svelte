@@ -5,11 +5,13 @@
 	const {
 		onSelect,
 		active,
-		children
+		children,
+		viewTransitionName
 	}: {
 		active?: boolean;
 		onSelect?: () => void;
 		children?: Snippet;
+		viewTransitionName?: string;
 	} = $props();
 </script>
 
@@ -17,6 +19,7 @@
 	variant={active ? 'default' : 'secondary'}
 	class={onSelect && 'hover:cursor-pointer'}
 	onclick={onSelect}
+	{viewTransitionName}
 >
 	{#if children}
 		{@render children()}
