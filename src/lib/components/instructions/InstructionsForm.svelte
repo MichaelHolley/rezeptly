@@ -10,13 +10,11 @@
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import { onMount } from 'svelte';
-	import z from 'zod';
 
-	type Step = z.infer<typeof StepSchema>;
-	const StepSchema = z.object({
-		heading: z.string().nullable(),
-		description: z.string()
-	});
+	type Step = {
+		heading: string | null;
+		description: string;
+	};
 
 	const {
 		recipe,
