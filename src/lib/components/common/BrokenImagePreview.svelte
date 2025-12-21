@@ -6,8 +6,8 @@
 <Empty.Root>
 	<Empty.Header>
 		<Empty.Media variant="icon">
-			<BugIcon class="text-neutral-300" />
+			<BugIcon class="text-zinc-300" />
 		</Empty.Media>
-		<Empty.Description class="text-neutral-300">Preview broken</Empty.Description>
+		<Empty.Description class="text-zinc-300">Preview broken</Empty.Description>
 	</Empty.Header>
 </Empty.Root>

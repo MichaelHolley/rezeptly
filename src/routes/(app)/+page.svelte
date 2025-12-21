@@ -89,11 +89,17 @@
 							</div>
 						{/if}
 					</div>
-					<Card.Title class="truncate px-6 py-2" title={recipe.name}>{recipe.name}</Card.Title>
+					<Card.Title class="truncate px-6 py-2" title={recipe.name}>
+						<span style:view-transition-name="recipe-title-{recipe.id}">{recipe.name}</span>
+					</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<TagsContainerComponent tags={recipe.tags.map((t) => t.name)} class="-mx-1 mb-3" />
-					<p class="line-clamp-3! flex flex-col gap-0.5 text-sm text-neutral-500">
+					<TagsContainerComponent
+						tags={recipe.tags.map((t) => t.name)}
+						class="-mx-1 mb-3"
+						viewTransitionPrefix={`recipe-tag-${recipe.id}`}
+					/>
+					<p class="line-clamp-3! text-sm text-zinc-500">
 						{recipe.description}
 					</p>
 				</Card.Content>

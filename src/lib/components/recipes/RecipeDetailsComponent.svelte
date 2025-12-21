@@ -37,7 +37,9 @@
 		<RecipeDetailsFormComponent {recipe} onSave={closeForm} onCancel={closeForm} />
 	{:else}
 		<div class="flex flex-row justify-between gap-2">
-			<h2>{recipe.name}</h2>
+			<h2 style:view-transition-name="recipe-title-{recipe.id}" class="tracking-tight">
+				{recipe.name}
+			</h2>
 			<div class="flex flex-row justify-end gap-2">
 				<Button onclick={toggleFavorite} variant="outline" title="Toggle Favorite">
 					{#if favorites.current.includes(recipe.id)}
@@ -64,13 +66,18 @@
 
 		<div class="mt-1 flex flex-row justify-between gap-3">
 			{#if recipe.tags?.length > 0}
-				<TagsContainer tags={recipe.tags.map((tag: Tag) => tag.name)} />
+				<TagsContainer
+					tags={recipe.tags.map((tag: Tag) => tag.name)}
+					viewTransitionPrefix={`recipe-tag-${recipe.id}`}
+				/>
 			{/if}
 			<div class="mt-1 text-xs text-zinc-400">
 				Created: {recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
 			</div>
 		</div>
 
-		<p class="mt-2 text-base font-light text-zinc-500">{recipe.description}</p>
+		<p class="mt-2 text-base font-light text-zinc-500 tracking-tight">
+			{recipe.description}
+		</p>
 	{/if}
 </div>

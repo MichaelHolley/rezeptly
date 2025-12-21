@@ -120,11 +120,11 @@
 						}}
 						disabled={!!deleteRecipeImage.pending}
 					>
-						<div class="rounded bg-neutral-200/70 p-1">
+						<div class="rounded bg-zinc-200/70 p-1">
 							{#if !!deleteRecipeImage.pending}
 								<LoadingComponent class="size-4" />
 							{:else}
-								<TrashIcon class="stroke-neutral-600 size-4" />
+								<TrashIcon class="stroke-zinc-600 size-4" />
 							{/if}
 						</div>
 					</button>
@@ -133,7 +133,7 @@
 		</div>
 	{:else if PermissionsStore.canEdit}
 		<button
-			class="flex size-32 items-center justify-center rounded-sm border bg-neutral-100 hover:cursor-pointer"
+			class="flex size-32 items-center justify-center rounded-sm border bg-zinc-100 hover:cursor-pointer"
 			onclick={() => {
 				fileUploadInput?.click();
 			}}
@@ -142,7 +142,7 @@
 			{#if !!uploadRecipeImage.pending}
 				<LoadingComponent />
 			{:else}
-				<PlusIcon class="size-8 text-neutral-300" />
+				<PlusIcon class="size-8 text-zinc-300" />
 			{/if}
 		</button>
 		<form {...uploadRecipeImage} enctype="multipart/form-data" class="hidden">

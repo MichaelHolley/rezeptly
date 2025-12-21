@@ -1,12 +1,10 @@
 <script lang="ts">
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/';
-	import z from 'zod';
 
-	type Breadcrumb = z.infer<typeof BreadcrumbSchema>;
-	const BreadcrumbSchema = z.object({
-		name: z.string(),
-		href: z.string().optional()
-	});
+	type Breadcrumb = {
+		name: string;
+		href?: string;
+	};
 
 	const { breadcrumbs }: { breadcrumbs?: Breadcrumb[] } = $props();
 </script>
