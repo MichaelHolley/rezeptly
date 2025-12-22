@@ -76,7 +76,7 @@
 			</div>
 		</div>
 
-		<p class="mt-2 text-base font-light text-zinc-500 tracking-tight">
+		<p class="mt-2 text-sm text-zinc-500">
 			{recipe.description}
 		</p>
 	{/if}
