@@ -1,7 +1,7 @@
-import { error } from '@sveltejs/kit';
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
+import { NotFoundError } from '../errors';
 import type {
 	NewIngredient,
 	NewInstruction,
@@ -52,7 +52,7 @@ export const getRecipes = async (): Promise<RecipeWithDetails[]> => {
 	}));
 };
 
-export const getRecipeById = async (id: number): Promise<RecipeWithDetails | undefined> => {
+export const getRecipeById = async (id: number): Promise<RecipeWithDetails> => {
 	const result = await db.query.recipes.findFirst({
 		where: eq(recipes.id, id),
 		with: {
@@ -67,7 +67,7 @@ export const getRecipeById = async (id: number): Promise<RecipeWithDetails | und
 	});
 
 	if (!result) {
-		return undefined;
+		throw new NotFoundError('Recipe', id);
 	}
 
 	return {
@@ -163,7 +163,9 @@ export const updateRecipe = async (
 		// Get current recipe to check if image URL is changing
 		const [currentRecipe] = await tx.select().from(recipes).where(eq(recipes.id, id));
 
-		if (!currentRecipe) error(404, 'Recipe not found');
+		if (!currentRecipe) {
+			throw new NotFoundError('Recipe', id);
+		}
 
 		const [updatedRecipe] = await tx
 			.update(recipes)
@@ -230,15 +232,17 @@ export const updateRecipe = async (
 };
 
 export const deleteRecipe = async (id: number): Promise<void> => {
-	// Get recipe to find image URL before deletion
-	const recipe = await db.query.recipes.findFirst({
-		where: eq(recipes.id, id)
-	});
+	// Get recipe to find image URL before deletion and verify it exists
+	const recipe = await getRecipeById(id);
+
+	if (!recipe) {
+		throw new NotFoundError('Recipe', id);
+	}
 
 	await db.delete(recipes).where(eq(recipes.id, id));
 
 	// Delete associated image from Vercel Blob
-	if (recipe?.imageUrl) {
+	if (recipe.imageUrl) {
 		await deleteImage(recipe.imageUrl);
 	}
 };

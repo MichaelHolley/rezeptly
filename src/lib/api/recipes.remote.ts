@@ -1,10 +1,11 @@
 import { command, form, query } from '$app/server';
 import { userCanWrite } from '$lib/server/auth/permissions';
+import { PermissionError, ValidationError } from '$lib/server/errors';
 import * as imageService from '$lib/server/services/image.service';
 import * as ingredientService from '$lib/server/services/ingredient.service';
 import * as instructionService from '$lib/server/services/instruction.service';
 import * as recipeService from '$lib/server/services/recipe.service';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const getRecipesMetadata = query(async () => {
@@ -21,9 +22,6 @@ export const getRecipes = query(async () => {
 
 export const getRecipeById = query(z.number(), async (id) => {
 	const recipe = await recipeService.getRecipeById(id);
-
-	if (!recipe) error(404, 'Recipe not found');
-
 	return recipe;
 });
 
@@ -37,7 +35,9 @@ export const deleteRecipe = form(
 			.or(z.number())
 	}),
 	async ({ recipeId }) => {
-		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+		if (!userCanWrite()) {
+			throw new PermissionError();
+		}
 
 		await recipeService.deleteRecipe(recipeId);
 
@@ -56,7 +56,9 @@ export const addIngredient = command(
 		name: z.string().min(1, 'Name is required')
 	}),
 	async ({ recipeId, name }) => {
-		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+		if (!userCanWrite()) {
+			throw new PermissionError();
+		}
 
 		await ingredientService.createIngredient({ name: name.trim(), recipeId });
 
@@ -70,7 +72,9 @@ export const removeIngredient = command(
 		ingrId: z.number()
 	}),
 	async ({ recipeId, ingrId }) => {
-		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+		if (!userCanWrite()) {
+			throw new PermissionError();
+		}
 
 		await ingredientService.deleteIngredient(ingrId);
 
@@ -92,7 +96,9 @@ export const updateRecipeDetails = form(
 		imageUrl: z.string().optional()
 	}),
 	async ({ recipeId, name, description, tags, imageUrl }) => {
-		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+		if (!userCanWrite()) {
+			throw new PermissionError();
+		}
 
 		await recipeService.updateRecipe(recipeId, {
 			name,
@@ -113,7 +119,9 @@ export const createRecipe = form(
 		imageUrl: z.string().optional()
 	}),
 	async ({ name, description, tags, imageUrl }) => {
-		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+		if (!userCanWrite()) {
+			throw new PermissionError();
+		}
 
 		const recipe = await recipeService.createRecipe({
 			name: name.trim(),
@@ -144,7 +152,9 @@ export const updateInstructions = form(
 		)
 	}),
 	async ({ recipeId, instructions }) => {
-		if (!userCanWrite()) error(403, 'Insufficient Permissions');
+		if (!userCanWrite()) {
+			throw new PermissionError();
+		}
 
 		await instructionService.upsertInstructionsForRecipe(
 			recipeId,
@@ -170,33 +180,29 @@ export const uploadRecipeImage = form(
 		file: z.instanceof(File)
 	}),
 	async ({ recipeId, file }) => {
-		if (!userCanWrite()) error(403, 'Insufficient Permissions');
-
-		const recipe = await recipeService.getRecipeById(recipeId);
-		if (!recipe) error(404, 'Recipe not found');
-
-		try {
-			const url = await imageService.uploadImage(file);
-
-			await recipeService.updateRecipe(recipeId, { imageUrl: url });
-
-			await getRecipeById(recipeId).refresh();
-
-			return { url };
-		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Failed to upload image';
-			error(400, message);
+		if (!userCanWrite()) {
+			throw new PermissionError();
 		}
+
+		const url = await imageService.uploadImage(file);
+		await recipeService.updateRecipe(recipeId, { imageUrl: url });
+
+		await getRecipeById(recipeId).refresh();
+
+		return { url };
 	}
 );
 
 export const deleteRecipeImage = command(z.number(), async (recipeId) => {
-	if (!userCanWrite()) error(403, 'Insufficient Permissions');
+	if (!userCanWrite()) {
+		throw new PermissionError();
+	}
 
 	const recipe = await recipeService.getRecipeById(recipeId);
 
-	if (!recipe) error(404, 'Recipe not found');
-	if (!recipe.imageUrl) error(400, 'Recipe does not have an image to delete');
+	if (!recipe.imageUrl) {
+		throw new ValidationError('Recipe does not have an image to delete');
+	}
 
 	await imageService.deleteImage(recipe.imageUrl);
 	await recipeService.updateRecipe(recipeId, { imageUrl: null });

@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { del, put } from '@vercel/blob';
 import sharp from 'sharp';
+import { ConfigurationError, ValidationError } from '../errors';
 
 const getAllowedTypes = () => {
 	const types = publicEnv.PUBLIC_UPLOAD_ALLOWED_TYPES || 'image/jpeg,image/png,image/webp';
@@ -14,7 +15,7 @@ export const validateImageFile = (file: File): void => {
 	const allowedTypes = getAllowedTypes();
 
 	if (!allowedTypes.includes(file.type)) {
-		throw new Error(`Invalid file type. Allowed types: ${allowedTypes.join(', ')}`);
+		throw new ValidationError(`Invalid file type. Allowed types: ${allowedTypes.join(', ')}`);
 	}
 };
 
@@ -44,7 +45,7 @@ export const uploadImage = async (file: File): Promise<string> => {
 
 	const token = env.BLOB_READ_WRITE_TOKEN;
 	if (!token) {
-		throw new Error('BLOB_READ_WRITE_TOKEN is not configured');
+		throw new ConfigurationError('BLOB_READ_WRITE_TOKEN is not configured');
 	}
 
 	const transformedBuffer = await transformImage(file);
@@ -65,13 +66,8 @@ export const deleteImage = async (url: string): Promise<void> => {
 
 	const token = env.BLOB_READ_WRITE_TOKEN;
 	if (!token) {
-		console.error('BLOB_READ_WRITE_TOKEN is not configured');
-		return;
+		throw new ConfigurationError('BLOB_READ_WRITE_TOKEN is not configured');
 	}
 
-	try {
-		await del(url, { token });
-	} catch (error) {
-		console.error('Failed to delete image from Vercel Blob:', error);
-	}
+	await del(url, { token });
 };

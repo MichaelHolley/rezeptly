@@ -1,11 +1,18 @@
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients } from '../db/schema';
+import { NotFoundError } from '../errors';
 import type { Ingredient, NewIngredient } from '../types';
 
 export const getIngredients = async (recipeId: number): Promise<Ingredient[]> => {
 	return await db.query.ingredients.findMany({
 		where: eq(ingredients.recipeId, recipeId)
+	});
+};
+
+export const getIngredientById = async (id: number): Promise<Ingredient | undefined> => {
+	return await db.query.ingredients.findFirst({
+		where: eq(ingredients.id, id)
 	});
 };
 
@@ -18,11 +25,21 @@ export const updateIngredient = async (
 	id: number,
 	data: Partial<NewIngredient>
 ): Promise<Ingredient> => {
+	const existing = await getIngredientById(id);
+	if (!existing) {
+		throw new NotFoundError('Ingredient', id);
+	}
+
 	const result = await db.update(ingredients).set(data).where(eq(ingredients.id, id)).returning();
 	return result[0];
 };
 
 export const deleteIngredient = async (id: number): Promise<void> => {
+	const existing = await getIngredientById(id);
+	if (!existing) {
+		throw new NotFoundError('Ingredient', id);
+	}
+
 	await db.delete(ingredients).where(eq(ingredients.id, id));
 };
 
