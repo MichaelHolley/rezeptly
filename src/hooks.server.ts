@@ -2,7 +2,7 @@ import { JWT_SECRET } from '$env/static/private';
 import { deleteSessionTokenCookie, sessionCookieName } from '$lib/server/auth/auth';
 import type { ROLE } from '$lib/server/auth/permissions';
 import { AppError } from '$lib/server/errors';
-import { redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
+import { error, redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import jwt from 'jsonwebtoken';
 
@@ -33,20 +33,19 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return await resolve(event);
 };
 
-export const handleError: HandleServerError = async ({ error, event, message }) => {
-	if (error instanceof AppError) {
-		console.error(`[AppError] ${error.code} at ${event.url.pathname}: ${error.message}`);
-		return {
-			message: error.message,
-			code: error.code
-		};
-	} else {
-		console.error(`[Unhandled Error] at ${event.url.pathname}: ${error}`);
-		return {
-			message: message || 'An unexpected error occurred',
-			code: 'UNHANDLED_ERROR'
-		};
+export const handleError: HandleServerError = async ({ error: err, event, message, status }) => {
+	if (err instanceof AppError) {
+		console.error(
+			`[AppError ${err.statusCode}] ${err.code} at ${event.url.pathname}: ${err.message}`
+		);
+		error(err.statusCode, { message: err.message, code: err.code, details: err.details });
 	}
+
+	console.error(`[Unhandled Error ${status}] at ${event.url.pathname}:`, err);
+	error(status || 500, {
+		message: message || 'An unexpected error occurred',
+		code: 'UNHANDLED_ERROR'
+	});
 };
 
 export const handle: Handle = sequence(handleAuth);

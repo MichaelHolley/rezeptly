@@ -2,6 +2,7 @@ export class AppError extends Error {
 	constructor(
 		public code: App.Error['code'],
 		message: string,
+		public statusCode: number = 500,
 		public details?: unknown
 	) {
 		super(message);
@@ -14,7 +15,7 @@ export class AppError extends Error {
  */
 export class NotFoundError extends AppError {
 	constructor(entity: string, id: number | string) {
-		super('NOT_FOUND', `${entity} with id ${id} not found`);
+		super('NOT_FOUND', `${entity} with id ${id} not found`, 404);
 	}
 }
 
@@ -23,7 +24,7 @@ export class NotFoundError extends AppError {
  */
 export class ValidationError extends AppError {
 	constructor(message: string, details?: unknown) {
-		super('VALIDATION_ERROR', message, details);
+		super('VALIDATION_ERROR', message, 400, details);
 	}
 }
 
@@ -32,7 +33,7 @@ export class ValidationError extends AppError {
  */
 export class PermissionError extends AppError {
 	constructor(message = 'Insufficient permissions') {
-		super('PERMISSION_DENIED', message);
+		super('PERMISSION_DENIED', message, 403);
 	}
 }
 
@@ -41,6 +42,6 @@ export class PermissionError extends AppError {
  */
 export class ConfigurationError extends AppError {
 	constructor(message: string) {
-		super('CONFIGURATION_ERROR', message);
+		super('CONFIGURATION_ERROR', message, 500);
 	}
 }
