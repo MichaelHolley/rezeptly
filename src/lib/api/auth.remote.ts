@@ -6,7 +6,8 @@ import {
 	setSessionTokenCookie
 } from '$lib/server/auth/auth';
 import { getRoles } from '$lib/server/auth/permissions';
-import { error, redirect } from '@sveltejs/kit';
+import { PermissionError } from '$lib/server/errors';
+import { redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const getUserRoles = query(async () => {
@@ -14,7 +15,7 @@ export const getUserRoles = query(async () => {
 });
 
 export const logout = command(async () => {
-	const event = await getRequestEvent();
+	const event = getRequestEvent();
 	deleteSessionTokenCookie(event);
 
 	return { success: true };
@@ -26,9 +27,11 @@ export const login = form(
 		returnTo: z.string().optional()
 	}),
 	async ({ password, returnTo }) => {
-		if (password !== AUTH_PASSWORD) error(401, 'Incorrect password');
+		if (password !== AUTH_PASSWORD) {
+			throw new PermissionError('Incorrect password');
+		}
 
-		const event = await getRequestEvent();
+		const event = getRequestEvent();
 		const { token, expires } = generateSessionToken();
 		setSessionTokenCookie(event, token, expires);
 
