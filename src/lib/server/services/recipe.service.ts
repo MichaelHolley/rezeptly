@@ -232,12 +232,8 @@ export const updateRecipe = async (
 };
 
 export const deleteRecipe = async (id: number): Promise<void> => {
-	// Get recipe to find image URL before deletion and verify it exists
+	// Get recipe to find image URL before deletion (getRecipeById throws if not found)
 	const recipe = await getRecipeById(id);
-
-	if (!recipe) {
-		throw new NotFoundError('Recipe', id);
-	}
 
 	await db.delete(recipes).where(eq(recipes.id, id));
 

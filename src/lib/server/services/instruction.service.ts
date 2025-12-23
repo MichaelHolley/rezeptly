@@ -1,13 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../db';
 import { instructions } from '../db/schema';
-import type { Instruction, NewInstruction } from '../types';
-
-export const getInstructionById = async (id: number): Promise<Instruction | undefined> => {
-	return await db.query.instructions.findFirst({
-		where: eq(instructions.id, id)
-	});
-};
+import type { NewInstruction } from '../types';
 
 export const upsertInstructionsForRecipe = async (
 	recipeId: number,
