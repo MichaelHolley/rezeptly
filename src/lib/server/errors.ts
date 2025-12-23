@@ -1,7 +1,3 @@
-/**
- * Base application error class.
- * Services should throw these errors, and remote functions will convert them to SvelteKit errors.
- */
 export class AppError extends Error {
 	constructor(
 		public code: App.Error['code'],
