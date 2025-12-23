@@ -11,7 +11,7 @@ const getAllowedTypes = () => {
 
 const getTargetWidth = () => parseInt(env.TARGET_IMAGE_WIDTH || '800');
 
-export const validateImageFile = (file: File): void => {
+const validateImageFile = (file: File): void => {
 	const allowedTypes = getAllowedTypes();
 
 	if (!allowedTypes.includes(file.type)) {
@@ -26,7 +26,7 @@ export const validateImageFile = (file: File): void => {
  * @param file - The image file to transform
  * @returns A Buffer containing the transformed WebP image
  */
-export const transformImage = async (file: File): Promise<Buffer> => {
+const transformImage = async (file: File): Promise<Buffer> => {
 	const targetWidth = getTargetWidth();
 	const arrayBuffer = await file.arrayBuffer();
 	const buffer = Buffer.from(arrayBuffer);
