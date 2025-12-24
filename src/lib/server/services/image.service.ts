@@ -48,10 +48,15 @@ export const uploadImage = async (file: File): Promise<string> => {
 		throw new ConfigurationError('BLOB_READ_WRITE_TOKEN is not configured');
 	}
 
+	const blogStorageDir = env.BLOG_STORAGE_DIR;
+	if (!blogStorageDir) {
+		throw new ConfigurationError('BLOG_STORAGE_DIR is not configured');
+	}
+
 	const transformedBuffer = await transformImage(file);
 	const fileName = file.name.replace(/\.[^/.]+$/, '.webp');
 
-	const blob = await put(fileName, transformedBuffer, {
+	const blob = await put(`${blogStorageDir}/${fileName}`, transformedBuffer, {
 		access: 'public',
 		token,
 		contentType: 'image/webp',
