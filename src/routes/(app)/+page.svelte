@@ -67,7 +67,7 @@
 
 <div class="card-container my-4 grid gap-4">
 	{#each filterRecipes(recipes) as recipe (recipe.id)}
-		<a href="/{recipe.id}">
+		<a href="/{recipe.id}" class="group">
 			<Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
 				<Card.Header class="p-0">
 					<div class="h-48 overflow-hidden rounded-xs">
@@ -76,7 +76,7 @@
 								src={recipe.imageUrl}
 								alt={`Image for ${recipe.name}`}
 								loading="lazy"
-								class="h-full w-full object-cover object-center"
+								class="h-full w-full object-cover object-center group-hover:scale-102 transition-all"
 								onerror={() => handleImageError(recipe.id)}
 							/>
 						{:else if recipe.imageUrl && brokenImages.has(recipe.id)}

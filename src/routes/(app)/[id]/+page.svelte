@@ -110,7 +110,11 @@
 	{#if recipe.imageUrl}
 		<div class="flex flex-row gap-4">
 			<a href={recipe.imageUrl} target="_blank" rel="noopener noreferrer" class="relative">
-				<img src={recipe.imageUrl} alt={`Image for ${recipe.name}`} class="h-52 rounded-sm" />
+				<img
+					src={recipe.imageUrl}
+					alt={`Image for ${recipe.name}`}
+					class="h-52 rounded-sm shadow-sm"
+				/>
 				{#if PermissionsStore.canEdit}
 					<button
 						class="absolute top-2 right-2"
@@ -133,7 +137,7 @@
 		</div>
 	{:else if PermissionsStore.canEdit}
 		<button
-			class="flex size-32 items-center justify-center rounded-sm border bg-zinc-100 hover:cursor-pointer"
+			class="flex size-32 items-center justify-center rounded-sm border bg-zinc-100 hover:cursor-pointer shadow-xs"
 			onclick={() => {
 				fileUploadInput?.click();
 			}}
