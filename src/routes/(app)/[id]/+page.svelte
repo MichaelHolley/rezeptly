@@ -88,7 +88,7 @@
 							{#if instr.heading}
 								<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
 							{/if}
-							<p class="whitespace-pre-wrap">{instr.instructions}</p>
+							<p class="whitespace-pre-wrap text-sm">{instr.instructions}</p>
 						</div>
 					{/each}
 				</div>
