@@ -67,19 +67,16 @@
 			</div>
 		</div>
 
-		<div class="mt-1 flex flex-row justify-between gap-3">
+		<div class="mt-2 flex flex-row justify-between gap-3">
 			{#if recipe.tags?.length > 0}
 				<TagsContainer
 					tags={recipe.tags.map((tag: Tag) => tag.name)}
 					viewTransitionPrefix={`recipe-tag-${recipe.id}`}
 				/>
 			{/if}
-			<div class="mt-1 text-xs text-zinc-400">
-				Created: {recipe.createdAt?.toLocaleDateString(undefined, { dateStyle: 'long' })}
-			</div>
 		</div>
 
-		<p class="mt-2 text-sm text-zinc-500">
+		<p class="mt-3 text-sm text-zinc-500">
 			{recipe.description}
 		</p>
 	{/if}
