@@ -76,7 +76,7 @@
 								src={recipe.imageUrl}
 								alt={`Image for ${recipe.name}`}
 								loading="lazy"
-								class="h-full w-full object-cover object-center group-hover:scale-102 transition-all"
+								class="h-full w-full object-cover object-center group-hover:scale-102 transition-all duration-300"
 								onerror={() => handleImageError(recipe.id)}
 							/>
 						{:else if recipe.imageUrl && brokenImages.has(recipe.id)}
