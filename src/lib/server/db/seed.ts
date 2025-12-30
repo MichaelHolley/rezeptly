@@ -501,7 +501,7 @@ async function showMenu(): Promise<string> {
 	const rl = readline.createInterface({ input, output });
 
 	console.log('\n╔════════════════════════════════════════╗');
-	console.log('║     Rezeptly Database Seed Menu        ║');
+	console.log('║     rezeptly Database Seed Menu        ║');
 	console.log('╚════════════════════════════════════════╝\n');
 	console.log('Please select an option:\n');
 	console.log('  1. Seed database (keep existing data)');

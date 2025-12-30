@@ -1,6 +1,6 @@
-# Rezeptly
+# rezeptly
 
-Rezeptly is a modern, web-based application designed to help you discover, organize, and manage your favorite recipes with ease. Whether you're a seasoned chef or just starting your culinary journey, Rezeptly provides an intuitive and elegant interface for all your cooking needs.
+rezeptly is a modern, web-based application designed to help you discover, organize, and manage your favorite recipes with ease. Whether you're a seasoned chef or just starting your culinary journey, rezeptly provides an intuitive and elegant interface for all your cooking needs.
 
 <div align="center">
    <img width="720" alt="Preview of rezeptly" src="https://github.com/user-attachments/assets/f15db478-c570-42e0-90e7-f75660aa8083" />
@@ -15,7 +15,7 @@ Rezeptly is a modern, web-based application designed to help you discover, organ
 
 ## 🚀 Getting Started
 
-Follow these instructions to get a local copy of Rezeptly up and running on your machine for development and testing purposes.
+Follow these instructions to get a local copy of rezeptly up and running on your machine for development and testing purposes.
 
 ### Prerequisites
 

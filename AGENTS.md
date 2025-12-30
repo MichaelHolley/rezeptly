@@ -1,4 +1,4 @@
-# Agent Guidelines for Rezeptly
+# Agent Guidelines for rezeptly
 
 ## Build & Test Commands
 

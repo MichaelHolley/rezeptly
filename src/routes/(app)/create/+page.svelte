@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-	<title>Rezeptly | New</title>
+	<title>rezeptly | New</title>
 </svelte:head>
 
 <BreadcrumbComponent breadcrumbs={[{ name: 'Create Recipe', href: '/create' }]} />

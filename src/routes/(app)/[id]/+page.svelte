@@ -44,7 +44,7 @@
 </script>
 
 <svelte:head>
-	<title>Rezeptly | {recipe.name}</title>
+	<title>rezeptly | {recipe.name}</title>
 </svelte:head>
 
 <BreadcrumbComponent breadcrumbs={[{ name: recipe.name, href: `/${recipe.id}` }]} />

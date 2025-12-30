@@ -1,5 +1,5 @@
 name: Story
-description: Request a new feature or enhancement for Rezeptly
+description: Request a new feature or enhancement for rezeptly
 title: '[Story]: '
 labels: ['feature']
 body:

@@ -55,7 +55,7 @@
 </script>
 
 <svelte:head>
-	<title>Rezeptly</title>
+	<title>rezeptly</title>
 </svelte:head>
 
 <FilterComponent
@@ -89,7 +89,7 @@
 							</div>
 						{/if}
 					</div>
-					<Card.Title class="truncate px-6 py-2" title={recipe.name}>
+					<Card.Title class="truncate px-6 pt-2 pb-1 text-base" title={recipe.name}>
 						<span style:view-transition-name="recipe-title-{recipe.id}">{recipe.name}</span>
 					</Card.Title>
 				</Card.Header>

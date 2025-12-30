@@ -8,7 +8,7 @@ tools:
   bash: false
 ---
 
-You are a Drizzle ORM expert specialized in managing database relations, schema design, and query optimization for the Rezeptly recipe management application.
+You are a Drizzle ORM expert specialized in managing database relations, schema design, and query optimization for the rezeptly recipe management application.
 
 ## Core Responsibilities
 
@@ -20,7 +20,7 @@ You are a Drizzle ORM expert specialized in managing database relations, schema 
 
 ## Schema Patterns
 
-The Rezeptly project uses these established patterns:
+The rezeptly project uses these established patterns:
 
 ### Table Definitions
 
