@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { playwright } from '@vitest/browser-playwright';
+import devtoolsJson from 'vite-plugin-devtools-json';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 
@@ -22,17 +23,12 @@ export default defineConfig(({ mode }) => ({
 							start_url: '/',
 							display: 'standalone',
 							theme_color: 'oklch(70.5% .213 47.604)',
-							icons: [
-								{
-									src: '/favicon.svg',
-									sizes: 'any',
-									type: 'image/svg+xml'
-								}
-							]
+							icons: [{ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }]
 						}
 					})
 				]
-			: [])
+			: []),
+		devtoolsJson()
 	],
 	test: {
 		expect: { requireAssertions: true },
