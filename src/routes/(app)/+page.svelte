@@ -1,15 +1,11 @@
 <script lang="ts">
 	import { getAvailableTags, getRecipesMetadata } from '$lib/api/recipes.remote';
-	import BrokenPreviewUrlComponent from '$lib/components/common/BrokenImagePreview.svelte';
 	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
-	import NoImagePreviewComponent from '$lib/components/common/NoImagePreviewComponent.svelte';
-	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
-	import * as Card from '$lib/components/ui/card/';
+	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
-	import { SvelteSet } from 'svelte/reactivity';
 	import z from 'zod';
 
 	const favorites = favoritesStore;
@@ -23,14 +19,8 @@
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);
 
-	const brokenImages = new SvelteSet<number>();
-
 	const recipes = $derived(await getRecipesMetadata());
 	const availableTags = $derived(await getAvailableTags());
-
-	const handleImageError = (recipeId: number) => {
-		brokenImages.add(recipeId);
-	};
 
 	const filterRecipes = (recipes: RecipeMetadata[]) => {
 		if (!recipes) {
@@ -67,43 +57,8 @@
 
 <div class="card-container my-4 grid gap-4">
 	{#each filterRecipes(recipes) as recipe (recipe.id)}
-		<a href="/{recipe.id}" class="group">
-			<Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
-				<Card.Header class="p-0">
-					<div class="h-48 overflow-hidden rounded-xs">
-						{#if recipe.imageUrl && !brokenImages.has(recipe.id)}
-							<img
-								src={recipe.imageUrl}
-								alt={`Image for ${recipe.name}`}
-								loading="lazy"
-								class="h-full w-full object-cover object-center group-hover:scale-102 transition-all duration-300"
-								onerror={() => handleImageError(recipe.id)}
-							/>
-						{:else if recipe.imageUrl && brokenImages.has(recipe.id)}
-							<div class="flex h-full justify-center">
-								<BrokenPreviewUrlComponent />
-							</div>
-						{:else}
-							<div class="flex h-full justify-center">
-								<NoImagePreviewComponent />
-							</div>
-						{/if}
-					</div>
-					<Card.Title class="truncate px-6 pt-2 pb-1 text-base" title={recipe.name}>
-						<span style:view-transition-name="recipe-title-{recipe.id}">{recipe.name}</span>
-					</Card.Title>
-				</Card.Header>
-				<Card.Content>
-					<TagsContainerComponent
-						tags={recipe.tags.map((t) => t.name)}
-						class="-mx-1 mb-3"
-						viewTransitionPrefix={`recipe-tag-${recipe.id}`}
-					/>
-					<p class="line-clamp-3! text-sm text-zinc-500">
-						{recipe.description}
-					</p>
-				</Card.Content>
-			</Card.Root>
+		<a href="/{recipe.id}">
+			<CardComponent {recipe} />
 		</a>
 	{/each}
 </div>
