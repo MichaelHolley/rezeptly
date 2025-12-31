@@ -18,9 +18,9 @@
 	};
 </script>
 
-<Card.Root class="h-full gap-0 overflow-hidden px-0 pt-0">
+<Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
 	<Card.Header class="p-0">
-		<div class="h-48 overflow-hidden rounded-xs">
+		<div class="h-48 overflow-hidden">
 			{#if recipe.imageUrl && !isImageBroken}
 				<img
 					src={recipe.imageUrl}
@@ -30,11 +30,11 @@
 					onerror={handleImageError}
 				/>
 			{:else if recipe.imageUrl && isImageBroken}
-				<div class="flex h-full justify-center">
+				<div class="flex h-full justify-center bg-neutral-50/80">
 					<BrokenPreviewUrlComponent />
 				</div>
 			{:else}
-				<div class="flex h-full justify-center">
+				<div class="flex h-full justify-center bg-neutral-50/80">
 					<NoImagePreviewComponent />
 				</div>
 			{/if}
@@ -49,7 +49,7 @@
 			class="-mx-1 mb-3"
 			viewTransitionPrefix={`recipe-tag-${recipe.id}`}
 		/>
-		<p class="line-clamp-3! text-sm text-zinc-500">
+		<p class="line-clamp-3 text-sm text-zinc-500">
 			{recipe.description}
 		</p>
 	</Card.Content>
