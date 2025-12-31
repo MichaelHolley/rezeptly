@@ -12,6 +12,6 @@
 <style>
 	h1 {
 		-webkit-text-fill-color: var(--color-neutral-100);
-		-webkit-text-stroke: 3px var(--color-orange-500);
+		-webkit-text-stroke: 2px var(--color-orange-500);
 	}
 </style>
