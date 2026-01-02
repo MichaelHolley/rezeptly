@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { beforeNavigate } from '$app/navigation';
 	import { env as publicEnv } from '$env/dynamic/public';
 	import { deleteRecipeImage, getRecipeById, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
@@ -41,6 +42,16 @@
 
 		return order;
 	};
+
+	beforeNavigate(async ({ cancel }) => {
+		if (showInstructionsForm) {
+			const r = confirm(
+				'You have unsaved changes to the instructions. Are you sure you want to leave this page?'
+			);
+
+			if (!r) cancel();
+		}
+	});
 </script>
 
 <svelte:head>
