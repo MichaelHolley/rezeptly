@@ -45,7 +45,7 @@ export const deleteRecipe = form(
 	}
 );
 
-export const addIngredient = command(
+export const addIngredient = form(
 	z.object({
 		recipeId: z
 			.pipe(

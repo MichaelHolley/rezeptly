@@ -11,7 +11,7 @@
 
 	const { recipeId, ingredients }: { recipeId: number; ingredients: Ingredient[] } = $props();
 
-	let addIngredientInput = $state('');
+	let inputRef = $state<HTMLInputElement | null>(null);
 </script>
 
 <Sheet.Root>
@@ -23,26 +23,32 @@
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
 			<form
-				onsubmit={async (event) => {
-					event.preventDefault();
-					await addIngredient({ recipeId: recipeId, name: addIngredientInput }).updates(
-						getRecipeById(recipeId).withOverride((recipe) => ({
-							...recipe,
-							ingredients: [
-								...recipe.ingredients,
-								{ id: 0, name: addIngredientInput, recipeId: recipeId }
-							]
-						}))
-					);
-					addIngredientInput = '';
-				}}
+				{...addIngredient.enhance(async ({ form, data, submit }) => {
+					try {
+						await submit()
+							.updates(
+								getRecipeById(recipeId).withOverride((recipe) => ({
+									...recipe,
+									ingredients: [...recipe.ingredients, { name: data.name, id: 0, recipeId }]
+								}))
+							)
+							.then(() => {
+								form.reset();
+								setTimeout(() => inputRef?.focus(), 50);
+							});
+					} catch (error) {
+						console.error(error);
+					}
+				})}
 				class="mt-6 flex flex-row gap-2"
 			>
+				<input {...addIngredient.fields.recipeId.as('hidden', recipeId)} />
 				<Input
 					required
+					{...addIngredient.fields.name.as('text')}
 					placeholder="Ingredient & Quantity"
-					bind:value={addIngredientInput}
 					disabled={!!addIngredient.pending}
+					bind:ref={inputRef}
 				/>
 				<Button type="submit" disabled={!!addIngredient.pending}><PlusIcon /></Button>
 			</form>
@@ -57,7 +63,6 @@
 							variant="secondary"
 							type="button"
 							size="sm"
-							disabled={!!removeIngredient.pending}
 							onclick={async () => {
 								try {
 									await removeIngredient({ recipeId, ingrId: ingr.id }).updates(
