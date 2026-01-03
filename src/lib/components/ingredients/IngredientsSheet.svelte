@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { addIngredient, getRecipeById, removeIngredient } from '$lib/api/recipes.remote';
+	import { addIngredient, getRecipeById } from '$lib/api/recipes.remote';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
+	import IngredientItem from './IngredientItem.svelte';
 	import type { Ingredient } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
-	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
 	const { recipeId, ingredients }: { recipeId: number; ingredients: Ingredient[] } = $props();
 
@@ -57,28 +57,7 @@
 		<div class="h-full overflow-y-auto px-4">
 			<div class="flex flex-col gap-2">
 				{#each ingredients as ingr, i (ingr.id)}
-					<div class="flex flex-row items-center justify-between gap-2">
-						<span class="px-1 text-sm">{ingr.name}</span>
-						<Button
-							variant="secondary"
-							type="button"
-							size="sm"
-							onclick={async () => {
-								try {
-									await removeIngredient({ recipeId, ingrId: ingr.id }).updates(
-										getRecipeById(recipeId).withOverride((recipe) => ({
-											...recipe,
-											ingredients: recipe.ingredients.filter((i) => i.id !== ingr.id)
-										}))
-									);
-								} catch (e) {
-									console.error(e);
-								}
-							}}
-						>
-							<TrashIcon />
-						</Button>
-					</div>
+					<IngredientItem ingredient={ingr} {recipeId} />
 					{#if i !== ingredients.length - 1}
 						<Separator />
 					{/if}
