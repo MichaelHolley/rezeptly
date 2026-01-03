@@ -19,19 +19,11 @@ describe('IngredientItem.svelte', () => {
 			await expect.element(ingredientName).toBeInTheDocument();
 		});
 
-		it('should render delete button', async () => {
-			const { container } = render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+		it('should show delete button by default', async () => {
+			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
 
-			const button = container.querySelector('button');
-			expect(button).toBeTruthy();
-			expect(button?.type).toBe('button');
-		});
-
-		it('should render trash icon in button', async () => {
-			const { container } = render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
-
-			const svg = container.querySelector('button svg');
-			expect(svg).toBeTruthy();
+			const deleteButton = await page.getByTitle('Delete ingredient');
+			await expect.element(deleteButton).toBeInTheDocument();
 		});
 
 		it('should render ingredient with special characters', async () => {
@@ -63,12 +55,48 @@ describe('IngredientItem.svelte', () => {
 		});
 	});
 
-	describe('props', () => {
-		it('should accept ingredient prop', () => {
+	describe('edit mode', () => {
+		it('should show form when ingredient name is clicked', async () => {
 			const { container } = render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
 
-			const span = container.querySelector('span');
-			expect(span?.textContent).toBe(mockIngredient.name);
+			const nameButton = await page.getByText('2 cups flour');
+			await nameButton.click();
+
+			const form = container.querySelector('form');
+			expect(form).toBeTruthy();
+		});
+
+		it('should show input field when ingredient name is clicked', async () => {
+			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+
+			const nameButton = await page.getByText('2 cups flour');
+			await nameButton.click();
+
+			const input = page.getByRole('textbox');
+			await expect.element(input).toBeInTheDocument();
+		});
+
+		it('should show save and cancel buttons in edit mode', async () => {
+			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+
+			const nameButton = await page.getByText('2 cups flour');
+			await nameButton.click();
+
+			const saveButton = await page.getByTitle('Save ingredient');
+			await expect.element(saveButton).toBeInTheDocument();
+
+			const cancelButton = await page.getByTitle('Cancel edit');
+			await expect.element(cancelButton).toBeInTheDocument();
+		});
+
+		it('should display ingredient name in input when editing', async () => {
+			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+
+			const nameButton = await page.getByText('2 cups flour');
+			await nameButton.click();
+
+			const input = page.getByRole('textbox');
+			await expect.element(input).toHaveValue('2 cups flour');
 		});
 	});
 });

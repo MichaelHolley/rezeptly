@@ -63,21 +63,32 @@
 					}
 				}}
 			/>
-			<Button type="submit" variant="ghost" size="sm" disabled={!!editIngredient.pending}>
+			<Button
+				type="submit"
+				variant="ghost"
+				size="sm"
+				disabled={!!editIngredient.pending}
+				title="Save ingredient"
+			>
 				<CheckIcon />
 			</Button>
-			<Button type="button" variant="ghost" size="sm" onclick={cancelEdit}>
+			<Button type="button" variant="ghost" size="sm" onclick={cancelEdit} title="Cancel edit">
 				<XIcon />
 			</Button>
 		</form>
 	{:else}
-		<button class="flex-1 cursor-pointer px-1 text-left text-sm" onclick={editItem}>
+		<button
+			class="flex-1 cursor-pointer px-1 text-left text-sm"
+			onclick={editItem}
+			title="Edit ingredient"
+		>
 			{ingredient.name}
 		</button>
 		<Button
 			variant="secondary"
 			type="button"
 			size="sm"
+			title="Delete ingredient"
 			onclick={async () => {
 				try {
 					await removeIngredient({ recipeId, ingrId: ingredient.id }).updates(
