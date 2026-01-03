@@ -82,6 +82,33 @@ export const removeIngredient = command(
 	}
 );
 
+export const editIngredient = form(
+	z.object({
+		recipeId: z
+			.pipe(
+				z.string(),
+				z.transform((id) => Number(id))
+			)
+			.or(z.number()),
+		ingrId: z
+			.pipe(
+				z.string(),
+				z.transform((id) => Number(id))
+			)
+			.or(z.number()),
+		name: z.string().min(1, 'Name is required')
+	}),
+	async ({ recipeId, ingrId, name }) => {
+		if (!userCanWrite()) {
+			throw new PermissionError();
+		}
+
+		await ingredientService.updateIngredient(ingrId, name.trim());
+
+		await getRecipeById(recipeId).refresh();
+	}
+);
+
 export const updateRecipeDetails = form(
 	z.object({
 		recipeId: z

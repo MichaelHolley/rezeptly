@@ -4,10 +4,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
-	import IngredientItem from './IngredientItem.svelte';
 	import type { Ingredient } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import IngredientItem from './IngredientItem.svelte';
 
 	const { recipeId, ingredients }: { recipeId: number; ingredients: Ingredient[] } = $props();
 
@@ -55,7 +55,7 @@
 		</Sheet.Header>
 
 		<div class="h-full overflow-y-auto px-4">
-			<div class="flex flex-col gap-2">
+			<div class="flex flex-col gap-2 py-1">
 				{#each ingredients as ingr, i (ingr.id)}
 					<IngredientItem ingredient={ingr} {recipeId} />
 					{#if i !== ingredients.length - 1}
