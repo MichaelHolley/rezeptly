@@ -45,7 +45,7 @@
 					console.error(error);
 				}
 			})}
-			class="flex flex-1 items-center gap-2"
+			class="flex flex-1 flex-row items-center gap-2"
 		>
 			<input {...editIngredient.fields.recipeId.as('hidden', recipeId)} />
 			<input {...editIngredient.fields.ingrId.as('hidden', ingredient.id)} />
