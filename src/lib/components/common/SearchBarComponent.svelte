@@ -11,11 +11,11 @@
 	}: { searchTerm: string; placeholder?: string; class?: string } = $props();
 </script>
 
-<InputGroup.Root class={cn('border-orange-500/50 bg-orange-500/3', className)}>
+<InputGroup.Root class={cn('bg-orange-500/3 border-orange-500/50! ring-orange-500/20!', className)}>
 	<InputGroup.Input
+		bind:value={searchTerm}
 		class={cn('placeholder:text-orange-500/60 focus-visible:ring-orange-500/20', className)}
 		{placeholder}
-		bind:value={searchTerm}
 	/>
 	<InputGroup.Addon>
 		<SearchIcon class="stroke-orange-500/60" />
