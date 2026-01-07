@@ -14,7 +14,10 @@
 <InputGroup.Root class={cn('bg-orange-500/3 border-orange-500/50! ring-orange-500/20!', className)}>
 	<InputGroup.Input
 		bind:value={searchTerm}
-		class={cn('placeholder:text-orange-500/60 focus-visible:ring-orange-500/20', className)}
+		class={cn(
+			'placeholder:text-orange-500/60 focus-visible:ring-orange-500/20 text-neutral-600',
+			className
+		)}
 		{placeholder}
 	/>
 	<InputGroup.Addon>

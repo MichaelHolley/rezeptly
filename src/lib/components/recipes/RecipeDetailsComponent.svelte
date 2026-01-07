@@ -39,7 +39,7 @@
 		<div class="flex flex-row justify-between gap-2">
 			<h2
 				style:view-transition-name="recipe-title-{recipe.id}"
-				class="tracking-tight text-shadow-2xs"
+				class="tracking-tight text-shadow-xs"
 			>
 				{recipe.name}
 			</h2>
@@ -76,7 +76,7 @@
 			{/if}
 		</div>
 
-		<p class="mt-3 text-sm text-zinc-500">
+		<p class="mt-3 text-sm text-zinc-500 max-w-3xl">
 			{recipe.description}
 		</p>
 	{/if}
