@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Empty from '$lib/components/ui/empty/';
-	import OrigamiIcon from '@lucide/svelte/icons/origami';
 	import RepeatIcon from '@lucide/svelte/icons/repeat-2';
+	import SoupIcon from '@lucide/svelte/icons/soup';
 
 	const {
 		message,
@@ -16,7 +16,7 @@
 <Empty.Root>
 	<Empty.Header>
 		<Empty.Media variant="icon">
-			<OrigamiIcon />
+			<SoupIcon />
 		</Empty.Media>
 		<Empty.Title>ooops...</Empty.Title>
 		<Empty.Description>Reason: {message}</Empty.Description>
