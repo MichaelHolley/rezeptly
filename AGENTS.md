@@ -22,6 +22,15 @@
 - **Services**: Keep business logic in `$lib/server/services/`, database queries in services not routes
 - **Comments**: Minimal comments; code should be self-documenting
 
+## Commit Messages
+
+- **Format**: Follow Conventional Commits specification with prefixes: `feat:`, `fix:`, `chore:`
+- **Examples**:
+  - `feat: update Notify button color`
+  - `fix: resolve recipe search pagination`
+  - `chore: update dependencies`
+  - `feat: add recipe sharing functionality`
+
 ## Remote Functions Pattern
 
 - **Location**: Define in `$lib/api/*.remote.ts` files
