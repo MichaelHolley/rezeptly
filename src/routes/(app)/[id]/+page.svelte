@@ -139,7 +139,7 @@
 							{#if !!deleteRecipeImage.pending}
 								<LoadingComponent class="size-4" />
 							{:else}
-								<TrashIcon class="stroke-zinc-600 size-4" />
+								<TrashIcon class="stroke-zinc-700 size-4" />
 							{/if}
 						</div>
 					</button>
@@ -157,7 +157,7 @@
 			{#if !!uploadRecipeImage.pending}
 				<LoadingComponent />
 			{:else}
-				<PlusIcon class="size-8 text-zinc-300" />
+				<PlusIcon class="size-8 text-zinc-500" />
 			{/if}
 		</button>
 		<form {...uploadRecipeImage} enctype="multipart/form-data" class="hidden">

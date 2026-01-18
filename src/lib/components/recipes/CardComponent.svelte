@@ -30,11 +30,11 @@
 					onerror={handleImageError}
 				/>
 			{:else if recipe.imageUrl && isImageBroken}
-				<div class="flex h-full justify-center bg-neutral-50/80">
+				<div class="flex h-full justify-center bg-neutral-50">
 					<BrokenPreviewUrlComponent />
 				</div>
 			{:else}
-				<div class="flex h-full justify-center bg-neutral-50/80">
+				<div class="flex h-full justify-center bg-neutral-50">
 					<NoImagePreviewComponent />
 				</div>
 			{/if}
