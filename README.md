@@ -3,7 +3,7 @@
 rezeptly is a modern, web-based application designed to help you discover, organize, and manage your favorite recipes with ease. Whether you're a seasoned chef or just starting your culinary journey, rezeptly provides an intuitive and elegant interface for all your cooking needs.
 
 <div align="center">
-   <img width="720" alt="Preview of rezeptly" src="https://github.com/user-attachments/assets/f15db478-c570-42e0-90e7-f75660aa8083" />
+   <img width="720" alt="Preview of rezeptly" src="https://github.com/user-attachments/assets/0a6868eb-adf3-493f-99b7-a9ccdc2eb178" />
 </div>
 
 ## ✨ Features
