@@ -6,10 +6,16 @@
   "automerge": false,
   "labels": ["renovate"],
   "minimumReleaseAge": "3 days",
+  "rangeStrategy": "bump",
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
       "enabled": false
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "devDependencies (non-major)"
     }
   ]
 }
