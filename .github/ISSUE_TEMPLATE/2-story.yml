@@ -1,6 +1,6 @@
 name: Story
 description: Request a new feature or enhancement for rezeptly
-title: '[Story]: '
+title: '[Story] '
 labels: ['feature']
 body:
   - type: markdown
