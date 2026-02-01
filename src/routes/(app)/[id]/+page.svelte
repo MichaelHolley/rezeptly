@@ -2,6 +2,7 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { env as publicEnv } from '$env/dynamic/public';
 	import { deleteRecipeImage, getRecipeById, uploadRecipeImage } from '$lib/api/recipes.remote';
+	import BrokenPreviewUrlComponent from '$lib/components/common/BrokenImagePreview.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
@@ -23,6 +24,11 @@
 	const recipe = $derived(await getRecipeById(Number(params.id)));
 
 	let showInstructionsForm = $state(false);
+	let isImageBroken = $state(false);
+
+	const handleImageError = () => {
+		isImageBroken = true;
+	};
 
 	const toggleEditInstructions = () => {
 		showInstructionsForm = !showInstructionsForm;
@@ -118,13 +124,14 @@
 </div>
 
 <div class="mt-12">
-	{#if recipe.imageUrl}
+	{#if recipe.imageUrl && !isImageBroken}
 		<div class="flex flex-row gap-4">
 			<a href={recipe.imageUrl} target="_blank" rel="noopener noreferrer" class="relative">
 				<img
 					src={recipe.imageUrl}
 					alt={`Image for ${recipe.name}`}
 					class="h-52 rounded-sm shadow-sm"
+					onerror={handleImageError}
 				/>
 				{#if PermissionsStore.canEdit}
 					<button
@@ -145,6 +152,32 @@
 					</button>
 				{/if}
 			</a>
+		</div>
+	{:else if recipe.imageUrl && isImageBroken}
+		<div class="flex flex-row gap-4">
+			<div
+				class="relative flex size-48 items-center justify-center rounded-sm border bg-zinc-50 shadow-sm"
+			>
+				<BrokenPreviewUrlComponent />
+				{#if PermissionsStore.canEdit}
+					<button
+						class="absolute top-2 right-2"
+						onclick={async (e) => {
+							e.preventDefault();
+							await deleteRecipeImage(recipe.id);
+						}}
+						disabled={!!deleteRecipeImage.pending}
+					>
+						<div class="rounded bg-zinc-200/70 p-1">
+							{#if !!deleteRecipeImage.pending}
+								<LoadingComponent class="size-4" />
+							{:else}
+								<TrashIcon class="stroke-zinc-700 size-4" />
+							{/if}
+						</div>
+					</button>
+				{/if}
+			</div>
 		</div>
 	{:else if PermissionsStore.canEdit}
 		<button
