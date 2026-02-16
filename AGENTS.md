@@ -31,6 +31,10 @@
   - `fix: resolve recipe search pagination`
   - `chore: update dependencies`
 
+## Documentation
+
+- **External Docs**: Use `context7` mcp tools for searching and querying up-to-date documentation for libraries and frameworks. Always call `resolve-library-id` first to get the correct ID before using `query-docs`.
+
 ## Remote Functions Pattern
 
 - **Location**: Define in `$lib/api/*.remote.ts` files
@@ -40,7 +44,3 @@
 - **Refreshing Data**: Call `.refresh()` on queries after mutations to update UI
 - **Example**: `export const getRecipes = query(async () => recipeService.getRecipes());`
 - **Form Actions**: For complex form handling, use traditional SvelteKit form actions in `+page.server.ts`
-
----
-
-When you need to search docs, use `context7` tools.
