@@ -7,9 +7,9 @@
 - **Lint**: `pnpm lint` - runs prettier check and eslint
 - **Format**: `pnpm format` - formats code with prettier
 - **Type-check**: `pnpm check` - runs svelte-check with TypeScript
-- **Database**: `pnpm db:start` (Docker), `pnpm db:push` (schema changes)
-- **Test** `pnpm test` - Run all tests once
-- **Unit Test**`pnpm test:unit` - Run tests in watch mode
+- **Database**: `pnpm db:start` (Docker), `pnpm db:push` (schema changes), `pnpm db:generate` (new migration)
+- **Test**: `pnpm test` - runs vitest unit tests once
+- **Unit Test**: `pnpm test:unit` - runs vitest in watch mode
 
 ## Code Style
 
@@ -17,19 +17,18 @@
 - **Imports**: Group by external libs, then $lib aliases, then relative paths
 - **Types**: Use TypeScript strict mode; import types from `$lib/server/types`
 - **Naming**: camelCase for variables/functions, PascalCase for components/types, kebab-case for files
-- **Components**: Use Svelte 5 runes (`$props`, `$state`, `$derived`) not legacy stores
+- **Components**: Use Svelte 5 runes (`$props`, `$state`, `$derived`) not legacy stores. Organize by feature in `$lib/components/<feature>/`.
+- **Icons**: Use `@lucide/svelte` for iconography
+- **Styling**: Tailwind CSS (v4) with `clsx` and `tailwind-merge` for dynamic classes
 - **Error Handling**: Throw custom error classes from `$lib/server/errors` (e.g., `NotFoundError`, `ValidationError`). The global `handleError` hook manages logging and client responses. Use try-catch only for local recovery logic.
-- **Database**: Use Drizzle ORM with transactions for multi-step operations
+- **Database**: Use Drizzle ORM with transactions for multi-step operations. Use `pnpm db:push` for rapid prototyping and `pnpm db:generate` for production migrations.
 - **Services**: Keep business logic in `$lib/server/services/`, database queries in services not routes
 - **Comments**: Minimal comments; code should be self-documenting
 
-## Commit Messages
+## Environment Variables
 
-- **Format**: Follow Conventional Commits specification with prefixes: `feat:`, `fix:`, `chore:`, `refactor`, `test`
-- **Examples**:
-  - `feat: update Notify button color`
-  - `fix: resolve recipe search pagination`
-  - `chore: update dependencies`
+- **Local Setup**: Copy `.env.example` to `.env` and fill in required values. NEVER commit `.env` files.
+- **Vercel**: Use Vercel Dashboard for production environment variables.
 
 ## Documentation
 
