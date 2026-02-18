@@ -65,9 +65,11 @@ export const addIngredient = form(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.createIngredient({ name: name.trim(), recipeId });
 
 		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
@@ -81,9 +83,11 @@ export const removeIngredient = command(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.deleteIngredient(ingrId);
 
 		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
@@ -108,9 +112,11 @@ export const editIngredient = form(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.updateIngredient(ingrId, name.trim());
 
 		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
@@ -132,6 +138,9 @@ export const updateRecipeDetails = form(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
+		const oldSlug = recipe.slug;
+
 		await recipeService.updateRecipe(recipeId, {
 			name,
 			description,
@@ -140,6 +149,15 @@ export const updateRecipeDetails = form(
 		});
 
 		await getRecipeById(recipeId).refresh();
+
+		// Refresh old slug (in case name changed, creating a new slug)
+		await getRecipeBySlug(oldSlug).refresh();
+
+		// Refresh new slug if it changed
+		const updatedRecipe = await recipeService.getRecipeById(recipeId);
+		if (updatedRecipe.slug !== oldSlug) {
+			await getRecipeBySlug(updatedRecipe.slug).refresh();
+		}
 	}
 );
 
@@ -188,6 +206,8 @@ export const updateInstructions = form(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
+
 		await instructionService.upsertInstructionsForRecipe(
 			recipeId,
 			instructions.map((item, i) => ({
@@ -198,6 +218,7 @@ export const updateInstructions = form(
 		);
 
 		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
@@ -216,10 +237,12 @@ export const uploadRecipeImage = form(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
 		const url = await imageService.uploadImage(file);
 		await recipeService.updateRecipe(recipeId, { imageUrl: url });
 
 		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 
 		return { url };
 	}
@@ -240,6 +263,7 @@ export const deleteRecipeImage = command(z.number(), async (recipeId) => {
 	await recipeService.updateRecipe(recipeId, { imageUrl: null });
 
 	await getRecipeById(recipeId).refresh();
+	await getRecipeBySlug(recipe.slug).refresh();
 
 	return { success: true };
 });

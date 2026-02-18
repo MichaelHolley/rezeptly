@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addIngredient, getRecipeById } from '$lib/api/recipes.remote';
+	import { addIngredient, getRecipeBySlug } from '$lib/api/recipes.remote';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
@@ -9,7 +9,11 @@
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import IngredientItem from './IngredientItem.svelte';
 
-	const { recipeId, ingredients }: { recipeId: number; ingredients: Ingredient[] } = $props();
+	const {
+		recipeId,
+		recipeSlug,
+		ingredients
+	}: { recipeId: number; recipeSlug: string; ingredients: Ingredient[] } = $props();
 
 	let inputRef = $state<HTMLInputElement | null>(null);
 </script>
@@ -27,7 +31,7 @@
 					try {
 						await submit()
 							.updates(
-								getRecipeById(recipeId).withOverride((recipe) => ({
+								getRecipeBySlug(recipeSlug).withOverride((recipe) => ({
 									...recipe,
 									ingredients: [...recipe.ingredients, { name: data.name, id: 0, recipeId }]
 								}))
@@ -57,7 +61,7 @@
 		<div class="h-full overflow-y-auto px-4">
 			<div class="flex flex-col gap-2 py-1">
 				{#each ingredients as ingr, i (ingr.id)}
-					<IngredientItem ingredient={ingr} {recipeId} />
+					<IngredientItem ingredient={ingr} {recipeId} {recipeSlug} />
 					{#if i !== ingredients.length - 1}
 						<Separator />
 					{/if}

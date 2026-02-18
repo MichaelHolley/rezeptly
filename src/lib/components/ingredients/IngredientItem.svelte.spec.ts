@@ -11,16 +11,26 @@ describe('IngredientItem.svelte', () => {
 		recipeId: 1
 	};
 
+	const mockRecipeSlug = 'test-recipe';
+
 	describe('rendering', () => {
 		it('should render ingredient name', async () => {
-			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+			render(IngredientItem, {
+				ingredient: mockIngredient,
+				recipeId: 1,
+				recipeSlug: mockRecipeSlug
+			});
 
 			const ingredientName = await page.getByText('2 cups flour');
 			await expect.element(ingredientName).toBeInTheDocument();
 		});
 
 		it('should show delete button by default', async () => {
-			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+			render(IngredientItem, {
+				ingredient: mockIngredient,
+				recipeId: 1,
+				recipeSlug: mockRecipeSlug
+			});
 
 			const deleteButton = await page.getByTitle('Delete ingredient');
 			await expect.element(deleteButton).toBeInTheDocument();
@@ -33,7 +43,11 @@ describe('IngredientItem.svelte', () => {
 				recipeId: 1
 			};
 
-			render(IngredientItem, { ingredient: specialIngredient, recipeId: 1 });
+			render(IngredientItem, {
+				ingredient: specialIngredient,
+				recipeId: 1,
+				recipeSlug: mockRecipeSlug
+			});
 
 			const ingredientName = await page.getByText('½ cup milk & cream');
 			await expect.element(ingredientName).toBeInTheDocument();
@@ -46,7 +60,11 @@ describe('IngredientItem.svelte', () => {
 				recipeId: 1
 			};
 
-			render(IngredientItem, { ingredient: longNameIngredient, recipeId: 1 });
+			render(IngredientItem, {
+				ingredient: longNameIngredient,
+				recipeId: 1,
+				recipeSlug: mockRecipeSlug
+			});
 
 			const ingredientName = await page.getByText(
 				'2 cups of all-purpose flour, sifted and measured correctly'
@@ -57,7 +75,11 @@ describe('IngredientItem.svelte', () => {
 
 	describe('edit mode', () => {
 		it('should show form when ingredient name is clicked', async () => {
-			const { container } = render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+			const { container } = render(IngredientItem, {
+				ingredient: mockIngredient,
+				recipeId: 1,
+				recipeSlug: mockRecipeSlug
+			});
 
 			const nameButton = await page.getByText('2 cups flour');
 			await nameButton.click();
@@ -67,7 +89,11 @@ describe('IngredientItem.svelte', () => {
 		});
 
 		it('should show input field when ingredient name is clicked', async () => {
-			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+			render(IngredientItem, {
+				ingredient: mockIngredient,
+				recipeId: 1,
+				recipeSlug: mockRecipeSlug
+			});
 
 			const nameButton = await page.getByText('2 cups flour');
 			await nameButton.click();
@@ -77,7 +103,11 @@ describe('IngredientItem.svelte', () => {
 		});
 
 		it('should show save and cancel buttons in edit mode', async () => {
-			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+			render(IngredientItem, {
+				ingredient: mockIngredient,
+				recipeId: 1,
+				recipeSlug: mockRecipeSlug
+			});
 
 			const nameButton = await page.getByText('2 cups flour');
 			await nameButton.click();
@@ -90,7 +120,11 @@ describe('IngredientItem.svelte', () => {
 		});
 
 		it('should display ingredient name in input when editing', async () => {
-			render(IngredientItem, { ingredient: mockIngredient, recipeId: 1 });
+			render(IngredientItem, {
+				ingredient: mockIngredient,
+				recipeId: 1,
+				recipeSlug: mockRecipeSlug
+			});
 
 			const nameButton = await page.getByText('2 cups flour');
 			await nameButton.click();
