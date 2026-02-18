@@ -26,6 +26,7 @@ export const getRecipeById = query(z.number(), async (id) => {
 });
 
 export const getRecipeBySlug = query(z.string(), async (slug) => {
+	console.log('AUAAAA');
 	const recipe = await recipeService.getRecipeBySlug(slug);
 	return recipe;
 });
@@ -141,7 +142,7 @@ export const updateRecipeDetails = form(
 		const recipe = await recipeService.getRecipeById(recipeId);
 		const oldSlug = recipe.slug;
 
-		await recipeService.updateRecipe(recipeId, {
+		const result = await recipeService.updateRecipe(recipeId, {
 			name,
 			description,
 			imageUrl,
@@ -153,10 +154,8 @@ export const updateRecipeDetails = form(
 		// Refresh old slug (in case name changed, creating a new slug)
 		await getRecipeBySlug(oldSlug).refresh();
 
-		// Refresh new slug if it changed
-		const updatedRecipe = await recipeService.getRecipeById(recipeId);
-		if (updatedRecipe.slug !== oldSlug) {
-			await getRecipeBySlug(updatedRecipe.slug).refresh();
+		if (result.slug !== oldSlug) {
+			await getRecipeBySlug(result.slug).refresh();
 		}
 	}
 );
@@ -237,12 +236,11 @@ export const uploadRecipeImage = form(
 			throw new PermissionError();
 		}
 
-		const recipe = await recipeService.getRecipeById(recipeId);
 		const url = await imageService.uploadImage(file);
-		await recipeService.updateRecipe(recipeId, { imageUrl: url });
+		const result = await recipeService.updateRecipe(recipeId, { imageUrl: url });
 
 		await getRecipeById(recipeId).refresh();
-		await getRecipeBySlug(recipe.slug).refresh();
+		await getRecipeBySlug(result.slug).refresh();
 
 		return { url };
 	}
