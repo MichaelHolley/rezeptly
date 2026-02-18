@@ -1,5 +1,4 @@
 import { eq, inArray } from 'drizzle-orm';
-import slugify from 'slugify';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
 import { NotFoundError } from '../errors';
@@ -14,10 +13,7 @@ import type {
 	Tag
 } from '../types';
 import { deleteImage } from './image.service';
-
-const generateSlug = (name: string): string => {
-	return slugify(name, { lower: true, strict: true });
-};
+import { generateSlug } from './util/generate-slug';
 
 export const getRecipesMetadata = async (): Promise<RecipeMetadata[]> => {
 	const result = await db.query.recipes.findMany({
