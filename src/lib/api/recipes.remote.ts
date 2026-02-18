@@ -26,7 +26,6 @@ export const getRecipeById = query(z.number(), async (id) => {
 });
 
 export const getRecipeBySlug = query(z.string(), async (slug) => {
-	console.log('AUAAAA');
 	const recipe = await recipeService.getRecipeBySlug(slug);
 	return recipe;
 });
