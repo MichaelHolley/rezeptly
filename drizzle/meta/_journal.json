@@ -43,6 +43,13 @@
       "when": 1771424259842,
       "tag": "0005_RecipeSlug",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771424501241,
+      "tag": "0006_SeedSlug",
+      "breakpoints": true
     }
   ]
 }
