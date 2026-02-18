@@ -1,7 +1,7 @@
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
-import { NotFoundError } from '../errors';
+import { NotFoundError, ValidationError } from '../errors';
 import type {
 	NewIngredient,
 	NewInstruction,
@@ -110,6 +110,13 @@ export const createRecipe = async (
 ): Promise<Recipe> => {
 	const newRecipe = await db.transaction(async (tx) => {
 		const slug = generateSlug(data.name);
+
+		if (!slug) {
+			throw new ValidationError(
+				'Generated slug is empty. Please provide a valid name for the recipe.'
+			);
+		}
+
 		const [createdRecipe] = await tx
 			.insert(recipes)
 			.values({ name: data.name, slug, description: data.description, imageUrl: data.imageUrl })
@@ -194,6 +201,12 @@ export const updateRecipe = async (
 		}
 
 		const slug = data.name ? generateSlug(data.name) : currentRecipe.slug;
+		if (!slug) {
+			throw new ValidationError(
+				'Generated slug is empty. Please provide a valid name for the recipe.'
+			);
+		}
+
 		const [updatedRecipe] = await tx
 			.update(recipes)
 			.set({ name: data.name, slug, description: data.description, imageUrl: data.imageUrl })
