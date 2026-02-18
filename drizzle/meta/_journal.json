@@ -36,6 +36,13 @@
       "when": 1764429692415,
       "tag": "0004_RecipeImage",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771424259842,
+      "tag": "0005_RecipeSlug",
+      "breakpoints": true
     }
   ]
 }

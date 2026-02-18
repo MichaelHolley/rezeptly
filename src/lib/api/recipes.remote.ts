@@ -164,7 +164,7 @@ export const createRecipe = form(
 			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
-		redirect(303, `/${recipe.slug}`);
+		redirect(303, `/${recipe.id}`);
 	}
 );
 
