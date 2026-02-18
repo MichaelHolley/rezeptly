@@ -25,6 +25,11 @@ export const getRecipeById = query(z.number(), async (id) => {
 	return recipe;
 });
 
+export const getRecipeBySlug = query(z.string(), async (slug) => {
+	const recipe = await recipeService.getRecipeBySlug(slug);
+	return recipe;
+});
+
 export const deleteRecipe = form(
 	z.object({
 		recipeId: z

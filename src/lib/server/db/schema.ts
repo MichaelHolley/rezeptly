@@ -4,6 +4,7 @@ import { integer, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-o
 export const recipes = pgTable('recipes', {
 	id: serial('id').primaryKey(),
 	name: text('name').notNull(),
+	slug: text('slug').unique(),
 	description: text('description'),
 	imageUrl: text('image_url'),
 	createdAt: timestamp('created_at').defaultNow()

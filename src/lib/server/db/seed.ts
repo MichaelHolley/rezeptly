@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { stdin as input, stdout as output } from 'node:process';
 import * as readline from 'node:readline/promises';
 import postgres from 'postgres';
+import slugify from 'slugify';
 import { ingredients, instructions, recipes, recipesToTags, tags } from './schema';
 
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -442,6 +443,7 @@ async function seed() {
 					.insert(recipes)
 					.values({
 						name: recipeData.name,
+						slug: slugify(recipeData.name, { lower: true, strict: true }),
 						description: recipeData.description
 					})
 					.returning();
