@@ -20,11 +20,6 @@ export const getRecipes = query(async () => {
 	return await recipeService.getRecipes();
 });
 
-export const getRecipeById = query(z.number(), async (id) => {
-	const recipe = await recipeService.getRecipeById(id);
-	return recipe;
-});
-
 export const getRecipeBySlug = query(z.string(), async (slug) => {
 	const recipe = await recipeService.getRecipeBySlug(slug);
 	return recipe;
@@ -65,9 +60,10 @@ export const addIngredient = form(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.createIngredient({ name: name.trim(), recipeId });
 
-		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
@@ -81,9 +77,9 @@ export const removeIngredient = command(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.deleteIngredient(ingrId);
-
-		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
@@ -108,9 +104,9 @@ export const editIngredient = form(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.updateIngredient(ingrId, name.trim());
-
-		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
@@ -132,14 +128,20 @@ export const updateRecipeDetails = form(
 			throw new PermissionError();
 		}
 
-		await recipeService.updateRecipe(recipeId, {
+		const recipe = await recipeService.getRecipeById(recipeId);
+		const oldSlug = recipe.slug;
+
+		const result = await recipeService.updateRecipe(recipeId, {
 			name,
 			description,
 			imageUrl,
 			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
-		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(result.slug).refresh();
+		if (result.slug !== oldSlug) {
+			redirect(303, `/${result.slug}`);
+		}
 	}
 );
 
@@ -164,7 +166,7 @@ export const createRecipe = form(
 			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
-		redirect(303, `/${recipe.id}`);
+		redirect(303, `/${recipe.slug}`);
 	}
 );
 
@@ -188,6 +190,8 @@ export const updateInstructions = form(
 			throw new PermissionError();
 		}
 
+		const recipe = await recipeService.getRecipeById(recipeId);
+
 		await instructionService.upsertInstructionsForRecipe(
 			recipeId,
 			instructions.map((item, i) => ({
@@ -197,7 +201,7 @@ export const updateInstructions = form(
 			}))
 		);
 
-		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
@@ -217,9 +221,9 @@ export const uploadRecipeImage = form(
 		}
 
 		const url = await imageService.uploadImage(file);
-		await recipeService.updateRecipe(recipeId, { imageUrl: url });
+		const result = await recipeService.updateRecipe(recipeId, { imageUrl: url });
 
-		await getRecipeById(recipeId).refresh();
+		await getRecipeBySlug(result.slug).refresh();
 
 		return { url };
 	}
@@ -239,7 +243,7 @@ export const deleteRecipeImage = command(z.number(), async (recipeId) => {
 	await imageService.deleteImage(recipe.imageUrl);
 	await recipeService.updateRecipe(recipeId, { imageUrl: null });
 
-	await getRecipeById(recipeId).refresh();
+	await getRecipeBySlug(recipe.slug).refresh();
 
 	return { success: true };
 });

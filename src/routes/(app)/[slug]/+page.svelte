@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
 	import { env as publicEnv } from '$env/dynamic/public';
-	import { deleteRecipeImage, getRecipeById, uploadRecipeImage } from '$lib/api/recipes.remote';
+	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import BrokenPreviewUrlComponent from '$lib/components/common/BrokenImagePreview.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
@@ -21,7 +21,7 @@
 	let fileUploadInput = $state<HTMLInputElement | null>(null);
 	let fileUploadFormSubmitButton = $state<HTMLButtonElement | null>(null);
 
-	const recipe = $derived(await getRecipeById(Number(params.id)));
+	const recipe = $derived(await getRecipeBySlug(params.slug));
 
 	let showInstructionsForm = $state(false);
 	let isImageBroken = $state(false);
@@ -64,7 +64,7 @@
 	<title>rezeptly | {recipe.name}</title>
 </svelte:head>
 
-<BreadcrumbComponent breadcrumbs={[{ name: recipe.name, href: `/${recipe.id}` }]} />
+<BreadcrumbComponent breadcrumbs={[{ name: recipe.name, href: `/${recipe.slug}` }]} />
 
 <RecipeDetails {recipe} />
 
@@ -74,7 +74,11 @@
 			<div class="flex flex-row gap-1 pb-2">
 				<h3>Ingredients</h3>
 				{#if PermissionsStore.canEdit}
-					<IngredientsSheet ingredients={recipe.ingredients} recipeId={recipe.id} />
+					<IngredientsSheet
+						ingredients={recipe.ingredients}
+						recipeId={recipe.id}
+						recipeSlug={recipe.slug}
+					/>
 				{/if}
 			</div>
 			<IngredientsListComponent ingredients={recipe.ingredients} />
@@ -116,7 +120,11 @@
 		<div class="flex flex-row gap-1 pb-2">
 			<h3>Ingredients</h3>
 			{#if PermissionsStore.canEdit}
-				<IngredientsSheet ingredients={recipe.ingredients} recipeId={recipe.id} />
+				<IngredientsSheet
+					ingredients={recipe.ingredients}
+					recipeId={recipe.id}
+					recipeSlug={recipe.slug}
+				/>
 			{/if}
 		</div>
 		<IngredientsListComponent ingredients={recipe.ingredients} />
