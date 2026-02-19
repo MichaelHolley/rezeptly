@@ -20,11 +20,6 @@ export const getRecipes = query(async () => {
 	return await recipeService.getRecipes();
 });
 
-export const getRecipeById = query(z.number(), async (id) => {
-	const recipe = await recipeService.getRecipeById(id);
-	return recipe;
-});
-
 export const getRecipeBySlug = query(z.string(), async (slug) => {
 	const recipe = await recipeService.getRecipeBySlug(slug);
 	return recipe;
@@ -68,7 +63,6 @@ export const addIngredient = form(
 		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.createIngredient({ name: name.trim(), recipeId });
 
-		await getRecipeById(recipeId).refresh();
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
@@ -85,8 +79,6 @@ export const removeIngredient = command(
 
 		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.deleteIngredient(ingrId);
-
-		await getRecipeById(recipeId).refresh();
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
@@ -114,8 +106,6 @@ export const editIngredient = form(
 
 		const recipe = await recipeService.getRecipeById(recipeId);
 		await ingredientService.updateIngredient(ingrId, name.trim());
-
-		await getRecipeById(recipeId).refresh();
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
@@ -147,8 +137,6 @@ export const updateRecipeDetails = form(
 			imageUrl,
 			tags: tags?.map((t) => ({ name: t })) || []
 		});
-
-		await getRecipeById(recipeId).refresh();
 
 		// Refresh old slug (in case name changed, creating a new slug)
 		await getRecipeBySlug(oldSlug).refresh();
@@ -215,7 +203,6 @@ export const updateInstructions = form(
 			}))
 		);
 
-		await getRecipeById(recipeId).refresh();
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
@@ -238,7 +225,6 @@ export const uploadRecipeImage = form(
 		const url = await imageService.uploadImage(file);
 		const result = await recipeService.updateRecipe(recipeId, { imageUrl: url });
 
-		await getRecipeById(recipeId).refresh();
 		await getRecipeBySlug(result.slug).refresh();
 
 		return { url };
@@ -259,7 +245,6 @@ export const deleteRecipeImage = command(z.number(), async (recipeId) => {
 	await imageService.deleteImage(recipe.imageUrl);
 	await recipeService.updateRecipe(recipeId, { imageUrl: null });
 
-	await getRecipeById(recipeId).refresh();
 	await getRecipeBySlug(recipe.slug).refresh();
 
 	return { success: true };
