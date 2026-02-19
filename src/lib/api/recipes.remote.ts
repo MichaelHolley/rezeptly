@@ -138,11 +138,9 @@ export const updateRecipeDetails = form(
 			tags: tags?.map((t) => ({ name: t })) || []
 		});
 
-		// Refresh old slug (in case name changed, creating a new slug)
-		await getRecipeBySlug(oldSlug).refresh();
-
+		await getRecipeBySlug(result.slug).refresh();
 		if (result.slug !== oldSlug) {
-			await getRecipeBySlug(result.slug).refresh();
+			redirect(303, `/${result.slug}`);
 		}
 	}
 );
