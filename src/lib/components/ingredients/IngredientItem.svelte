@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { editIngredient, getRecipeById, removeIngredient } from '$lib/api/recipes.remote';
+	import { editIngredient, getRecipeBySlug, removeIngredient } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import type { Ingredient } from '$lib/server/types';
@@ -7,7 +7,11 @@
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 
-	const { ingredient, recipeId }: { ingredient: Ingredient; recipeId: number } = $props();
+	const {
+		ingredient,
+		recipeId,
+		recipeSlug
+	}: { ingredient: Ingredient; recipeId: number; recipeSlug: string } = $props();
 
 	let isEditing = $state(false);
 	let inputRef = $state<HTMLInputElement | null>(null);
@@ -31,7 +35,7 @@
 				try {
 					await submit()
 						.updates(
-							getRecipeById(recipeId).withOverride((recipe) => ({
+							getRecipeBySlug(recipeSlug).withOverride((recipe) => ({
 								...recipe,
 								ingredients: recipe.ingredients.map((i) =>
 									i.id === ingredient.id ? { ...i, name: editValue } : i
@@ -92,7 +96,7 @@
 			onclick={async () => {
 				try {
 					await removeIngredient({ recipeId, ingrId: ingredient.id }).updates(
-						getRecipeById(recipeId).withOverride((recipe) => ({
+						getRecipeBySlug(recipeSlug).withOverride((recipe) => ({
 							...recipe,
 							ingredients: recipe.ingredients.filter((i) => i.id !== ingredient.id)
 						}))

@@ -59,7 +59,7 @@
 
 	<div class="card-container my-4 grid gap-4">
 		{#each filterRecipes(recipes) as recipe (recipe.id)}
-			<a href="/{recipe.id}">
+			<a href="/{recipe.slug}">
 				<CardComponent {recipe} />
 			</a>
 		{/each}

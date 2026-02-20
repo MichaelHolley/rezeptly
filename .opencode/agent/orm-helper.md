@@ -97,7 +97,7 @@ await db.query.recipes.findFirst({
 3. **Type Safety**: Import types from `$lib/server/types` and use Drizzle's inferred types
 4. **Junction Tables**: Use composite primary keys with `primaryKey({ columns: [...] })`
 5. **Service Layer**: Keep all database queries in `$lib/server/services/*.service.ts`
-6. **Migrations**: NEVER create migration files manually - always recommend `pnpm db:generate` to auto-generate
+6. **Migrations**: NEVER create migration files manually - always recommend `pnpm db:generate` to auto-generate with `--name MigrationName` for naming them.
 7. **Case Sensitivity**: Tags preserve original case - "Pasta" and "pasta" are different tags
 
 ## Important Constraints

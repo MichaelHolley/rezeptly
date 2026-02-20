@@ -1,7 +1,7 @@
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
-import { NotFoundError } from '../errors';
+import { NotFoundError, ValidationError } from '../errors';
 import type {
 	NewIngredient,
 	NewInstruction,
@@ -13,6 +13,7 @@ import type {
 	Tag
 } from '../types';
 import { deleteImage } from './image.service';
+import { generateSlug } from './util/generate-slug';
 
 export const getRecipesMetadata = async (): Promise<RecipeMetadata[]> => {
 	const result = await db.query.recipes.findMany({
@@ -76,17 +77,49 @@ export const getRecipeById = async (id: number): Promise<RecipeWithDetails> => {
 	};
 };
 
+export const getRecipeBySlug = async (slug: string): Promise<RecipeWithDetails> => {
+	const result = await db.query.recipes.findFirst({
+		where: eq(recipes.slug, slug),
+		with: {
+			ingredients: true,
+			instructions: true,
+			tags: {
+				with: {
+					tag: true
+				}
+			}
+		}
+	});
+
+	if (!result) {
+		throw new NotFoundError('Recipe', slug);
+	}
+
+	return {
+		...result,
+		tags: result.tags.map((rt) => rt.tag)
+	};
+};
+
 export const createRecipe = async (
-	data: NewRecipe & {
+	data: Omit<NewRecipe, 'id' | 'slug' | 'createdAt'> & {
 		ingredients: Omit<NewIngredient, 'recipeId'>[];
 		instructions: Omit<NewInstruction, 'recipeId'>[];
 		tags: NewTag[];
 	}
 ): Promise<Recipe> => {
 	const newRecipe = await db.transaction(async (tx) => {
+		const slug = generateSlug(data.name);
+
+		if (!slug) {
+			throw new ValidationError(
+				'Generated slug is empty. Please provide a valid name for the recipe.'
+			);
+		}
+
 		const [createdRecipe] = await tx
 			.insert(recipes)
-			.values({ name: data.name, description: data.description, imageUrl: data.imageUrl })
+			.values({ name: data.name, slug, description: data.description, imageUrl: data.imageUrl })
 			.returning();
 
 		if (data.ingredients && data.ingredients.length > 0) {
@@ -167,9 +200,16 @@ export const updateRecipe = async (
 			throw new NotFoundError('Recipe', id);
 		}
 
+		const slug = data.name ? generateSlug(data.name) : currentRecipe.slug;
+		if (!slug) {
+			throw new ValidationError(
+				'Generated slug is empty. Please provide a valid name for the recipe.'
+			);
+		}
+
 		const [updatedRecipe] = await tx
 			.update(recipes)
-			.set({ name: data.name, description: data.description, imageUrl: data.imageUrl })
+			.set({ name: data.name, slug, description: data.description, imageUrl: data.imageUrl })
 			.where(eq(recipes.id, id))
 			.returning();
 

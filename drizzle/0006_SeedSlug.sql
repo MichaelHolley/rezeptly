@@ -1,0 +1,1 @@
+UPDATE "recipes" SET "slug" = TRIM(BOTH '-' FROM LOWER(REGEXP_REPLACE("name", '[^a-zA-Z0-9]+', '-', 'g'))) WHERE "slug" IS NULL;--> statement-breakpoint
