@@ -1,5 +1,20 @@
+import { isHttpError, type HttpError } from '@sveltejs/kit';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
+export function transformError(error: unknown): App.Error {
+	if (isHttpError(error)) {
+		const httpError = error as HttpError;
+		return {
+			...httpError.body
+		};
+	}
+
+	return {
+		code: 'UNHANDLED_ERROR',
+		message: error instanceof Error ? error.message : 'An unknown error occurred'
+	};
+}
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));

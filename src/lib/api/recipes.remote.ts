@@ -5,7 +5,7 @@ import * as imageService from '$lib/server/services/image.service';
 import * as ingredientService from '$lib/server/services/ingredient.service';
 import * as instructionService from '$lib/server/services/instruction.service';
 import * as recipeService from '$lib/server/services/recipe.service';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const getRecipesMetadata = query(async () => {
@@ -21,6 +21,10 @@ export const getRecipes = query(async () => {
 });
 
 export const getRecipeBySlug = query(z.string(), async (slug) => {
+	await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+	error(404, { message: 'Recipe not found', code: 'NOT_FOUND' }); // Simulate not found error
+	// throw new NotFoundError('recipe', 187); // Simulate not found error
+
 	const recipe = await recipeService.getRecipeBySlug(slug);
 	return recipe;
 });

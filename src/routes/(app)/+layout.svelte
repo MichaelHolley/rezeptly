@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { logout } from '$lib/api/auth.remote';
+	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import { transformError } from '$lib/utils.js';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
+	import { isHttpError, type HttpError } from '@sveltejs/kit';
 
 	let { children, data } = $props();
 
@@ -46,5 +49,35 @@
 </nav>
 
 <div class="container mx-auto my-6 mb-10 px-3 md:px-6">
-	{@render children()}
+	<svelte:boundary
+		onerror={(err) => {
+			if (isHttpError(err)) {
+				const error = err as HttpError;
+				return { ...error.body };
+			}
+		}}
+	>
+		{@render children()}
+		{#snippet pending()}
+			<div class="flex h-64 items-center justify-center">
+				<LoadingComponent class="h-8 w-8" />
+			</div>
+		{/snippet}
+
+		{#snippet failed(error, reset)}
+			{@const errorObj = transformError(error)}
+			<div class="flex flex-col items-center justify-center gap-4 py-12 text-center">
+				<p class="text-xl text-destructive font-medium">Failed to load recipe</p>
+				<p class="text-muted-foreground text-sm">
+					{errorObj.message}
+				</p>
+				<button
+					onclick={reset}
+					class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm transition-colors"
+				>
+					Try again
+				</button>
+			</div>
+		{/snippet}
+	</svelte:boundary>
 </div>

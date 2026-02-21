@@ -48,7 +48,6 @@
 	{href}
 	class={cn(badgeVariants({ variant }), className)}
 	{...restProps}
-	style:view-transition-name={sanitizedViewTransitionName}
 >
 	{@render children?.()}
 </svelte:element>
