@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { logout } from '$lib/api/auth.remote';
+	import { getAvailableTags } from '$lib/api/recipes.remote';
 	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
+	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
 
 	let { children, data } = $props();
+	const availableTags = await getAvailableTags();
+	AvailableTagsStore.tags = availableTags;
 
 	$effect(() => {
 		PermissionsStore.roles = data.roles || [];

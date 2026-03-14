@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { getAvailableTags, getRecipesMetadata } from '$lib/api/recipes.remote';
+	import { getRecipesMetadata } from '$lib/api/recipes.remote';
 	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
 	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
+	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
@@ -20,7 +21,7 @@
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);
 
 	const recipes = $derived(await getRecipesMetadata());
-	const availableTags = $derived(await getAvailableTags());
+	const availableTags = $derived(AvailableTagsStore.tags);
 
 	const filterRecipes = (recipes: RecipeMetadata[]) => {
 		if (!recipes) {
