@@ -82,14 +82,16 @@
 						<XIcon />
 					</TagComponent>
 				{/each}
-
-				{#each recommendedTags as tag (tag)}
-					<TagComponent onSelect={() => addTag(tag)}>
-						{tag}
-						<PlusIcon class="text-orange-500" />
-					</TagComponent>
-				{/each}
 			</div>
 		</InputGroup.Addon>
 	</InputGroup.Root>
+	<div class="flex flex-row gap-2">
+		<p class="text-neutral-500"><small>Suggestions:</small></p>
+		{#each recommendedTags as tag (tag)}
+			<TagComponent onSelect={() => addTag(tag)}>
+				{tag}
+				<PlusIcon class="text-orange-500" />
+			</TagComponent>
+		{/each}
+	</div>
 </div>
