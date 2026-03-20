@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { getAvailableTags, getRecipesMetadata } from '$lib/api/recipes.remote';
+	import { getRecipesMetadata } from '$lib/api/recipes.remote';
 	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
+	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
@@ -48,13 +49,12 @@
 
 <svelte:boundary>
 	{@const recipes = await getRecipesMetadata()}
-	{@const availableTags = await getAvailableTags()}
 
 	<FilterComponent
 		bind:searchTerm={searchParams.searchTerm}
 		bind:selectedTag={searchParams.activeTagFilter}
 		bind:filterFavorites={searchParams.filterFavorites}
-		availableTags={availableTags.map((t) => t.name)}
+		availableTags={AvailableTagsStore.tags.map((t) => t.name)}
 	/>
 
 	<div class="card-container my-4 grid gap-4">
