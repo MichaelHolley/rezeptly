@@ -1,12 +1,12 @@
 import { command, form, query } from '$app/server';
 import { userCanWrite } from '$lib/server/auth/permissions';
-import { PermissionError, ValidationError } from '$lib/server/errors';
 import * as imageService from '$lib/server/services/image.service';
 import * as ingredientService from '$lib/server/services/ingredient.service';
 import * as instructionService from '$lib/server/services/instruction.service';
 import * as recipeService from '$lib/server/services/recipe.service';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
+import { throwNewPermissionError } from '../server/error';
 
 export const getRecipesMetadata = query(async () => {
 	return await recipeService.getRecipesMetadata();
@@ -21,10 +21,6 @@ export const getRecipes = query(async () => {
 });
 
 export const getRecipeBySlug = query(z.string(), async (slug) => {
-	await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
-	error(404, { message: 'Recipe not found', code: 'NOT_FOUND' }); // Simulate not found error
-	// throw new NotFoundError('recipe', 187); // Simulate not found error
-
 	const recipe = await recipeService.getRecipeBySlug(slug);
 	return recipe;
 });
@@ -40,7 +36,7 @@ export const deleteRecipe = form(
 	}),
 	async ({ recipeId }) => {
 		if (!userCanWrite()) {
-			throw new PermissionError();
+			throwNewPermissionError();
 		}
 
 		await recipeService.deleteRecipe(recipeId);
@@ -61,7 +57,7 @@ export const addIngredient = form(
 	}),
 	async ({ recipeId, name }) => {
 		if (!userCanWrite()) {
-			throw new PermissionError();
+			throwNewPermissionError();
 		}
 
 		const recipe = await recipeService.getRecipeById(recipeId);
@@ -78,7 +74,7 @@ export const removeIngredient = command(
 	}),
 	async ({ recipeId, ingrId }) => {
 		if (!userCanWrite()) {
-			throw new PermissionError();
+			throwNewPermissionError();
 		}
 
 		const recipe = await recipeService.getRecipeById(recipeId);
@@ -105,7 +101,7 @@ export const editIngredient = form(
 	}),
 	async ({ recipeId, ingrId, name }) => {
 		if (!userCanWrite()) {
-			throw new PermissionError();
+			throwNewPermissionError();
 		}
 
 		const recipe = await recipeService.getRecipeById(recipeId);
@@ -129,7 +125,7 @@ export const updateRecipeDetails = form(
 	}),
 	async ({ recipeId, name, description, tags, imageUrl }) => {
 		if (!userCanWrite()) {
-			throw new PermissionError();
+			throwNewPermissionError();
 		}
 
 		const recipe = await recipeService.getRecipeById(recipeId);
@@ -158,7 +154,7 @@ export const createRecipe = form(
 	}),
 	async ({ name, description, tags, imageUrl }) => {
 		if (!userCanWrite()) {
-			throw new PermissionError();
+			throwNewPermissionError();
 		}
 
 		const recipe = await recipeService.createRecipe({
@@ -191,7 +187,7 @@ export const updateInstructions = form(
 	}),
 	async ({ recipeId, instructions }) => {
 		if (!userCanWrite()) {
-			throw new PermissionError();
+			throwNewPermissionError();
 		}
 
 		const recipe = await recipeService.getRecipeById(recipeId);
@@ -221,7 +217,7 @@ export const uploadRecipeImage = form(
 	}),
 	async ({ recipeId, file }) => {
 		if (!userCanWrite()) {
-			throw new PermissionError();
+			throwNewPermissionError();
 		}
 
 		const url = await imageService.uploadImage(file);
@@ -235,13 +231,13 @@ export const uploadRecipeImage = form(
 
 export const deleteRecipeImage = command(z.number(), async (recipeId) => {
 	if (!userCanWrite()) {
-		throw new PermissionError();
+		throwNewPermissionError();
 	}
 
 	const recipe = await recipeService.getRecipeById(recipeId);
 
 	if (!recipe.imageUrl) {
-		throw new ValidationError('Recipe does not have an image to delete');
+		error(400, { message: 'Recipe does not have an image to delete', code: 'VALIDATION_ERROR' });
 	}
 
 	await imageService.deleteImage(recipe.imageUrl);

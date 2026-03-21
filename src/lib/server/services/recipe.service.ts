@@ -1,7 +1,7 @@
+import { error } from '@sveltejs/kit';
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
-import { NotFoundError, ValidationError } from '../errors';
 import type {
 	NewIngredient,
 	NewInstruction,
@@ -68,7 +68,7 @@ export const getRecipeById = async (id: number): Promise<RecipeWithDetails> => {
 	});
 
 	if (!result) {
-		throw new NotFoundError('Recipe', id);
+		error(404, { message: `Recipe with ID ${id} not found`, code: 'NOT_FOUND' });
 	}
 
 	return {
@@ -92,7 +92,7 @@ export const getRecipeBySlug = async (slug: string): Promise<RecipeWithDetails> 
 	});
 
 	if (!result) {
-		throw new NotFoundError('Recipe', slug);
+		error(404, { message: `Recipe with slug ${slug} not found`, code: 'NOT_FOUND' });
 	}
 
 	return {
@@ -112,9 +112,10 @@ export const createRecipe = async (
 		const slug = generateSlug(data.name);
 
 		if (!slug) {
-			throw new ValidationError(
-				'Generated slug is empty. Please provide a valid name for the recipe.'
-			);
+			error(400, {
+				message: 'Generated slug is empty. Please provide a valid name for the recipe.',
+				code: 'VALIDATION_ERROR'
+			});
 		}
 
 		const [createdRecipe] = await tx
@@ -197,14 +198,15 @@ export const updateRecipe = async (
 		const [currentRecipe] = await tx.select().from(recipes).where(eq(recipes.id, id));
 
 		if (!currentRecipe) {
-			throw new NotFoundError('Recipe', id);
+			error(404, { message: `Recipe with ID ${id} not found`, code: 'NOT_FOUND' });
 		}
 
 		const slug = data.name ? generateSlug(data.name) : currentRecipe.slug;
 		if (!slug) {
-			throw new ValidationError(
-				'Generated slug is empty. Please provide a valid name for the recipe.'
-			);
+			error(400, {
+				message: 'Generated slug is empty. Please provide a valid name for the recipe.',
+				code: 'VALIDATION_ERROR'
+			});
 		}
 
 		const [updatedRecipe] = await tx
