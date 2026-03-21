@@ -6,7 +6,7 @@
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
-	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
+	import { AvailableTagsStore } from '$lib/store/available-tags.svelte.js';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import { transformError } from '$lib/utils.js';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
@@ -14,10 +14,10 @@
 
 	let { children, data } = $props();
 	const availableTags = await getAvailableTags();
-	AvailableTagsStore.tags = availableTags;
 
 	$effect(() => {
 		PermissionsStore.roles = data.roles || [];
+		AvailableTagsStore.tags = availableTags;
 	});
 
 	const logoutUser = async () => {
