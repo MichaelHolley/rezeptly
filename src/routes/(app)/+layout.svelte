@@ -11,10 +11,10 @@
 
 	let { children, data } = $props();
 	const availableTags = await getAvailableTags();
-	AvailableTagsStore.tags = availableTags;
 
 	$effect(() => {
 		PermissionsStore.roles = data.roles || [];
+		AvailableTagsStore.tags = availableTags;
 	});
 
 	const logoutUser = async () => {
