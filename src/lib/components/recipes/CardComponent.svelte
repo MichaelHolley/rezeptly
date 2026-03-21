@@ -40,7 +40,7 @@
 			{/if}
 		</div>
 		<Card.Title class="truncate px-6 pt-2 pb-1 text-base tracking-tight" title={recipe.name}>
-			<span>{recipe.name}</span>
+			<span style:view-transition-name="recipe-title-{recipe.id}">{recipe.name}</span>
 		</Card.Title>
 	</Card.Header>
 	<Card.Content>

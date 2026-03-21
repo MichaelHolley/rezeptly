@@ -37,7 +37,10 @@
 		<RecipeDetailsFormComponent {recipe} onSave={closeForm} onCancel={closeForm} />
 	{:else}
 		<div class="flex flex-row justify-between gap-2">
-			<h2 class="tracking-tight text-shadow-xs">
+			<h2
+				style:view-transition-name="recipe-title-{recipe.id}"
+				class="tracking-tight text-shadow-xs"
+			>
 				{recipe.name}
 			</h2>
 			<div class="flex flex-row justify-end gap-2">
