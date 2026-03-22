@@ -2,8 +2,6 @@
 	import { page } from '$app/state';
 	import { logout } from '$lib/api/auth.remote';
 	import { getAvailableTags } from '$lib/api/recipes.remote';
-	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte.js';
@@ -12,11 +10,11 @@
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
 
 	let { children, data } = $props();
-	const availableTags = await getAvailableTags();
+	const availableTags = $derived(getAvailableTags());
 
 	$effect(() => {
 		PermissionsStore.roles = data.roles || [];
-		AvailableTagsStore.tags = availableTags;
+		AvailableTagsStore.tags = availableTags.current || [];
 	});
 
 	const logoutUser = async () => {
@@ -52,17 +50,5 @@
 </nav>
 
 <div class="container mx-auto my-6 mb-10 px-3 md:px-6">
-	<svelte:boundary>
-		{@render children()}
-
-		{#snippet pending()}
-			<div class="flex h-64 items-center justify-center">
-				<LoadingComponent class="h-8 w-8" />
-			</div>
-		{/snippet}
-
-		{#snippet failed(error, retry)}
-			<ErrorComponent {error} {retry} />
-		{/snippet}
-	</svelte:boundary>
+	{@render children()}
 </div>

@@ -37,6 +37,10 @@
 		<Empty.Title class="text-5xl">
 			<p class="text-4xl">Oops!</p>
 		</Empty.Title>
+		<Empty.Description class="mt-1 text-sm">
+			{parsedError.status}
+			{parsedError.code}
+		</Empty.Description>
 		<Empty.Description class="mt-1 text-2xl">{parsedError.message}</Empty.Description>
 	</Empty.Header>
 	{#if retry}

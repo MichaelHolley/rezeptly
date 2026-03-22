@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { getRecipesMetadata } from '$lib/api/recipes.remote';
+	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
+	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
@@ -17,8 +19,6 @@
 			activeTagFilter: z.string().optional().default('')
 		})
 	);
-
-	const recipes = await getRecipesMetadata();
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);
 
@@ -48,20 +48,34 @@
 	<title>rezeptly</title>
 </svelte:head>
 
-<FilterComponent
-	bind:searchTerm={searchParams.searchTerm}
-	bind:selectedTag={searchParams.activeTagFilter}
-	bind:filterFavorites={searchParams.filterFavorites}
-	availableTags={AvailableTagsStore.tags.map((t) => t.name)}
-/>
+<svelte:boundary>
+	{@const recipes = await getRecipesMetadata()}
 
-<div class="card-container my-4 grid gap-4">
-	{#each filterRecipes(recipes) as recipe (recipe.id)}
-		<a href="/{recipe.slug}">
-			<CardComponent {recipe} />
-		</a>
-	{/each}
-</div>
+	<FilterComponent
+		bind:searchTerm={searchParams.searchTerm}
+		bind:selectedTag={searchParams.activeTagFilter}
+		bind:filterFavorites={searchParams.filterFavorites}
+		availableTags={AvailableTagsStore.tags.map((t) => t.name)}
+	/>
+
+	<div class="card-container my-4 grid gap-4">
+		{#each filterRecipes(recipes) as recipe (recipe.id)}
+			<a href="/{recipe.slug}">
+				<CardComponent {recipe} />
+			</a>
+		{/each}
+	</div>
+
+	{#snippet pending()}
+		<div class="flex h-64 items-center justify-center">
+			<LoadingComponent class="h-8 w-8" />
+		</div>
+	{/snippet}
+
+	{#snippet failed(error, retry)}
+		<ErrorComponent {error} {retry} />
+	{/snippet}
+</svelte:boundary>
 
 <style>
 	.card-container {
