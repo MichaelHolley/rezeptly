@@ -6,8 +6,7 @@ import {
 	setSessionTokenCookie
 } from '$lib/server/auth/auth';
 import { getRoles } from '$lib/server/auth/permissions';
-import { PermissionError } from '$lib/server/errors';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const getUserRoles = query(async () => {
@@ -28,7 +27,7 @@ export const login = form(
 	}),
 	async ({ password, returnTo }) => {
 		if (password !== AUTH_PASSWORD) {
-			throw new PermissionError('Incorrect password');
+			error(401, { message: 'Invalid password', code: 'INVALID_CREDENTIALS' });
 		}
 
 		const event = getRequestEvent();

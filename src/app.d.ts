@@ -11,6 +11,7 @@ declare global {
 				| 'VALIDATION_ERROR'
 				| 'PERMISSION_DENIED'
 				| 'CONFIGURATION_ERROR'
+				| 'INVALID_CREDENTIALS'
 				| 'UNHANDLED_ERROR';
 			details?: unknown;
 		}

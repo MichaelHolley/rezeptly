@@ -7,7 +7,7 @@
 - **Lint**: `pnpm lint` - runs prettier check and eslint
 - **Format**: `pnpm format` - formats code with prettier
 - **Type-check**: `pnpm check` - runs svelte-check with TypeScript
-- **Database**: `pnpm db:start` (Docker), `pnpm db:push` (schema changes), `pnpm db:generate` (new migration)
+- **Database**: `pnpm db:start` (Docker), `pnpm db:push` (schema changes), `pnpm db:generate` (new migration), `pnpm db:migrate` (apply migrations)
 - **Test**: `pnpm test` - runs vitest unit tests once
 - **Unit Test**: `pnpm test:unit` - runs vitest in watch mode
 
@@ -20,9 +20,10 @@
 - **Components**: Use Svelte 5 runes (`$props`, `$state`, `$derived`) not legacy stores. Organize by feature in `$lib/components/<feature>/`.
 - **Icons**: Use `@lucide/svelte` for iconography
 - **Styling**: Tailwind CSS (v4) with `clsx` and `tailwind-merge` for dynamic classes
-- **Error Handling**: Throw custom error classes from `$lib/server/errors` (e.g., `NotFoundError`, `ValidationError`). The global `handleError` hook manages logging and client responses. Use try-catch only for local recovery logic.
+- **Error Handling**: Use SvelteKit `error()` / `redirect()` with typed payloads that match `App.Error` (`message` + `code`). Use shared helpers like `src/lib/server/error.ts` for repeated cases such as permission failures. Keep try-catch blocks for local recovery only.
 - **Database**: Use Drizzle ORM with transactions for multi-step operations. Use `pnpm db:push` for rapid prototyping and `pnpm db:generate` for production migrations.
-- **Services**: Keep business logic in `$lib/server/services/`, database queries in services not routes
+- **Services**: Keep business logic in `$lib/server/services/`, database queries in services not routes, and blob/file side effects in services too.
+- **Architecture**: Keep routes and remote functions thin; put validation at the boundary and refresh remote queries after mutations.
 - **Comments**: Minimal comments; code should be self-documenting
 
 ## Environment Variables

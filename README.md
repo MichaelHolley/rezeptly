@@ -13,13 +13,21 @@ rezeptly is a modern, web-based application designed to help you discover, organ
 - **Ingredient Lists:** Keep track of all the necessary ingredients for your recipes.
 - **Responsive Design:** Access your recipes from any device—desktop, tablet, or mobile.
 
+## 🏗 Architecture
+
+- Server logic lives in `src/lib/server/services/`; routes and remote functions stay thin.
+- Remote functions live in `src/lib/api/*.remote.ts` and use `query()`, `command()`, and `form()` with Zod validation.
+- Server failures use SvelteKit `error()` / `redirect()` with typed payloads shaped by `App.Error`.
+- Permission failures use the shared `throwNewPermissionError()` helper.
+- Shared error UI renders the server `message` and `code` fields.
+
 ## 🚀 Getting Started
 
 Follow these instructions to get a local copy of rezeptly up and running on your machine for development and testing purposes.
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v22 or later)
+- [Node.js](https://nodejs.org/) (20.19+, 22.13+, or 24+)
 - [pnpm](https://pnpm.io/installation)
 - [Docker](https://www.docker.com/products/docker-desktop/)
 
@@ -113,7 +121,7 @@ The application will be available at `http://localhost:5173`.
 
 - `pnpm db:start`: Starts the PostgreSQL database using Docker Compose.
 - `pnpm db:push`: Pushes the current Drizzle schema to the database.
-- `pnpm db:migrate`: Creates a new SQL migration file based on schema changes.
+- `pnpm db:generate`: Creates a new SQL migration file based on schema changes.
 - `pnpm db:studio`: Opens Drizzle Studio to browse and manage your data.
 - `pnpm db:seed`: Opens an interactive menu to seed or clear the database (requires `db:start` and `db:push` first).
   - Use `pnpm db:seed -- --clear` to clear and reseed without the interactive menu.
@@ -126,4 +134,4 @@ The application will be available at `http://localhost:5173`.
 - [PostgreSQL](https://www.postgresql.org/) - The relational database.
 - [Tailwind CSS](https://tailwindcss.com/) - For styling the user interface.
 - [TypeScript](https://www.typescriptlang.org/) - For type-safe code.
-- [Vite](https.vitejs.dev/) - The build tool and development server.
+- [Vite](https://vitejs.dev/) - The build tool and development server.
