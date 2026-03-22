@@ -8,7 +8,6 @@
 	import { Button } from '$lib/components/ui/button/';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte.js';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
-	import { transformError } from '$lib/utils.js';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
 
@@ -62,9 +61,8 @@
 			</div>
 		{/snippet}
 
-		{#snippet failed(error, reset)}
-			{@const errorObj = transformError(error)}
-			<ErrorComponent error={errorObj} onRetry={reset} />
+		{#snippet failed(error, retry)}
+			<ErrorComponent {error} {retry} />
 		{/snippet}
 	</svelte:boundary>
 </div>
