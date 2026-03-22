@@ -27,7 +27,7 @@ export const login = form(
 	}),
 	async ({ password, returnTo }) => {
 		if (password !== AUTH_PASSWORD) {
-			error(401, { message: 'Invalid password', code: 'PERMISSION_DENIED' });
+			error(401, { message: 'Invalid password', code: 'INVALID_CREDENTIALS' });
 		}
 
 		const event = getRequestEvent();
