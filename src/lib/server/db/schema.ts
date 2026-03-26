@@ -1,5 +1,7 @@
 import { relations } from 'drizzle-orm';
-import { integer, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { integer, pgEnum, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core';
+
+export const tagCategoryEnum = pgEnum('tag_category', ['type', 'cuisine', 'nutrition', 'diet']);
 
 export const recipes = pgTable('recipes', {
 	id: serial('id').primaryKey(),
@@ -50,7 +52,9 @@ export const instructionsRelations = relations(instructions, ({ one }) => ({
 
 export const tags = pgTable('tags', {
 	id: serial('id').primaryKey(),
-	name: text('name').notNull().unique()
+	name: text('name').notNull(),
+	slug: text('slug').notNull(),
+	category: tagCategoryEnum('category')
 });
 
 export const tagsRelations = relations(tags, ({ many }) => ({

@@ -420,7 +420,13 @@ async function seed() {
 					console.log(`   ℹ Tag already exists: ${tagName}`);
 				} else {
 					try {
-						const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
+						const tagSlug =
+							slugify(tagName, { lower: true, strict: true }) ||
+							tagName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+						const [newTag] = await tx
+							.insert(tags)
+							.values({ name: tagName, slug: tagSlug })
+							.returning();
 						createdTags.set(tagName, newTag);
 						existingTagMap.set(tagName, newTag);
 						console.log(`   ✓ Created tag: ${tagName}`);

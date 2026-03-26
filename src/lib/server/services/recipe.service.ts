@@ -1,19 +1,88 @@
 import { error } from '@sveltejs/kit';
-import { eq, inArray } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
 import type {
 	NewIngredient,
 	NewInstruction,
 	NewRecipe,
-	NewTag,
 	Recipe,
 	RecipeMetadata,
 	RecipeWithDetails,
-	Tag
+	Tag,
+	TagCategory,
+	TagInput
 } from '../types';
 import { deleteImage } from './image.service';
 import { generateSlug } from './util/generate-slug';
+
+export const TAG_CATEGORIES: TagCategory[] = ['type', 'cuisine', 'nutrition', 'diet'];
+
+function generateTagSlug(name: string): string {
+	return (
+		generateSlug(name) ??
+		name
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-|-$/g, '')
+	);
+}
+
+/**
+ * Upserts tags within a transaction and returns resolved Tag rows.
+ */
+async function upsertTags(
+	tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+	inputs: TagInput[]
+): Promise<Tag[]> {
+	if (!inputs.length) return [];
+
+	// Deduplicate: for categorized tags, key by category (last one wins per category)
+	// For uncategorized tags, key by slug
+	const seen = new Map<string, TagInput>();
+	for (const t of inputs) {
+		const trimmedName = t.name.trim();
+		if (!trimmedName) continue;
+		const slug = generateTagSlug(trimmedName);
+		const key = t.category ? `cat::${t.category}` : `slug::${slug}`;
+		seen.set(key, { name: trimmedName, category: t.category ?? null });
+	}
+
+	const uniqueInputs = [...seen.values()];
+	if (!uniqueInputs.length) return [];
+
+	const allTags: Tag[] = [];
+	for (const input of uniqueInputs) {
+		const slug = generateTagSlug(input.name);
+
+		// Find existing tag by slug + category match
+		const existingRows = await tx.select().from(tags).where(eq(tags.slug, slug));
+		const existing = input.category
+			? (existingRows.find((r) => r.category === input.category) ?? null)
+			: (existingRows.find((r) => r.category === null) ?? null);
+
+		if (existing) {
+			allTags.push(existing);
+		} else {
+			try {
+				const [newTag] = await tx
+					.insert(tags)
+					.values({ name: input.name, slug, category: input.category ?? null })
+					.returning();
+				allTags.push(newTag);
+			} catch {
+				// Race condition: refetch
+				const rows = await tx.select().from(tags).where(eq(tags.slug, slug));
+				const raceTag = input.category
+					? rows.find((r) => r.category === input.category)
+					: rows.find((r) => r.category === null);
+				if (raceTag) allTags.push(raceTag);
+			}
+		}
+	}
+
+	return allTags;
+}
 
 export const getRecipesMetadata = async (): Promise<RecipeMetadata[]> => {
 	const result = await db.query.recipes.findMany({
@@ -105,7 +174,7 @@ export const createRecipe = async (
 	data: Omit<NewRecipe, 'id' | 'slug' | 'createdAt'> & {
 		ingredients: Omit<NewIngredient, 'recipeId'>[];
 		instructions: Omit<NewInstruction, 'recipeId'>[];
-		tags: NewTag[];
+		tags: TagInput[];
 	}
 ): Promise<Recipe> => {
 	const newRecipe = await db.transaction(async (tx) => {
@@ -142,45 +211,16 @@ export const createRecipe = async (
 		}
 
 		if (data.tags && data.tags.length > 0) {
-			// 1. Deduplicate input (case-sensitive - preserves original case)
-			const uniqueTagNames = [
-				...new Set(data.tags.map((t) => t.name.trim()).filter((name) => name !== ''))
-			];
+			const resolvedTags = await upsertTags(tx, data.tags);
 
-			// 2. Batch fetch existing tags (single query)
-			const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
-
-			// 3. Create map for quick lookup (case-sensitive)
-			const existingTagMap = new Map(existingTags.map((t) => [t.name, t]));
-
-			// 4. Sequentially insert only missing tags with error handling
-			const allTags = [];
-			for (const tagName of uniqueTagNames) {
-				if (existingTagMap.has(tagName)) {
-					allTags.push(existingTagMap.get(tagName)!);
-				} else {
-					try {
-						const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
-						allTags.push(newTag);
-						existingTagMap.set(tagName, newTag);
-					} catch {
-						// Handle unique constraint violation - fetch the tag that was just created
-						const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
-						if (existingTag) {
-							allTags.push(existingTag);
-							existingTagMap.set(tagName, existingTag);
-						}
-					}
-				}
+			if (resolvedTags.length > 0) {
+				await tx.insert(recipesToTags).values(
+					resolvedTags.map((tag) => ({
+						recipeId: createdRecipe.id,
+						tagId: tag.id
+					}))
+				);
 			}
-
-			// 5. Insert into junction table
-			await tx.insert(recipesToTags).values(
-				allTags.map((tag) => ({
-					recipeId: createdRecipe.id,
-					tagId: tag.id
-				}))
-			);
 		}
 
 		return createdRecipe;
@@ -191,10 +231,9 @@ export const createRecipe = async (
 
 export const updateRecipe = async (
 	id: number,
-	data: Partial<NewRecipe> & { tags?: NewTag[] }
+	data: Partial<NewRecipe> & { tags?: TagInput[] }
 ): Promise<Recipe> => {
 	const updatedRecipe = await db.transaction(async (tx) => {
-		// Get current recipe to check if image URL is changing
 		const [currentRecipe] = await tx.select().from(recipes).where(eq(recipes.id, id));
 
 		if (!currentRecipe) {
@@ -225,45 +264,16 @@ export const updateRecipe = async (
 			await tx.delete(recipesToTags).where(eq(recipesToTags.recipeId, updatedRecipe.id));
 
 			if (data.tags.length > 0) {
-				// 1. Deduplicate input (case-sensitive - preserves original case)
-				const uniqueTagNames = [
-					...new Set(data.tags.map((t) => t.name.trim()).filter((name) => name !== ''))
-				];
+				const resolvedTags = await upsertTags(tx, data.tags);
 
-				// 2. Batch fetch existing tags (single query)
-				const existingTags = await tx.select().from(tags).where(inArray(tags.name, uniqueTagNames));
-
-				// 3. Create map for quick lookup (case-sensitive)
-				const existingTagMap = new Map(existingTags.map((t) => [t.name, t]));
-
-				// 4. Sequentially insert only missing tags with error handling
-				const allTags = [];
-				for (const tagName of uniqueTagNames) {
-					if (existingTagMap.has(tagName)) {
-						allTags.push(existingTagMap.get(tagName)!);
-					} else {
-						try {
-							const [newTag] = await tx.insert(tags).values({ name: tagName }).returning();
-							allTags.push(newTag);
-							existingTagMap.set(tagName, newTag);
-						} catch {
-							// Handle unique constraint violation - fetch the tag that was just created
-							const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
-							if (existingTag) {
-								allTags.push(existingTag);
-								existingTagMap.set(tagName, existingTag);
-							}
-						}
-					}
+				if (resolvedTags.length > 0) {
+					await tx.insert(recipesToTags).values(
+						resolvedTags.map((tag) => ({
+							recipeId: updatedRecipe.id,
+							tagId: tag.id
+						}))
+					);
 				}
-
-				// 5. Insert into junction table
-				await tx.insert(recipesToTags).values(
-					allTags.map((tag) => ({
-						recipeId: updatedRecipe.id,
-						tagId: tag.id
-					}))
-				);
 			}
 		}
 
@@ -289,7 +299,7 @@ export const getAllActiveTags = async (): Promise<Tag[]> => {
 	const result = await db.query.tags.findMany({
 		where: (tags, { exists }) =>
 			exists(db.select().from(recipesToTags).where(eq(recipesToTags.tagId, tags.id))),
-		orderBy: (tags, { asc }) => [asc(tags.name)]
+		orderBy: (tags, { asc }) => [asc(tags.category), asc(tags.name)]
 	});
 	return result;
 };
