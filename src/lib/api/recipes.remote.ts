@@ -120,10 +120,13 @@ export const updateRecipeDetails = form(
 			.or(z.number()),
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
-		tags: z.array(z.string()).optional(),
+		tagType: z.string().optional(),
+		tagCuisine: z.string().optional(),
+		tagNutrition: z.string().optional(),
+		tagDiet: z.string().optional(),
 		imageUrl: z.string().optional()
 	}),
-	async ({ recipeId, name, description, tags, imageUrl }) => {
+	async ({ recipeId, name, description, tagType, tagCuisine, tagNutrition, tagDiet, imageUrl }) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
 		}
@@ -131,11 +134,18 @@ export const updateRecipeDetails = form(
 		const recipe = await recipeService.getRecipeById(recipeId);
 		const oldSlug = recipe.slug;
 
+		const tags = [
+			tagType ? { name: tagType.trim(), category: 'type' as const } : null,
+			tagCuisine ? { name: tagCuisine.trim(), category: 'cuisine' as const } : null,
+			tagNutrition ? { name: tagNutrition.trim(), category: 'nutrition' as const } : null,
+			tagDiet ? { name: tagDiet.trim(), category: 'diet' as const } : null
+		].filter((t): t is NonNullable<typeof t> => t !== null && t.name.length > 0);
+
 		const result = await recipeService.updateRecipe(recipeId, {
 			name,
 			description,
 			imageUrl,
-			tags: tags?.map((t) => ({ name: t })) || []
+			tags
 		});
 
 		await getRecipeBySlug(result.slug).refresh();
@@ -149,13 +159,23 @@ export const createRecipe = form(
 	z.object({
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
-		tags: z.array(z.string()).optional(),
+		tagType: z.string().optional(),
+		tagCuisine: z.string().optional(),
+		tagNutrition: z.string().optional(),
+		tagDiet: z.string().optional(),
 		imageUrl: z.string().optional()
 	}),
-	async ({ name, description, tags, imageUrl }) => {
+	async ({ name, description, tagType, tagCuisine, tagNutrition, tagDiet, imageUrl }) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
 		}
+
+		const tags = [
+			tagType ? { name: tagType.trim(), category: 'type' as const } : null,
+			tagCuisine ? { name: tagCuisine.trim(), category: 'cuisine' as const } : null,
+			tagNutrition ? { name: tagNutrition.trim(), category: 'nutrition' as const } : null,
+			tagDiet ? { name: tagDiet.trim(), category: 'diet' as const } : null
+		].filter((t): t is NonNullable<typeof t> => t !== null && t.name.length > 0);
 
 		const recipe = await recipeService.createRecipe({
 			name: name.trim(),
@@ -163,7 +183,7 @@ export const createRecipe = form(
 			imageUrl,
 			ingredients: [],
 			instructions: [],
-			tags: tags?.map((t) => ({ name: t })) || []
+			tags
 		});
 
 		redirect(303, `/${recipe.slug}`);

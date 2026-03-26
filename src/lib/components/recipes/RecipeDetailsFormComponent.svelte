@@ -3,11 +3,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import type { RecipeWithDetails } from '$lib/server/types';
+	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { onMount } from 'svelte';
-	import TagInputComponent from './TagInputComponent.svelte';
+	import CategoryTagInputComponent from './CategoryTagInputComponent.svelte';
 
 	const {
 		onSave,
@@ -15,11 +14,14 @@
 		recipe
 	}: { onSave?: () => void; onCancel?: () => void; recipe: RecipeWithDetails } = $props();
 
-	let tags = $state<string[]>([]);
+	function getTagByCategory(category: TagCategory): string {
+		return recipe.tags.find((t) => t.category === category)?.name ?? '';
+	}
 
-	onMount(() => {
-		tags = recipe.tags.map((t) => t.name);
-	});
+	let typeTag = $state(getTagByCategory('type'));
+	let cuisineTag = $state(getTagByCategory('cuisine'));
+	let nutritionTag = $state(getTagByCategory('nutrition'));
+	let dietTag = $state(getTagByCategory('diet'));
 </script>
 
 <form
@@ -46,10 +48,24 @@
 		value={recipe.description}
 		required
 	/>
-	<TagInputComponent bind:tags />
-	{#each tags as tag, i (tag)}
-		<input {...updateRecipeDetails.fields.tags[i].as('hidden', tag)} value={tag} />
-	{/each}
+	<CategoryTagInputComponent
+		bind:typeTag
+		bind:cuisineTag
+		bind:nutritionTag
+		bind:dietTag
+	/>
+	{#if typeTag}
+		<input {...updateRecipeDetails.fields.tagType.as('hidden', typeTag)} />
+	{/if}
+	{#if cuisineTag}
+		<input {...updateRecipeDetails.fields.tagCuisine.as('hidden', cuisineTag)} />
+	{/if}
+	{#if nutritionTag}
+		<input {...updateRecipeDetails.fields.tagNutrition.as('hidden', nutritionTag)} />
+	{/if}
+	{#if dietTag}
+		<input {...updateRecipeDetails.fields.tagDiet.as('hidden', dietTag)} />
+	{/if}
 	<div class="flex flex-row justify-end gap-2">
 		<Button
 			variant="secondary"
