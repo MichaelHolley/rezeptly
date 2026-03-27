@@ -23,7 +23,3 @@ UPDATE "tags" SET "category" = 'cuisine', "name" = 'deutsch', "slug" = 'deutsch'
 -- diet: vegan, Hähnchen
 UPDATE "tags" SET "category" = 'diet'
   WHERE lower(trim("name")) IN ('vegan','hähnchen');--> statement-breakpoint
--- Add unique constraint: (slug, category) for categorized tags
-CREATE UNIQUE INDEX "tags_slug_category_unique" ON "tags" ("slug", "category") WHERE "category" IS NOT NULL;--> statement-breakpoint
--- For uncategorized tags (NULL category), keep uniqueness by slug
-CREATE UNIQUE INDEX "tags_slug_unique_uncategorized" ON "tags" ("slug") WHERE "category" IS NULL;
