@@ -4,29 +4,43 @@ import LoadingComponent from './LoadingComponent.svelte';
 
 describe('LoadingComponent.svelte', () => {
 	describe('rendering', () => {
-		it('should render the loading icon', () => {
+		it('should render with status role', () => {
+			const { container } = render(LoadingComponent);
+
+			const status = container.querySelector('[role="status"]');
+			expect(status).toBeTruthy();
+		});
+
+		it('should render an icon', () => {
 			const { container } = render(LoadingComponent);
 
 			const svg = container.querySelector('svg');
 			expect(svg).toBeTruthy();
 		});
 
-		it('should have spin animation class', () => {
+		it('should render a screen reader label', () => {
 			const { container } = render(LoadingComponent);
 
-			const svg = container.querySelector('svg');
-			expect(svg?.classList.contains('animate-spin')).toBe(true);
+			const srOnly = container.querySelector('.sr-only');
+			expect(srOnly?.textContent).toBe('Loading...');
 		});
 	});
 
 	describe('styling', () => {
-		it('should apply custom className', () => {
+		it('should apply default classes to the wrapper', () => {
+			const { container } = render(LoadingComponent);
+
+			const wrapper = container.querySelector('[role="status"]');
+			expect(wrapper?.classList.contains('size-10')).toBe(true);
+		});
+
+		it('should apply custom className to the wrapper', () => {
 			const { container } = render(LoadingComponent, {
 				class: 'custom-loading-class'
 			});
 
-			const svg = container.querySelector('svg');
-			expect(svg?.classList.contains('custom-loading-class')).toBe(true);
+			const wrapper = container.querySelector('[role="status"]');
+			expect(wrapper?.classList.contains('custom-loading-class')).toBe(true);
 		});
 
 		it('should preserve default classes when custom class is applied', () => {
@@ -34,27 +48,9 @@ describe('LoadingComponent.svelte', () => {
 				class: 'custom-class'
 			});
 
-			const svg = container.querySelector('svg');
-			expect(svg?.classList.contains('animate-spin')).toBe(true);
-			expect(svg?.classList.contains('custom-class')).toBe(true);
-		});
-
-		it('should apply size-4 class and check component dimensions', () => {
-			const { container } = render(LoadingComponent, {
-				class: 'size-4'
-			});
-
-			const svg = container.querySelector('svg') as SVGElement;
-			expect(svg?.classList.contains('size-4')).toBe(true);
-
-			// Get computed style to check actual dimensions
-			const computedStyle = window.getComputedStyle(svg);
-			const width = computedStyle.width;
-			const height = computedStyle.height;
-
-			// size-4 in Tailwind is 1rem (16px)
-			expect(width).toBe('16px');
-			expect(height).toBe('16px');
+			const wrapper = container.querySelector('[role="status"]');
+			expect(wrapper?.classList.contains('size-10')).toBe(true);
+			expect(wrapper?.classList.contains('custom-class')).toBe(true);
 		});
 
 		it('should apply multiple custom classes', () => {
@@ -62,9 +58,9 @@ describe('LoadingComponent.svelte', () => {
 				class: 'size-8 text-blue-500'
 			});
 
-			const svg = container.querySelector('svg');
-			expect(svg?.classList.contains('size-8')).toBe(true);
-			expect(svg?.classList.contains('text-blue-500')).toBe(true);
+			const wrapper = container.querySelector('[role="status"]');
+			expect(wrapper?.classList.contains('size-8')).toBe(true);
+			expect(wrapper?.classList.contains('text-blue-500')).toBe(true);
 		});
 	});
 });
