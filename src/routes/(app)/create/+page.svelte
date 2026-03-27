@@ -33,12 +33,7 @@
 			{...createRecipe.fields.description.as('text')}
 		/>
 	</div>
-	<CategoryTagInputComponent
-		bind:typeTag
-		bind:cuisineTag
-		bind:nutritionTag
-		bind:dietTag
-	/>
+	<CategoryTagInputComponent bind:typeTag bind:cuisineTag bind:nutritionTag bind:dietTag />
 	{#if typeTag}
 		<input {...createRecipe.fields.tagType.as('hidden', typeTag)} />
 	{/if}

@@ -225,4 +225,3 @@ export const deleteRecipe = async (id: number): Promise<void> => {
 		await deleteImage(recipe.imageUrl);
 	}
 };
-

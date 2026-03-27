@@ -55,10 +55,7 @@
 		const current = getCurrentValue(key);
 		return availableTags
 			.filter(
-				(t) =>
-					t.category === key &&
-					t.name.toLowerCase().includes(input) &&
-					t.name !== current
+				(t) => t.category === key && t.name.toLowerCase().includes(input) && t.name !== current
 			)
 			.slice(0, 3)
 			.map((t) => t.name);

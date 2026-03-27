@@ -53,9 +53,7 @@
 
 	const toggleTag = (category: TagCategory, slug: string) => {
 		const current = getSelected(category);
-		const updated = current.includes(slug)
-			? current.filter((s) => s !== slug)
-			: [...current, slug];
+		const updated = current.includes(slug) ? current.filter((s) => s !== slug) : [...current, slug];
 		setSelected(category, updated);
 	};
 </script>

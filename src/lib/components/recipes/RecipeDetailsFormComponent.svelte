@@ -48,12 +48,7 @@
 		value={recipe.description}
 		required
 	/>
-	<CategoryTagInputComponent
-		bind:typeTag
-		bind:cuisineTag
-		bind:nutritionTag
-		bind:dietTag
-	/>
+	<CategoryTagInputComponent bind:typeTag bind:cuisineTag bind:nutritionTag bind:dietTag />
 	{#if typeTag}
 		<input {...updateRecipeDetails.fields.tagType.as('hidden', typeTag)} />
 	{/if}
