@@ -4,6 +4,7 @@ import * as imageService from '$lib/server/services/image.service';
 import * as ingredientService from '$lib/server/services/ingredient.service';
 import * as instructionService from '$lib/server/services/instruction.service';
 import * as recipeService from '$lib/server/services/recipe.service';
+import * as tagService from '$lib/server/services/tag.service';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
@@ -13,7 +14,7 @@ export const getRecipesMetadata = query(async () => {
 });
 
 export const getAvailableTags = query(async () => {
-	return await recipeService.getAllActiveTags();
+	return await tagService.getAllActiveTags();
 });
 
 export const getRecipes = query(async () => {
