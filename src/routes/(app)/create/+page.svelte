@@ -7,10 +7,11 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 
-	let typeTag = $state('');
-	let cuisineTag = $state('');
-	let nutritionTag = $state('');
-	let dietTag = $state('');
+	let typeTags = $state<string[]>([]);
+	let cuisineTags = $state<string[]>([]);
+	let nutritionTags = $state<string[]>([]);
+	let dietTags = $state<string[]>([]);
+
 </script>
 
 <svelte:head>
@@ -33,19 +34,19 @@
 			{...createRecipe.fields.description.as('text')}
 		/>
 	</div>
-	<CategoryTagInputComponent bind:typeTag bind:cuisineTag bind:nutritionTag bind:dietTag />
-	{#if typeTag}
-		<input {...createRecipe.fields.tagType.as('hidden', typeTag)} />
-	{/if}
-	{#if cuisineTag}
-		<input {...createRecipe.fields.tagCuisine.as('hidden', cuisineTag)} />
-	{/if}
-	{#if nutritionTag}
-		<input {...createRecipe.fields.tagNutrition.as('hidden', nutritionTag)} />
-	{/if}
-	{#if dietTag}
-		<input {...createRecipe.fields.tagDiet.as('hidden', dietTag)} />
-	{/if}
+	<CategoryTagInputComponent bind:typeTags bind:cuisineTags bind:nutritionTags bind:dietTags />
+	{#each typeTags as tag, i (tag)}
+		<input {...createRecipe.fields.tagType[i].as('hidden', tag)} />
+	{/each}
+	{#each cuisineTags as tag, i (tag)}
+		<input {...createRecipe.fields.tagCuisine[i].as('hidden', tag)} />
+	{/each}
+	{#each nutritionTags as tag, i (tag)}
+		<input {...createRecipe.fields.tagNutrition[i].as('hidden', tag)} />
+	{/each}
+	{#each dietTags as tag, i (tag)}
+		<input {...createRecipe.fields.tagDiet[i].as('hidden', tag)} />
+	{/each}
 	<div class="flex flex-row justify-end">
 		<Button type="submit" disabled={!!createRecipe.pending}>+ Create</Button>
 	</div>

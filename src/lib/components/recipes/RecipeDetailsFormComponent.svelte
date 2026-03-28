@@ -14,14 +14,15 @@
 		recipe
 	}: { onSave?: () => void; onCancel?: () => void; recipe: RecipeWithDetails } = $props();
 
-	function getTagByCategory(category: TagCategory): string {
-		return recipe.tags.find((t) => t.category === category)?.name ?? '';
+	function getTagsByCategory(category: TagCategory): string[] {
+		return recipe.tags.filter((t) => t.category === category).map((t) => t.name);
 	}
 
-	let typeTag = $state(getTagByCategory('type'));
-	let cuisineTag = $state(getTagByCategory('cuisine'));
-	let nutritionTag = $state(getTagByCategory('nutrition'));
-	let dietTag = $state(getTagByCategory('diet'));
+	let typeTags = $state(getTagsByCategory('type'));
+	let cuisineTags = $state(getTagsByCategory('cuisine'));
+	let nutritionTags = $state(getTagsByCategory('nutrition'));
+	let dietTags = $state(getTagsByCategory('diet'));
+
 </script>
 
 <form
@@ -48,19 +49,19 @@
 		value={recipe.description}
 		required
 	/>
-	<CategoryTagInputComponent bind:typeTag bind:cuisineTag bind:nutritionTag bind:dietTag />
-	{#if typeTag}
-		<input {...updateRecipeDetails.fields.tagType.as('hidden', typeTag)} />
-	{/if}
-	{#if cuisineTag}
-		<input {...updateRecipeDetails.fields.tagCuisine.as('hidden', cuisineTag)} />
-	{/if}
-	{#if nutritionTag}
-		<input {...updateRecipeDetails.fields.tagNutrition.as('hidden', nutritionTag)} />
-	{/if}
-	{#if dietTag}
-		<input {...updateRecipeDetails.fields.tagDiet.as('hidden', dietTag)} />
-	{/if}
+	<CategoryTagInputComponent bind:typeTags bind:cuisineTags bind:nutritionTags bind:dietTags />
+	{#each typeTags as tag, i (tag)}
+		<input {...updateRecipeDetails.fields.tagType[i].as('hidden', tag)} />
+	{/each}
+	{#each cuisineTags as tag, i (tag)}
+		<input {...updateRecipeDetails.fields.tagCuisine[i].as('hidden', tag)} />
+	{/each}
+	{#each nutritionTags as tag, i (tag)}
+		<input {...updateRecipeDetails.fields.tagNutrition[i].as('hidden', tag)} />
+	{/each}
+	{#each dietTags as tag, i (tag)}
+		<input {...updateRecipeDetails.fields.tagDiet[i].as('hidden', tag)} />
+	{/each}
 	<div class="flex flex-row justify-end gap-2">
 		<Button
 			variant="secondary"

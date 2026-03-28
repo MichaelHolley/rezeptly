@@ -5,17 +5,15 @@ import * as ingredientService from '$lib/server/services/ingredient.service';
 import * as instructionService from '$lib/server/services/instruction.service';
 import * as recipeService from '$lib/server/services/recipe.service';
 import * as tagService from '$lib/server/services/tag.service';
-import type { TagCategory } from '$lib/server/types';
-import { TAG_CATEGORIES } from '$lib/shared/tags';
+import type { TagCategory, TagInput } from '$lib/server/types';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
 
-function buildTagInputs(inputs: Partial<Record<TagCategory, string | undefined>>) {
-	return TAG_CATEGORIES.filter((cat) => inputs[cat]?.trim()).map((cat) => ({
-		name: inputs[cat]!.trim(),
-		category: cat
-	}));
+function buildTagInputs(input: Partial<Record<TagCategory, string[]>>): TagInput[] {
+	return (Object.entries(input) as [TagCategory, string[]][]).flatMap(([category, names]) =>
+		(names ?? []).map((name) => ({ name, category }))
+	);
 }
 
 export const getRecipesMetadata = query(async () => {
@@ -130,10 +128,10 @@ export const updateRecipeDetails = form(
 			.or(z.number()),
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
-		tagType: z.string().optional(),
-		tagCuisine: z.string().optional(),
-		tagNutrition: z.string().optional(),
-		tagDiet: z.string().optional(),
+		tagType: z.array(z.string()).optional().default([]),
+		tagCuisine: z.array(z.string()).optional().default([]),
+		tagNutrition: z.array(z.string()).optional().default([]),
+		tagDiet: z.array(z.string()).optional().default([]),
 		imageUrl: z.string().optional()
 	}),
 	async ({ recipeId, name, description, tagType, tagCuisine, tagNutrition, tagDiet, imageUrl }) => {
@@ -141,15 +139,15 @@ export const updateRecipeDetails = form(
 			throwNewPermissionError();
 		}
 
-		const recipe = await recipeService.getRecipeById(recipeId);
-		const oldSlug = recipe.slug;
-
 		const tags = buildTagInputs({
 			type: tagType,
 			cuisine: tagCuisine,
 			nutrition: tagNutrition,
 			diet: tagDiet
 		});
+
+		const recipe = await recipeService.getRecipeById(recipeId);
+		const oldSlug = recipe.slug;
 
 		const result = await recipeService.updateRecipe(recipeId, {
 			name,
@@ -169,10 +167,10 @@ export const createRecipe = form(
 	z.object({
 		name: z.string().nonempty().nonoptional(),
 		description: z.string().nonempty().nonoptional(),
-		tagType: z.string().optional(),
-		tagCuisine: z.string().optional(),
-		tagNutrition: z.string().optional(),
-		tagDiet: z.string().optional(),
+		tagType: z.array(z.string()).optional().default([]),
+		tagCuisine: z.array(z.string()).optional().default([]),
+		tagNutrition: z.array(z.string()).optional().default([]),
+		tagDiet: z.array(z.string()).optional().default([]),
 		imageUrl: z.string().optional()
 	}),
 	async ({ name, description, tagType, tagCuisine, tagNutrition, tagDiet, imageUrl }) => {

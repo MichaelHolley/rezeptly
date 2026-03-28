@@ -9,15 +9,15 @@
 	import TagComponent from './TagComponent.svelte';
 
 	let {
-		typeTag = $bindable(''),
-		cuisineTag = $bindable(''),
-		nutritionTag = $bindable(''),
-		dietTag = $bindable('')
+		typeTags = $bindable([]),
+		cuisineTags = $bindable([]),
+		nutritionTags = $bindable([]),
+		dietTags = $bindable([])
 	}: {
-		typeTag?: string;
-		cuisineTag?: string;
-		nutritionTag?: string;
-		dietTag?: string;
+		typeTags?: string[];
+		cuisineTags?: string[];
+		nutritionTags?: string[];
+		dietTags?: string[];
 	} = $props();
 
 	const MAX_SUGGESTIONS = 3;
@@ -38,83 +38,86 @@
 		diet: ''
 	});
 
-	const getters: Record<TagCategory, () => string> = {
-		type: () => typeTag,
-		cuisine: () => cuisineTag,
-		nutrition: () => nutritionTag,
-		diet: () => dietTag
+	const getters: Record<TagCategory, () => string[]> = {
+		type: () => typeTags,
+		cuisine: () => cuisineTags,
+		nutrition: () => nutritionTags,
+		diet: () => dietTags
 	};
 
-	const setters: Record<TagCategory, (v: string) => void> = {
-		type: (v) => (typeTag = v),
-		cuisine: (v) => (cuisineTag = v),
-		nutrition: (v) => (nutritionTag = v),
-		diet: (v) => (dietTag = v)
+	const setters: Record<TagCategory, (v: string[]) => void> = {
+		type: (v) => (typeTags = v),
+		cuisine: (v) => (cuisineTags = v),
+		nutrition: (v) => (nutritionTags = v),
+		diet: (v) => (dietTags = v)
 	};
 
-	const getCurrentValue = (key: TagCategory): string => getters[key]();
-	const setCurrentValue = (key: TagCategory, value: string) => setters[key](value);
+	const getCurrentValues = (key: TagCategory): string[] => getters[key]();
+
+	function addTag(key: TagCategory, name: string) {
+		const trimmed = name.trim();
+		if (!trimmed) return;
+		const current = getCurrentValues(key);
+		if (!current.includes(trimmed)) setters[key]([...current, trimmed]);
+		inputValues[key] = '';
+	}
+
+	function removeTag(key: TagCategory, name: string) {
+		setters[key](getCurrentValues(key).filter((t) => t !== name));
+	}
 
 	function getSuggestions(key: TagCategory): string[] {
 		const input = inputValues[key].trim().toLowerCase();
-		const current = getCurrentValue(key);
+		const current = getCurrentValues(key);
 		return availableTags
 			.filter(
 				(t) =>
 					t.category === key &&
-					t.name !== current &&
+					!current.includes(t.name) &&
 					(!input || t.name.toLowerCase().includes(input))
 			)
 			.slice(0, MAX_SUGGESTIONS)
 			.map((t) => t.name);
 	}
 
-	function selectTag(key: TagCategory, name: string) {
-		setCurrentValue(key, name);
-		inputValues[key] = '';
-	}
-
-	function clearTag(key: TagCategory) {
-		setCurrentValue(key, '');
-	}
-
 	function handleKeydown(key: TagCategory, e: KeyboardEvent) {
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			const input = inputValues[key].trim();
-			if (input) selectTag(key, input);
+			if (input) addTag(key, input);
 		}
 	}
 </script>
 
 <div class="flex flex-col gap-4">
 	{#each TAG_CATEGORY_CONFIG as { key, label } (key)}
-		{@const currentValue = getCurrentValue(key)}
+		{@const currentValues = getCurrentValues(key)}
 		{@const suggestions = getSuggestions(key)}
 		<div class="form-group">
 			<Label>{label}</Label>
-			{#if currentValue}
-				<div class="flex items-center">
-					<TagComponent onSelect={() => clearTag(key)}>
-						{currentValue}
-						<XIcon />
-					</TagComponent>
+			{#if currentValues.length > 0}
+				<div class="mb-2 flex flex-wrap gap-1">
+					{#each currentValues as tag (tag)}
+						<TagComponent onSelect={() => removeTag(key, tag)}>
+							{tag}
+							<XIcon />
+						</TagComponent>
+					{/each}
 				</div>
-			{:else}
-				<InputGroup.Root>
-					<InputGroup.Input
-						type="text"
-						placeholder={PLACEHOLDERS[key]}
-						bind:value={inputValues[key]}
-						onkeydown={(e) => handleKeydown(key, e)}
-					/>
-				</InputGroup.Root>
 			{/if}
-			{#if !currentValue && suggestions.length > 0}
+			<InputGroup.Root>
+				<InputGroup.Input
+					type="text"
+					placeholder={PLACEHOLDERS[key]}
+					bind:value={inputValues[key]}
+					onkeydown={(e) => handleKeydown(key, e)}
+				/>
+			</InputGroup.Root>
+			{#if suggestions.length > 0}
 				<div class="flex flex-row gap-2">
 					<p class="text-neutral-500"><small>Suggestions:</small></p>
 					{#each suggestions as tag (tag)}
-						<TagComponent onSelect={() => selectTag(key, tag)}>
+						<TagComponent onSelect={() => addTag(key, tag)}>
 							{tag}
 							<PlusIcon class="text-orange-500" />
 						</TagComponent>

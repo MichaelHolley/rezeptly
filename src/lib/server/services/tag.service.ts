@@ -32,7 +32,7 @@ export async function upsertTags(
 		const trimmedName = t.name.trim();
 		if (!trimmedName) continue;
 		const slug = generateTagSlug(trimmedName);
-		const key = t.category ? `cat::${t.category}` : `slug::${slug}`;
+		const key = t.category ? `cat::${t.category}::${slug}` : `slug::${slug}`;
 		seen.set(key, { name: trimmedName, category: t.category ?? null });
 	}
 
