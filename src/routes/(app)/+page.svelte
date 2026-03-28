@@ -4,7 +4,8 @@
 	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
-	import type { RecipeMetadata, TagCategory } from '$lib/server/types';
+	import type { RecipeMetadata } from '$lib/server/types';
+	import { TAG_CATEGORIES } from '$lib/shared/tags';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { Debounced } from 'runed';
@@ -12,8 +13,6 @@
 	import z from 'zod';
 
 	const favorites = favoritesStore;
-
-	const TAG_CATEGORIES: TagCategory[] = ['type', 'cuisine', 'nutrition', 'diet'];
 
 	const searchParams = useSearchParams(
 		z.object({

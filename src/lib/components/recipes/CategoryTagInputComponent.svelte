@@ -2,6 +2,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import type { TagCategory } from '$lib/server/types';
+	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import XIcon from '@lucide/svelte/icons/x';
 	import * as InputGroup from '../ui/input-group';
@@ -21,12 +22,12 @@
 
 	const availableTags = $derived(AvailableTagsStore.tags);
 
-	const CATEGORIES: { key: TagCategory; label: string }[] = [
-		{ key: 'type', label: 'Type' },
-		{ key: 'cuisine', label: 'Cuisine' },
-		{ key: 'nutrition', label: 'Nutrition' },
-		{ key: 'diet', label: 'Diet' }
-	];
+	const PLACEHOLDERS: Record<TagCategory, string> = {
+		type: 'e.g. Cake, Dessert, Pasta, Salad, Sauce …',
+		cuisine: 'e.g. Italian, French, Mexican, German …',
+		diet: 'e.g. Vegan, Chicken …',
+		nutrition: 'e.g. High protein, Low carb …'
+	};
 
 	let inputValues = $state<Record<TagCategory, string>>({
 		type: '',
@@ -80,7 +81,7 @@
 </script>
 
 <div class="flex flex-col gap-4">
-	{#each CATEGORIES as { key, label } (key)}
+	{#each TAG_CATEGORY_CONFIG as { key, label } (key)}
 		{@const currentValue = getCurrentValue(key)}
 		{@const suggestions = getSuggestions(key)}
 		<div class="form-group">
@@ -96,7 +97,7 @@
 				<InputGroup.Root>
 					<InputGroup.Input
 						type="text"
-						placeholder="Enter a {label.toLowerCase()} tag and confirm with Enter"
+						placeholder={PLACEHOLDERS[key]}
 						bind:value={inputValues[key]}
 						onkeydown={(e) => handleKeydown(key, e)}
 					/>

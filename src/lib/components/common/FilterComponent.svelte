@@ -1,15 +1,9 @@
 <script lang="ts">
 	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
 	import type { Tag, TagCategory } from '$lib/server/types';
+	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import SearchBarComponent from './SearchBarComponent.svelte';
-
-	const CATEGORIES: { id: TagCategory; label: string }[] = [
-		{ id: 'type', label: 'Type' },
-		{ id: 'cuisine', label: 'Cuisine' },
-		{ id: 'diet', label: 'Diet' },
-		{ id: 'nutrition', label: 'Nutrition' }
-	];
 
 	let {
 		searchTerm = $bindable(),
@@ -30,10 +24,10 @@
 	} = $props();
 
 	const tagsByCategory = $derived(
-		CATEGORIES.map(({ id, label }) => ({
-			id,
+		TAG_CATEGORY_CONFIG.map(({ key, label }) => ({
+			key,
 			label,
-			tags: availableTags.filter((t) => t.category === id)
+			tags: availableTags.filter((t) => t.category === key)
 		})).filter((c) => c.tags.length > 0)
 	);
 
@@ -70,7 +64,7 @@
 			</TagComponent>
 		</div>
 
-		{#each tagsByCategory as { id, label, tags }}
+		{#each tagsByCategory as { key, label, tags }}
 			<div class="mb-3">
 				<p class="text-muted-foreground mb-1 text-xs font-medium uppercase tracking-wide">
 					{label}
@@ -78,8 +72,8 @@
 				<div class="flex flex-row flex-wrap gap-2">
 					{#each tags as tag (tag.slug)}
 						<TagComponent
-							onSelect={() => toggleTag(id, tag.slug)}
-							active={getSelected(id).includes(tag.slug)}
+							onSelect={() => toggleTag(key, tag.slug)}
+							active={getSelected(key).includes(tag.slug)}
 						>
 							{tag.name}
 						</TagComponent>

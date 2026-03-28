@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../db';
 import { recipesToTags, tags } from '../db/schema';
-import type { Tag, TagCategory, TagInput } from '../types';
+import type { Tag, TagInput } from '../types';
 import { generateSlug } from './util/generate-slug';
 
-export const TAG_CATEGORIES: TagCategory[] = ['type', 'cuisine', 'nutrition', 'diet'];
+export { TAG_CATEGORIES, TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 
 function generateTagSlug(name: string): string {
 	return (
