@@ -1,10 +1,11 @@
-import { eq, inArray, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { stdin as input, stdout as output } from 'node:process';
 import * as readline from 'node:readline/promises';
 import postgres from 'postgres';
 import slugify from 'slugify';
 import { ingredients, instructions, recipes, recipesToTags, tags } from './schema';
+import type { TagCategory } from '../types';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -50,7 +51,10 @@ const sampleData = [
 				stepOrder: 4
 			}
 		],
-		tags: ['breakfast', 'quick', 'vegetarian']
+		tags: [
+			{ name: 'Breakfast', category: 'type' as TagCategory },
+			{ name: 'Vegetarian', category: 'diet' as TagCategory }
+		]
 	},
 	{
 		name: 'Homemade Margherita Pizza',
@@ -93,7 +97,11 @@ const sampleData = [
 				stepOrder: 5
 			}
 		],
-		tags: ['dinner', 'italian', 'vegetarian']
+		tags: [
+			{ name: 'Dinner', category: 'type' as TagCategory },
+			{ name: 'Italian', category: 'cuisine' as TagCategory },
+			{ name: 'Vegetarian', category: 'diet' as TagCategory }
+		]
 	},
 	{
 		name: 'Chicken Stir-Fry',
@@ -143,7 +151,11 @@ const sampleData = [
 				stepOrder: 6
 			}
 		],
-		tags: ['dinner', 'asian', 'quick', 'healthy']
+		tags: [
+			{ name: 'Dinner', category: 'type' as TagCategory },
+			{ name: 'Asian', category: 'cuisine' as TagCategory },
+			{ name: 'High Protein', category: 'nutrition' as TagCategory }
+		]
 	},
 	{
 		name: 'Classic Chocolate Chip Cookies',
@@ -192,7 +204,10 @@ const sampleData = [
 				stepOrder: 6
 			}
 		],
-		tags: ['dessert', 'baking', 'comfort-food']
+		tags: [
+			{ name: 'Dessert', category: 'type' as TagCategory },
+			{ name: 'Vegetarian', category: 'diet' as TagCategory }
+		]
 	},
 	{
 		name: 'Greek Salad',
@@ -232,7 +247,12 @@ const sampleData = [
 				stepOrder: 4
 			}
 		],
-		tags: ['lunch', 'dinner', 'healthy', 'vegetarian', 'greek']
+		tags: [
+			{ name: 'Salad', category: 'type' as TagCategory },
+			{ name: 'Greek', category: 'cuisine' as TagCategory },
+			{ name: 'Vegetarian', category: 'diet' as TagCategory },
+			{ name: 'Low Calorie', category: 'nutrition' as TagCategory }
+		]
 	},
 	{
 		name: 'Beef Tacos',
@@ -278,7 +298,10 @@ const sampleData = [
 				stepOrder: 5
 			}
 		],
-		tags: ['dinner', 'mexican', 'quick', 'comfort-food']
+		tags: [
+			{ name: 'Dinner', category: 'type' as TagCategory },
+			{ name: 'Mexican', category: 'cuisine' as TagCategory }
+		]
 	},
 	{
 		name: 'Blueberry Pancakes',
@@ -330,7 +353,10 @@ const sampleData = [
 				stepOrder: 6
 			}
 		],
-		tags: ['breakfast', 'vegetarian', 'comfort-food']
+		tags: [
+			{ name: 'Breakfast', category: 'type' as TagCategory },
+			{ name: 'Vegetarian', category: 'diet' as TagCategory }
+		]
 	},
 	{
 		name: 'Caprese Salad',
@@ -365,7 +391,11 @@ const sampleData = [
 				stepOrder: 4
 			}
 		],
-		tags: ['lunch', 'italian', 'vegetarian', 'quick', 'healthy']
+		tags: [
+			{ name: 'Salad', category: 'type' as TagCategory },
+			{ name: 'Italian', category: 'cuisine' as TagCategory },
+			{ name: 'Vegetarian', category: 'diet' as TagCategory }
+		]
 	}
 ];
 
@@ -404,41 +434,47 @@ async function seed() {
 	try {
 		await db.transaction(async (tx) => {
 			console.log('📝 Collecting all unique tags...');
-			const allTagNames = [...new Set(sampleData.flatMap((recipe) => recipe.tags))];
+			const toSlug = (name: string) =>
+				slugify(name, { lower: true, strict: true }) ||
+				name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+			const tagKey = (name: string, category: TagCategory) =>
+				`${toSlug(name)}::${category}`;
+
+			const allTagInputs = [
+				...new Map(
+					sampleData
+						.flatMap((r) => r.tags)
+						.map((t) => [tagKey(t.name, t.category), t])
+				).values()
+			];
 
 			console.log('🏷️  Creating tags...');
-			const createdTags = new Map();
+			const createdTags = new Map<string, { id: number }>();
 
-			// Batch fetch existing tags
-			const existingTags = await tx.select().from(tags).where(inArray(tags.name, allTagNames));
-			const existingTagMap = new Map(existingTags.map((t) => [t.name, t]));
-
-			// Insert only missing tags
-			for (const tagName of allTagNames) {
-				if (existingTagMap.has(tagName)) {
-					createdTags.set(tagName, existingTagMap.get(tagName)!);
-					console.log(`   ℹ Tag already exists: ${tagName}`);
-				} else {
-					try {
-						const tagSlug =
-							slugify(tagName, { lower: true, strict: true }) ||
-							tagName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-						const [newTag] = await tx
-							.insert(tags)
-							.values({ name: tagName, slug: tagSlug })
-							.returning();
-						createdTags.set(tagName, newTag);
-						existingTagMap.set(tagName, newTag);
-						console.log(`   ✓ Created tag: ${tagName}`);
-					} catch {
-						// Handle race condition where tag was just created
-						const [existingTag] = await tx.select().from(tags).where(eq(tags.name, tagName));
-						if (existingTag) {
-							createdTags.set(tagName, existingTag);
-							existingTagMap.set(tagName, existingTag);
-							console.log(`   ℹ Tag already exists: ${tagName}`);
+			for (const tagInput of allTagInputs) {
+				const slug = toSlug(tagInput.name);
+				const key = tagKey(tagInput.name, tagInput.category);
+				try {
+					const [newTag] = await tx
+						.insert(tags)
+						.values({ name: tagInput.name, slug, category: tagInput.category })
+						.onConflictDoNothing()
+						.returning();
+					if (newTag) {
+						createdTags.set(key, newTag);
+						console.log(`   ✓ Created tag: ${tagInput.name} (${tagInput.category})`);
+					} else {
+						const [existing] = await tx
+							.select()
+							.from(tags)
+							.where(sql`slug = ${slug} AND category = ${tagInput.category}`);
+						if (existing) {
+							createdTags.set(key, existing);
+							console.log(`   ℹ Tag already exists: ${tagInput.name} (${tagInput.category})`);
 						}
 					}
+				} catch {
+					console.log(`   ⚠ Skipped tag: ${tagInput.name} (${tagInput.category})`);
 				}
 			}
 
@@ -483,8 +519,8 @@ async function seed() {
 				// Link tags
 				if (recipeData.tags.length > 0) {
 					const recipeTags = recipeData.tags
-						.map((tagName) => {
-							const tag = createdTags.get(tagName);
+						.map((t) => {
+							const tag = createdTags.get(tagKey(t.name, t.category));
 							return tag ? { recipeId: recipe.id, tagId: tag.id } : null;
 						})
 						.filter((t) => t !== null);
