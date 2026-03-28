@@ -1,7 +1,9 @@
 <script lang="ts">
-	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import MultiSelectComponent from '$lib/components/ui/multi-select/MultiSelectComponent.svelte';
 	import type { Tag, TagCategory } from '$lib/server/types';
 	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
+	import { cn } from '$lib/utils';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import SearchBarComponent from './SearchBarComponent.svelte';
 
@@ -40,42 +42,39 @@
 		nutrition: (v) => (nutrition = v),
 		diet: (v) => (diet = v)
 	};
-
-	const toggleTag = (category: TagCategory, slug: string) => {
-		const current = getSelected(category);
-		const updated = current.includes(slug) ? current.filter((s) => s !== slug) : [...current, slug];
-		setters[category](updated);
-	};
 </script>
 
-<div class="my-4 flex flex-row justify-center">
-	<div class="w-full max-w-xs">
-		<div class="mb-3 flex flex-row items-center gap-2">
-			<SearchBarComponent bind:searchTerm />
-		</div>
+<div class="my-4">
+	<div class="mb-3 mx-auto max-w-xs">
+		<SearchBarComponent bind:searchTerm />
+	</div>
 
-		<div class="mb-3 flex flex-row flex-wrap gap-2">
-			<TagComponent onSelect={() => (filterFavorites = !filterFavorites)} active={filterFavorites}>
-				<StarIcon class="size-5 fill-yellow-400 text-yellow-400" />
-			</TagComponent>
-		</div>
-
+	<div class="flex flex-row flex-wrap items-center gap-2 justify-center">
+		<Button
+			variant="outline"
+			size="sm"
+			onclick={() => (filterFavorites = !filterFavorites)}
+			class={cn(
+				'rounded-full',
+				filterFavorites &&
+					'border-yellow-400 bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300'
+			)}
+		>
+			<StarIcon
+				class={cn(
+					'size-4',
+					filterFavorites ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
+				)}
+			/>
+			Favorites
+		</Button>
 		{#each tagsByCategory as { key, label, tags } (key)}
-			<div class="mb-3">
-				<p class="text-muted-foreground mb-1 text-xs font-medium uppercase tracking-wide">
-					{label}
-				</p>
-				<div class="flex flex-row flex-wrap gap-2">
-					{#each tags as tag (tag.slug)}
-						<TagComponent
-							onSelect={() => toggleTag(key, tag.slug)}
-							active={getSelected(key).includes(tag.slug)}
-						>
-							{tag.name}
-						</TagComponent>
-					{/each}
-				</div>
-			</div>
+			<MultiSelectComponent
+				{label}
+				options={tags.map((t) => ({ value: t.slug, label: t.name }))}
+				selected={getSelected(key)}
+				onchange={setters[key]}
+			/>
 		{/each}
 	</div>
 </div>
