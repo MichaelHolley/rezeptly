@@ -5,9 +5,18 @@ import * as ingredientService from '$lib/server/services/ingredient.service';
 import * as instructionService from '$lib/server/services/instruction.service';
 import * as recipeService from '$lib/server/services/recipe.service';
 import * as tagService from '$lib/server/services/tag.service';
+import type { TagCategory } from '$lib/server/types';
+import { TAG_CATEGORIES } from '$lib/shared/tags';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
+
+function buildTagInputs(inputs: Partial<Record<TagCategory, string | undefined>>) {
+	return TAG_CATEGORIES.filter((cat) => inputs[cat]?.trim()).map((cat) => ({
+		name: inputs[cat]!.trim(),
+		category: cat
+	}));
+}
 
 export const getRecipesMetadata = query(async () => {
 	return await recipeService.getRecipesMetadata();
@@ -135,12 +144,12 @@ export const updateRecipeDetails = form(
 		const recipe = await recipeService.getRecipeById(recipeId);
 		const oldSlug = recipe.slug;
 
-		const tags = [
-			tagType ? { name: tagType.trim(), category: 'type' as const } : null,
-			tagCuisine ? { name: tagCuisine.trim(), category: 'cuisine' as const } : null,
-			tagNutrition ? { name: tagNutrition.trim(), category: 'nutrition' as const } : null,
-			tagDiet ? { name: tagDiet.trim(), category: 'diet' as const } : null
-		].filter((t): t is NonNullable<typeof t> => t !== null && t.name.length > 0);
+		const tags = buildTagInputs({
+			type: tagType,
+			cuisine: tagCuisine,
+			nutrition: tagNutrition,
+			diet: tagDiet
+		});
 
 		const result = await recipeService.updateRecipe(recipeId, {
 			name,
@@ -171,12 +180,12 @@ export const createRecipe = form(
 			throwNewPermissionError();
 		}
 
-		const tags = [
-			tagType ? { name: tagType.trim(), category: 'type' as const } : null,
-			tagCuisine ? { name: tagCuisine.trim(), category: 'cuisine' as const } : null,
-			tagNutrition ? { name: tagNutrition.trim(), category: 'nutrition' as const } : null,
-			tagDiet ? { name: tagDiet.trim(), category: 'diet' as const } : null
-		].filter((t): t is NonNullable<typeof t> => t !== null && t.name.length > 0);
+		const tags = buildTagInputs({
+			type: tagType,
+			cuisine: tagCuisine,
+			nutrition: tagNutrition,
+			diet: tagDiet
+		});
 
 		const recipe = await recipeService.createRecipe({
 			name: name.trim(),

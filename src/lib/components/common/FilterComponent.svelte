@@ -31,24 +31,20 @@
 		})).filter((c) => c.tags.length > 0)
 	);
 
-	const getSelected = (category: TagCategory): string[] => {
-		if (category === 'type') return type;
-		if (category === 'cuisine') return cuisine;
-		if (category === 'nutrition') return nutrition;
-		return diet;
-	};
+	const getSelected = (category: TagCategory): string[] =>
+		({ type, cuisine, nutrition, diet })[category];
 
-	const setSelected = (category: TagCategory, value: string[]) => {
-		if (category === 'type') type = value;
-		else if (category === 'cuisine') cuisine = value;
-		else if (category === 'nutrition') nutrition = value;
-		else diet = value;
+	const setters: Record<TagCategory, (v: string[]) => void> = {
+		type: (v) => (type = v),
+		cuisine: (v) => (cuisine = v),
+		nutrition: (v) => (nutrition = v),
+		diet: (v) => (diet = v)
 	};
 
 	const toggleTag = (category: TagCategory, slug: string) => {
 		const current = getSelected(category);
 		const updated = current.includes(slug) ? current.filter((s) => s !== slug) : [...current, slug];
-		setSelected(category, updated);
+		setters[category](updated);
 	};
 </script>
 
@@ -64,7 +60,7 @@
 			</TagComponent>
 		</div>
 
-		{#each tagsByCategory as { key, label, tags }}
+		{#each tagsByCategory as { key, label, tags } (key)}
 			<div class="mb-3">
 				<p class="text-muted-foreground mb-1 text-xs font-medium uppercase tracking-wide">
 					{label}

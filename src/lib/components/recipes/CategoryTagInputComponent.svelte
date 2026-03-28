@@ -36,19 +36,22 @@
 		diet: ''
 	});
 
-	function getCurrentValue(key: TagCategory): string {
-		if (key === 'type') return typeTag;
-		if (key === 'cuisine') return cuisineTag;
-		if (key === 'nutrition') return nutritionTag;
-		return dietTag;
-	}
+	const getters: Record<TagCategory, () => string> = {
+		type: () => typeTag,
+		cuisine: () => cuisineTag,
+		nutrition: () => nutritionTag,
+		diet: () => dietTag
+	};
 
-	function setCurrentValue(key: TagCategory, value: string) {
-		if (key === 'type') typeTag = value;
-		else if (key === 'cuisine') cuisineTag = value;
-		else if (key === 'nutrition') nutritionTag = value;
-		else dietTag = value;
-	}
+	const setters: Record<TagCategory, (v: string) => void> = {
+		type: (v) => (typeTag = v),
+		cuisine: (v) => (cuisineTag = v),
+		nutrition: (v) => (nutritionTag = v),
+		diet: (v) => (dietTag = v)
+	};
+
+	const getCurrentValue = (key: TagCategory): string => getters[key]();
+	const setCurrentValue = (key: TagCategory, value: string) => setters[key](value);
 
 	function getSuggestions(key: TagCategory): string[] {
 		const input = inputValues[key].trim().toLowerCase();
