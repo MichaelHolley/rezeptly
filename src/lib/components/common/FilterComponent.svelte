@@ -55,7 +55,7 @@
 			size="sm"
 			onclick={() => (filterFavorites = !filterFavorites)}
 			class={cn(
-				'rounded-full',
+				'rounded-full hover:bg-transparent',
 				filterFavorites &&
 					'border-yellow-400 bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300'
 			)}
@@ -74,6 +74,7 @@
 				options={tags.map((t) => ({ value: t.slug, label: t.name }))}
 				selected={getSelected(key)}
 				onchange={setters[key]}
+				clearable
 			/>
 		{/each}
 	</div>
