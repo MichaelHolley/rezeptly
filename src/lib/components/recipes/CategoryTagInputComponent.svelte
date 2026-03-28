@@ -20,6 +20,8 @@
 		dietTag?: string;
 	} = $props();
 
+	const MAX_SUGGESTIONS = 3;
+
 	const availableTags = $derived(AvailableTagsStore.tags);
 
 	const PLACEHOLDERS: Record<TagCategory, string> = {
@@ -55,13 +57,15 @@
 
 	function getSuggestions(key: TagCategory): string[] {
 		const input = inputValues[key].trim().toLowerCase();
-		if (!input) return [];
 		const current = getCurrentValue(key);
 		return availableTags
 			.filter(
-				(t) => t.category === key && t.name.toLowerCase().includes(input) && t.name !== current
+				(t) =>
+					t.category === key &&
+					t.name !== current &&
+					(!input || t.name.toLowerCase().includes(input))
 			)
-			.slice(0, 3)
+			.slice(0, MAX_SUGGESTIONS)
 			.map((t) => t.name);
 	}
 
