@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 	import * as InputGroup from '$lib/components/ui/input-group/index.js';
 	import { cn } from '$lib/utils';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { Checkbox, Popover } from 'bits-ui';
+	import * as Popover from '$lib/components/ui/popover/index.js';
 
 	let {
 		label,
@@ -69,25 +70,11 @@
 					<label
 						class="hover:bg-accent flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm"
 					>
-						<Checkbox.Root
+						<Checkbox
 							checked={selected.includes(option.value)}
 							onCheckedChange={() => toggle(option.value)}
-							class="border-input data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500 flex size-4 shrink-0 items-center justify-center rounded border transition-colors"
-						>
-							{#snippet children({ checked })}
-								{#if checked}
-									<svg viewBox="0 0 10 8" fill="none" class="size-2.5 text-white">
-										<path
-											d="M1 4l3 3 5-6"
-											stroke="currentColor"
-											stroke-width="1.5"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-										/>
-									</svg>
-								{/if}
-							{/snippet}
-						</Checkbox.Root>
+							class="data-checked:bg-orange-500 data-checked:border-orange-500"
+						/>
 						{option.label}
 					</label>
 				{/each}
