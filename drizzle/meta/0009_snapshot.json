@@ -1,5 +1,5 @@
 {
-  "id": "488f0f7e-0bc1-45fe-8964-7b9bef73dcc4",
+  "id": "a5d9743d-bb33-4b36-a7ab-70f951394a19",
   "prevId": "944f1aa9-3bfa-4369-a06d-f62ec9f551b3",
   "version": "7",
   "dialect": "postgresql",
@@ -27,7 +27,23 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "ingredients_recipe_id_idx": {
+          "name": "ingredients_recipe_id_idx",
+          "columns": [
+            {
+              "expression": "recipe_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "ingredients_recipe_id_recipes_id_fk": {
           "name": "ingredients_recipe_id_recipes_id_fk",
@@ -84,7 +100,23 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "instructions_recipe_id_idx": {
+          "name": "instructions_recipe_id_idx",
+          "columns": [
+            {
+              "expression": "recipe_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "instructions_recipe_id_recipes_id_fk": {
           "name": "instructions_recipe_id_recipes_id_fk",
@@ -181,7 +213,23 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "recipes_to_tags_tag_id_idx": {
+          "name": "recipes_to_tags_tag_id_idx",
+          "columns": [
+            {
+              "expression": "tag_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "recipes_to_tags_recipe_id_recipes_id_fk": {
           "name": "recipes_to_tags_recipe_id_recipes_id_fk",
@@ -255,8 +303,8 @@
         }
       },
       "indexes": {
-        "tags_slug_unique": {
-          "name": "tags_slug_unique",
+        "tags_slug_idx": {
+          "name": "tags_slug_idx",
           "columns": [
             {
               "expression": "slug",
@@ -265,7 +313,7 @@
               "nulls": "last"
             }
           ],
-          "isUnique": true,
+          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
