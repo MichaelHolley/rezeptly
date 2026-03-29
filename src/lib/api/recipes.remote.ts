@@ -126,8 +126,8 @@ export const updateRecipeDetails = form(
 				z.transform((id) => Number(id))
 			)
 			.or(z.number()),
-		name: z.string().nonempty().nonoptional(),
-		description: z.string().nonempty().nonoptional(),
+		name: z.string().trim().min(1).nonoptional(),
+		description: z.string().trim().min(1).nonoptional(),
 		tagType: z.array(z.string()).optional().default([]),
 		tagCuisine: z.array(z.string()).optional().default([]),
 		tagNutrition: z.array(z.string()).optional().default([]),
@@ -165,8 +165,8 @@ export const updateRecipeDetails = form(
 
 export const createRecipe = form(
 	z.object({
-		name: z.string().nonempty().nonoptional(),
-		description: z.string().nonempty().nonoptional(),
+		name: z.string().trim().min(1).nonoptional(),
+		description: z.string().trim().min(1).nonoptional(),
 		tagType: z.array(z.string()).optional().default([]),
 		tagCuisine: z.array(z.string()).optional().default([]),
 		tagNutrition: z.array(z.string()).optional().default([]),
