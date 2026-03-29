@@ -11,12 +11,14 @@
 		tags = $bindable(),
 		label = 'Tags',
 		placeholder = 'Enter a tag-name and confirm with Enter-Key',
-		category
+		category,
+		inputId = 'tagsinput'
 	}: {
 		tags: string[];
 		label?: string;
 		placeholder?: string;
 		category?: TagCategory;
+		inputId?: string;
 	} = $props();
 
 	let tagInputValue = $state('');
@@ -68,12 +70,11 @@
 </script>
 
 <div class="form-group">
-	<Label for="tagsinput">{label}</Label>
+	<Label for={inputId}>{label}</Label>
 
 	<InputGroup.Root class="h-fit!">
 		<InputGroup.Input
-			name="tagsinput"
-			id="tagsinput"
+			id={inputId}
 			type="text"
 			{placeholder}
 			bind:value={tagInputValue}

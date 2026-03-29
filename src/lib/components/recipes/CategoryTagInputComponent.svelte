@@ -27,24 +27,28 @@
 		label="Type"
 		placeholder={PLACEHOLDERS.type}
 		category="type"
+		inputId="tag-input-type"
 		bind:tags={typeTags}
 	/>
 	<TagInputComponent
 		label="Cuisine"
 		placeholder={PLACEHOLDERS.cuisine}
 		category="cuisine"
+		inputId="tag-input-cuisine"
 		bind:tags={cuisineTags}
 	/>
 	<TagInputComponent
 		label="Nutrition"
 		placeholder={PLACEHOLDERS.nutrition}
 		category="nutrition"
+		inputId="tag-input-nutrition"
 		bind:tags={nutritionTags}
 	/>
 	<TagInputComponent
 		label="Diet"
 		placeholder={PLACEHOLDERS.diet}
 		category="diet"
+		inputId="tag-input-diet"
 		bind:tags={dietTags}
 	/>
 </div>
