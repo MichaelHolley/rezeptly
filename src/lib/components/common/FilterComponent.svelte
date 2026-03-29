@@ -30,7 +30,7 @@
 			key,
 			label,
 			tags: availableTags.filter((t) => t.category === key)
-		})).filter((c) => c.tags.length > 0)
+		})).filter((c) => c.tags.length > 0 || getSelected(c.key).length > 0)
 	);
 
 	const getSelected = (category: TagCategory): string[] =>
@@ -53,6 +53,7 @@
 		<Button
 			variant="outline"
 			size="sm"
+			aria-pressed={filterFavorites}
 			onclick={() => (filterFavorites = !filterFavorites)}
 			class={cn(
 				'rounded-full hover:bg-transparent',

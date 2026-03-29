@@ -6,16 +6,6 @@ import { generateSlug } from './util/generate-slug';
 
 export { TAG_CATEGORIES, TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 
-function generateTagSlug(name: string): string {
-	return (
-		generateSlug(name) ??
-		name
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, '-')
-			.replace(/^-|-$/g, '')
-	);
-}
-
 /**
  * Upserts tags within a transaction and returns resolved Tag rows.
  */
@@ -31,7 +21,7 @@ export async function upsertTags(
 	for (const t of inputs) {
 		const trimmedName = t.name.trim();
 		if (!trimmedName) continue;
-		const slug = generateTagSlug(trimmedName);
+		const slug = generateSlug(trimmedName);
 		const key = t.category ? `cat::${t.category}::${slug}` : `slug::${slug}`;
 		seen.set(key, { name: trimmedName, category: t.category ?? null });
 	}
@@ -41,7 +31,8 @@ export async function upsertTags(
 
 	const allTags: Tag[] = [];
 	for (const input of uniqueInputs) {
-		const slug = generateTagSlug(input.name);
+		const slug = generateSlug(input.name);
+		if (!slug) continue;
 
 		// Find existing tag by slug + category match
 		const existingRows = await tx.select().from(tags).where(eq(tags.slug, slug));
