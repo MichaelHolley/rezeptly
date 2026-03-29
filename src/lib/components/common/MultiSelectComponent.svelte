@@ -83,7 +83,12 @@
 	</Popover.Root>
 
 	{#if showClear}
-		<InputGroup.Button size="sm" onclick={() => onchange([])} class="hover:bg-transparent" aria-label="Clear selection">
+		<InputGroup.Button
+			size="sm"
+			onclick={() => onchange([])}
+			class="hover:bg-transparent"
+			aria-label="Clear selection"
+		>
 			<XIcon class="size-3.5 text-orange-700 dark:text-orange-300" />
 		</InputGroup.Button>
 	{/if}
