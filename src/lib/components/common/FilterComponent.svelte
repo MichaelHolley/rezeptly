@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index.js';
-	import MultiSelectComponent from '$lib/components/ui/multi-select/MultiSelectComponent.svelte';
+	import MultiSelectComponent from '$lib/components/common/MultiSelectComponent.svelte';
+	import { Button } from '$lib/components/ui/button/';
 	import type { Tag, TagCategory } from '$lib/server/types';
 	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 	import { cn } from '$lib/utils';
