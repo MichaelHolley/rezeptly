@@ -11,7 +11,6 @@
 	let cuisineTags = $state<string[]>([]);
 	let nutritionTags = $state<string[]>([]);
 	let dietTags = $state<string[]>([]);
-
 </script>
 
 <svelte:head>

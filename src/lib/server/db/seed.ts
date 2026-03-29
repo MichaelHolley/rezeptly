@@ -4,8 +4,8 @@ import { stdin as input, stdout as output } from 'node:process';
 import * as readline from 'node:readline/promises';
 import postgres from 'postgres';
 import slugify from 'slugify';
-import { ingredients, instructions, recipes, recipesToTags, tags } from './schema';
 import type { TagCategory } from '../types';
+import { ingredients, instructions, recipes, recipesToTags, tags } from './schema';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -437,14 +437,11 @@ async function seed() {
 			const toSlug = (name: string) =>
 				slugify(name, { lower: true, strict: true }) ||
 				name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-			const tagKey = (name: string, category: TagCategory) =>
-				`${toSlug(name)}::${category}`;
+			const tagKey = (name: string, category: TagCategory) => `${toSlug(name)}::${category}`;
 
 			const allTagInputs = [
 				...new Map(
-					sampleData
-						.flatMap((r) => r.tags)
-						.map((t) => [tagKey(t.name, t.category), t])
+					sampleData.flatMap((r) => r.tags).map((t) => [tagKey(t.name, t.category), t])
 				).values()
 			];
 

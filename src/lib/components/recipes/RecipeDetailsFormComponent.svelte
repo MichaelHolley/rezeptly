@@ -22,7 +22,6 @@
 	let cuisineTags = $state(getTagsByCategory('cuisine'));
 	let nutritionTags = $state(getTagsByCategory('nutrition'));
 	let dietTags = $state(getTagsByCategory('diet'));
-
 </script>
 
 <form
