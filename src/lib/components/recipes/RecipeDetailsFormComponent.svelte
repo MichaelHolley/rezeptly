@@ -3,11 +3,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import type { RecipeWithDetails } from '$lib/server/types';
+	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { onMount } from 'svelte';
-	import TagInputComponent from './TagInputComponent.svelte';
+	import CategoryTagInputComponent from './CategoryTagInputComponent.svelte';
 
 	const {
 		onSave,
@@ -15,11 +14,14 @@
 		recipe
 	}: { onSave?: () => void; onCancel?: () => void; recipe: RecipeWithDetails } = $props();
 
-	let tags = $state<string[]>([]);
+	function getTagsByCategory(category: TagCategory): string[] {
+		return recipe.tags.filter((t) => t.category === category).map((t) => t.name);
+	}
 
-	onMount(() => {
-		tags = recipe.tags.map((t) => t.name);
-	});
+	let typeTags = $state(getTagsByCategory('type'));
+	let cuisineTags = $state(getTagsByCategory('cuisine'));
+	let nutritionTags = $state(getTagsByCategory('nutrition'));
+	let dietTags = $state(getTagsByCategory('diet'));
 </script>
 
 <form
@@ -46,9 +48,18 @@
 		value={recipe.description}
 		required
 	/>
-	<TagInputComponent bind:tags />
-	{#each tags as tag, i (tag)}
-		<input {...updateRecipeDetails.fields.tags[i].as('hidden', tag)} value={tag} />
+	<CategoryTagInputComponent bind:typeTags bind:cuisineTags bind:nutritionTags bind:dietTags />
+	{#each typeTags as tag, i (tag)}
+		<input {...updateRecipeDetails.fields.tagType[i].as('hidden', tag)} />
+	{/each}
+	{#each cuisineTags as tag, i (tag)}
+		<input {...updateRecipeDetails.fields.tagCuisine[i].as('hidden', tag)} />
+	{/each}
+	{#each nutritionTags as tag, i (tag)}
+		<input {...updateRecipeDetails.fields.tagNutrition[i].as('hidden', tag)} />
+	{/each}
+	{#each dietTags as tag, i (tag)}
+		<input {...updateRecipeDetails.fields.tagDiet[i].as('hidden', tag)} />
 	{/each}
 	<div class="flex flex-row justify-end gap-2">
 		<Button

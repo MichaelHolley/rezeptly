@@ -1,5 +1,7 @@
 import type { ingredients, instructions, recipes, tags } from './db/schema';
 
+export type TagCategory = 'type' | 'cuisine' | 'nutrition' | 'diet';
+
 export type Recipe = typeof recipes.$inferSelect;
 export type NewRecipe = typeof recipes.$inferInsert;
 
@@ -11,6 +13,12 @@ export type NewInstruction = typeof instructions.$inferInsert;
 
 export type Tag = typeof tags.$inferSelect;
 export type NewTag = typeof tags.$inferInsert;
+
+/** Input shape accepted by service layer — slug is generated automatically */
+export type TagInput = {
+	name: string;
+	category?: TagCategory | null;
+};
 
 export type RecipeWithDetails = Recipe & {
 	ingredients: Ingredient[];

@@ -1,43 +1,82 @@
 <script lang="ts">
-	import TagComponent from '$lib/components/recipes/TagComponent.svelte';
+	import MultiSelectComponent from '$lib/components/common/MultiSelectComponent.svelte';
+	import { Button } from '$lib/components/ui/button/';
+	import type { Tag, TagCategory } from '$lib/server/types';
+	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
+	import { cn } from '$lib/utils';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import SearchBarComponent from './SearchBarComponent.svelte';
 
 	let {
 		searchTerm = $bindable(),
-		selectedTag = $bindable(),
 		filterFavorites = $bindable(),
+		type = $bindable(),
+		cuisine = $bindable(),
+		nutrition = $bindable(),
+		diet = $bindable(),
 		availableTags
 	}: {
 		searchTerm: string;
-		selectedTag: string;
 		filterFavorites: boolean;
-		availableTags: string[];
+		type: string[];
+		cuisine: string[];
+		nutrition: string[];
+		diet: string[];
+		availableTags: Tag[];
 	} = $props();
 
-	const setSelectedTag = (tag: string) => {
-		if (selectedTag === tag) {
-			selectedTag = '';
-		} else {
-			selectedTag = tag;
-		}
+	const tagsByCategory = $derived(
+		TAG_CATEGORY_CONFIG.map(({ key, label }) => ({
+			key,
+			label,
+			tags: availableTags.filter((t) => t.category === key)
+		})).filter((c) => c.tags.length > 0 || getSelected(c.key).length > 0)
+	);
+
+	const getSelected = (category: TagCategory): string[] =>
+		({ type, cuisine, nutrition, diet })[category];
+
+	const setters: Record<TagCategory, (v: string[]) => void> = {
+		type: (v) => (type = v),
+		cuisine: (v) => (cuisine = v),
+		nutrition: (v) => (nutrition = v),
+		diet: (v) => (diet = v)
 	};
 </script>
 
-<div class="my-4 flex flex-row justify-center">
-	<div class="w-full max-w-xs">
-		<div class="mb-2 flex flex-row items-center gap-2">
-			<SearchBarComponent bind:searchTerm />
-		</div>
-		<div class="flex flex-row flex-wrap justify-center gap-2">
-			<TagComponent onSelect={() => (filterFavorites = !filterFavorites)} active={filterFavorites}>
-				<StarIcon class="size-5 fill-yellow-400 text-yellow-400" />
-			</TagComponent>
-			{#each availableTags as tag (tag)}
-				<TagComponent onSelect={() => setSelectedTag(tag)} active={selectedTag === tag}>
-					{tag}
-				</TagComponent>
-			{/each}
-		</div>
+<div class="my-4">
+	<div class="mb-3 mx-auto max-w-xs">
+		<SearchBarComponent bind:searchTerm />
+	</div>
+
+	<div class="flex flex-row flex-wrap items-center gap-2 justify-center">
+		<Button
+			variant="outline"
+			size="sm"
+			aria-pressed={filterFavorites}
+			onclick={() => (filterFavorites = !filterFavorites)}
+			class={cn(
+				'rounded-full hover:bg-transparent',
+				filterFavorites &&
+					'border-yellow-400 bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300'
+			)}
+		>
+			<StarIcon
+				class={cn(
+					'size-4',
+					filterFavorites ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
+				)}
+			/>
+			Favorites
+		</Button>
+		{#each tagsByCategory as { key, label, tags } (key)}
+			<MultiSelectComponent
+				{label}
+				options={tags.map((t) => ({ value: t.slug, label: t.name }))}
+				selected={getSelected(key)}
+				onchange={setters[key]}
+				clearable
+			/>
+		{/each}
 	</div>
 </div>

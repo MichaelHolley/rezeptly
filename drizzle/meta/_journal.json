@@ -57,6 +57,13 @@
       "when": 1771426195320,
       "tag": "0007_RecipeSlugNotNullConstraint",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1774639004595,
+      "tag": "0008_TagTaxonomy",
+      "breakpoints": true
     }
   ]
 }

@@ -5,6 +5,7 @@
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
+	import { TAG_CATEGORIES } from '$lib/shared/tags';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { Debounced } from 'runed';
@@ -12,11 +13,15 @@
 	import z from 'zod';
 
 	const favorites = favoritesStore;
+
 	const searchParams = useSearchParams(
 		z.object({
 			filterFavorites: z.boolean().default(false),
 			searchTerm: z.string().optional().default(''),
-			activeTagFilter: z.string().optional().default('')
+			type: z.array(z.string()).default([]),
+			cuisine: z.array(z.string()).default([]),
+			nutrition: z.array(z.string()).default([]),
+			diet: z.array(z.string()).default([])
 		})
 	);
 
@@ -32,9 +37,11 @@
 				!searchParams.searchTerm ||
 				r.name.toLowerCase().includes(debouncedSearchTerm.current.toLowerCase());
 
-			const matchesTagFilter =
-				!searchParams.activeTagFilter ||
-				r.tags.some((t: { name: string }) => t.name === searchParams.activeTagFilter);
+			const matchesTagFilter = TAG_CATEGORIES.every((category) => {
+				const selected = searchParams[category] as string[];
+				if (!selected || selected.length === 0) return true;
+				return r.tags.some((t) => t.category === category && selected.includes(t.slug));
+			});
 
 			const matchesFavoritesFilter =
 				!searchParams.filterFavorites || favorites.current.includes(r.id);
@@ -53,9 +60,12 @@
 
 	<FilterComponent
 		bind:searchTerm={searchParams.searchTerm}
-		bind:selectedTag={searchParams.activeTagFilter}
 		bind:filterFavorites={searchParams.filterFavorites}
-		availableTags={AvailableTagsStore.tags.map((t) => t.name)}
+		bind:type={searchParams.type}
+		bind:cuisine={searchParams.cuisine}
+		bind:nutrition={searchParams.nutrition}
+		bind:diet={searchParams.diet}
+		availableTags={AvailableTagsStore.tags}
 	/>
 
 	<div class="card-container my-4 grid gap-4">
