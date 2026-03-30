@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { getRecipesMetadata } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import FilterComponent from '$lib/components/common/FilterComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
+	import FilterComponent from '$lib/components/recipes/FilterComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
 	import { TAG_CATEGORIES } from '$lib/shared/tags';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';

@@ -2,7 +2,7 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { env as publicEnv } from '$env/dynamic/public';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
-	import BrokenPreviewUrlComponent from '$lib/components/common/BrokenImagePreview.svelte';
+	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
@@ -169,7 +169,7 @@
 				<div
 					class="relative flex size-48 items-center justify-center rounded-sm border bg-zinc-50 shadow-sm"
 				>
-					<BrokenPreviewUrlComponent />
+					<ImagePlaceholderComponent variant="broken" />
 					{#if PermissionsStore.canEdit}
 						<button
 							class="absolute top-2 right-2"

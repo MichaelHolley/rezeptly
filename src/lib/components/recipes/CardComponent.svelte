@@ -1,6 +1,5 @@
 <script lang="ts">
-	import BrokenPreviewUrlComponent from '$lib/components/common/BrokenImagePreview.svelte';
-	import NoImagePreviewComponent from '$lib/components/common/NoImagePreviewComponent.svelte';
+	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import type { RecipeMetadata } from '$lib/server/types';
@@ -31,11 +30,11 @@
 				/>
 			{:else if recipe.imageUrl && isImageBroken}
 				<div class="flex h-full justify-center bg-neutral-50">
-					<BrokenPreviewUrlComponent />
+					<ImagePlaceholderComponent variant="broken" />
 				</div>
 			{:else}
 				<div class="flex h-full justify-center bg-neutral-50">
-					<NoImagePreviewComponent />
+					<ImagePlaceholderComponent />
 				</div>
 			{/if}
 		</div>

@@ -25,7 +25,7 @@
 	</InputGroup.Addon>
 	<InputGroup.Addon align="inline-end">
 		{#if searchTerm}
-			<button onclick={() => (searchTerm = '')}>
+			<button onclick={() => (searchTerm = '')} aria-label="Clear search">
 				<XIcon class="size-4 stroke-orange-500/60" />
 			</button>
 		{/if}

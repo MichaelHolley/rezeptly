@@ -5,7 +5,7 @@
 	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 	import { cn } from '$lib/utils';
 	import StarIcon from '@lucide/svelte/icons/star';
-	import SearchBarComponent from './SearchBarComponent.svelte';
+	import SearchBarComponent from '../common/SearchBarComponent.svelte';
 
 	let {
 		searchTerm = $bindable(),
