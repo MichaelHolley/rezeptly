@@ -39,14 +39,16 @@ export async function upsertTags(
 		if (existing) {
 			allTags.push(existing);
 		} else {
-			try {
-				const [newTag] = await tx
-					.insert(tags)
-					.values({ name: input.name, slug, category: input.category })
-					.returning();
+			const [newTag] = await tx
+				.insert(tags)
+				.values({ name: input.name, slug, category: input.category })
+				.onConflictDoNothing()
+				.returning();
+
+			if (newTag) {
 				allTags.push(newTag);
-			} catch {
-				// Race condition: refetch
+			} else {
+				// Race condition: another transaction inserted the same slug+category
 				const rows = await tx.select().from(tags).where(eq(tags.slug, slug));
 				const raceTag = rows.find((r) => r.category === input.category);
 				if (raceTag) allTags.push(raceTag);
