@@ -17,7 +17,7 @@ export type NewTag = typeof tags.$inferInsert;
 /** Input shape accepted by service layer — slug is generated automatically */
 export type TagInput = {
 	name: string;
-	category?: TagCategory | null;
+	category: TagCategory;
 };
 
 export type RecipeWithDetails = Recipe & {

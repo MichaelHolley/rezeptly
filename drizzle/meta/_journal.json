@@ -64,6 +64,13 @@
       "when": 1774639004595,
       "tag": "0008_TagTaxonomy",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1774806386272,
+      "tag": "0009_AddIndexAndConstraints",
+      "breakpoints": true
     }
   ]
 }

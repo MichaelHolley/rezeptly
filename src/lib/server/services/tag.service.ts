@@ -15,15 +15,13 @@ export async function upsertTags(
 ): Promise<Tag[]> {
 	if (!inputs.length) return [];
 
-	// Deduplicate: for categorized tags, key by category (last one wins per category)
-	// For uncategorized tags, key by slug
+	// Deduplicate by category+slug (last one wins per category+slug pair)
 	const seen = new Map<string, TagInput>();
 	for (const t of inputs) {
 		const trimmedName = t.name.trim();
 		if (!trimmedName) continue;
 		const slug = generateSlug(trimmedName);
-		const key = t.category ? `cat::${t.category}::${slug}` : `slug::${slug}`;
-		seen.set(key, { name: trimmedName, category: t.category ?? null });
+		seen.set(`${t.category}::${slug}`, { name: trimmedName, category: t.category });
 	}
 
 	const uniqueInputs = [...seen.values()];
@@ -36,25 +34,23 @@ export async function upsertTags(
 
 		// Find existing tag by slug + category match
 		const existingRows = await tx.select().from(tags).where(eq(tags.slug, slug));
-		const existing = input.category
-			? (existingRows.find((r) => r.category === input.category) ?? null)
-			: (existingRows.find((r) => r.category === null) ?? null);
+		const existing = existingRows.find((r) => r.category === input.category) ?? null;
 
 		if (existing) {
 			allTags.push(existing);
 		} else {
-			try {
-				const [newTag] = await tx
-					.insert(tags)
-					.values({ name: input.name, slug, category: input.category ?? null })
-					.returning();
+			const [newTag] = await tx
+				.insert(tags)
+				.values({ name: input.name, slug, category: input.category })
+				.onConflictDoNothing()
+				.returning();
+
+			if (newTag) {
 				allTags.push(newTag);
-			} catch {
-				// Race condition: refetch
+			} else {
+				// Race condition: another transaction inserted the same slug+category
 				const rows = await tx.select().from(tags).where(eq(tags.slug, slug));
-				const raceTag = input.category
-					? rows.find((r) => r.category === input.category)
-					: rows.find((r) => r.category === null);
+				const raceTag = rows.find((r) => r.category === input.category);
 				if (raceTag) allTags.push(raceTag);
 			}
 		}
