@@ -1,17 +1,16 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { scale } from 'svelte/transition';
-	import CookingPot from '@lucide/svelte/icons/cooking-pot';
+	import { cn } from '$lib/utils';
 	import ChefHat from '@lucide/svelte/icons/chef-hat';
-	import HandPlatter from '@lucide/svelte/icons/hand-platter';
+	import CookingPot from '@lucide/svelte/icons/cooking-pot';
 	import Flame from '@lucide/svelte/icons/flame';
+	import HandPlatter from '@lucide/svelte/icons/hand-platter';
 	import Microwave from '@lucide/svelte/icons/microwave';
 	import Refrigerator from '@lucide/svelte/icons/refrigerator';
 	import Soup from '@lucide/svelte/icons/soup';
-	import Beaker from '@lucide/svelte/icons/beaker';
 	import Utensils from '@lucide/svelte/icons/utensils';
 	import UtensilsCrossed from '@lucide/svelte/icons/utensils-crossed';
-	import { cn } from '$lib/utils';
+	import { onMount } from 'svelte';
+	import { scale } from 'svelte/transition';
 
 	const { class: className }: { class?: string } = $props();
 
@@ -24,7 +23,6 @@
 		Microwave,
 		HandPlatter,
 		Refrigerator,
-		Beaker,
 		Flame
 	] as const;
 	let iconIndex = $state(0);
