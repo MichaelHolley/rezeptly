@@ -11,6 +11,7 @@
 	let cuisineTags = $state<string[]>([]);
 	let nutritionTags = $state<string[]>([]);
 	let dietTags = $state<string[]>([]);
+	let importImageName = $state<string | null>(null);
 </script>
 
 <svelte:head>
@@ -19,7 +20,7 @@
 
 <BreadcrumbComponent breadcrumbs={[{ name: 'Create Recipe', href: '/create' }]} />
 
-<form {...createRecipe} class="flex flex-col gap-4">
+<form {...createRecipe} enctype="multipart/form-data" class="flex flex-col gap-4">
 	<div class="form-group">
 		<Label for="name">Name</Label>
 		<Input id="name" placeholder="Name" required {...createRecipe.fields.name.as('text')} />
@@ -46,6 +47,23 @@
 	{#each dietTags as tag, i (tag)}
 		<input {...createRecipe.fields.tagDiet[i].as('hidden', tag)} />
 	{/each}
+	<div class="form-group mt-6">
+		<Label for="importImage"
+			>Import from image <span class="text-muted-foreground">(optional)</span></Label
+		>
+		<input
+			id="importImage"
+			accept="image/jpeg,image/png,image/webp"
+			{...createRecipe.fields.importImage.as('file')}
+			oninput={(e) => {
+				importImageName = e.currentTarget.files?.[0]?.name ?? null;
+			}}
+			class="text-sm"
+		/>
+		{#if importImageName}
+			<p class="text-muted-foreground text-xs">{importImageName}</p>
+		{/if}
+	</div>
 	<div class="flex flex-row justify-end">
 		<Button type="submit" disabled={!!createRecipe.pending}>+ Create</Button>
 	</div>
