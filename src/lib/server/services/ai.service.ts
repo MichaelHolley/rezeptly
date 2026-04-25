@@ -4,8 +4,25 @@ import { generateText, Output } from 'ai';
 import { z } from 'zod';
 
 const extractionSchema = z.object({
-	ingredients: z.array(z.object({ name: z.string() })),
-	instructions: z.array(z.object({ heading: z.string(), instructions: z.string() }))
+	ingredients: z.array(
+		z
+			.object({
+				name: z
+					.string()
+					.describe("A single recipe ingredient including both amount and title (e.g. '150g Mehl'")
+			})
+			.describe('The list of recipe ingredients')
+	),
+	instructions: z
+		.array(
+			z
+				.object({
+					heading: z.string().describe('The heading of the instruction section'),
+					instructions: z.string().describe('The description of the instruction section')
+				})
+				.describe('One Section of the recipe instructions')
+		)
+		.describe('The list of recipe instructions segments')
 });
 
 export type ExtractedRecipeData = z.infer<typeof extractionSchema>;
@@ -35,8 +52,7 @@ export async function extractRecipeFromImage(file: File): Promise<ExtractedRecip
 				content: [
 					{
 						type: 'image',
-						image: base64,
-						mediaType: file.type as 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif'
+						image: base64
 					},
 					{ type: 'text', text: 'Extract all ingredients and instructions from this recipe image.' }
 				]
