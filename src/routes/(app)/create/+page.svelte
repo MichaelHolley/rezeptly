@@ -6,6 +6,9 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	let typeTags = $state<string[]>([]);
 	let cuisineTags = $state<string[]>([]);
@@ -47,23 +50,25 @@
 	{#each dietTags as tag, i (tag)}
 		<input {...createRecipe.fields.tagDiet[i].as('hidden', tag)} />
 	{/each}
-	<div class="form-group mt-6">
-		<Label for="importImage"
-			>Import from image <span class="text-muted-foreground">(optional)</span></Label
-		>
-		<input
-			id="importImage"
-			accept="image/jpeg,image/png,image/webp"
-			{...createRecipe.fields.importImage.as('file')}
-			oninput={(e) => {
-				importImageName = e.currentTarget.files?.[0]?.name ?? null;
-			}}
-			class="text-sm"
-		/>
-		{#if importImageName}
-			<p class="text-muted-foreground text-xs">{importImageName}</p>
-		{/if}
-	</div>
+	{#if data.features.imageImport}
+		<div class="form-group mt-6">
+			<Label for="importImage"
+				>Import from image <span class="text-muted-foreground">(optional)</span></Label
+			>
+			<input
+				id="importImage"
+				accept="image/jpeg,image/png,image/webp"
+				{...createRecipe.fields.importImage.as('file')}
+				oninput={(e) => {
+					importImageName = e.currentTarget.files?.[0]?.name ?? null;
+				}}
+				class="text-sm"
+			/>
+			{#if importImageName}
+				<p class="text-muted-foreground text-xs">{importImageName}</p>
+			{/if}
+		</div>
+	{/if}
 	<div class="flex flex-row justify-end">
 		<Button type="submit" disabled={!!createRecipe.pending}>+ Create</Button>
 	</div>

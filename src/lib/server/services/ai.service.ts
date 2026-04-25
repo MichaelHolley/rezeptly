@@ -9,7 +9,9 @@ const extractionSchema = z.object({
 			.object({
 				name: z
 					.string()
-					.describe("A single recipe ingredient including both amount and title (e.g. '150g Mehl'")
+					.describe(
+						"A single recipe ingredient. Must include both amount and title (e.g. '150g Mehl'"
+					)
 			})
 			.describe('The list of recipe ingredients')
 	),
@@ -45,7 +47,7 @@ export async function extractRecipeFromImage(file: File): Promise<ExtractedRecip
 			schema: extractionSchema
 		}),
 		system:
-			'You are a recipe parser. Extract ingredients and cooking instructions from recipe images. Return empty arrays if the information is not visible or unclear in the image.',
+			'You are a recipe parser. Extract ingredients and cooking instructions from recipe images. Return empty arrays if the information is not visible or unclear in the image. Ingredient-values must include both amount and title. Fix typos.',
 		messages: [
 			{
 				role: 'user',
