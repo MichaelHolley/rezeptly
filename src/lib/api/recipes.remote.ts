@@ -1,5 +1,6 @@
 import { command, form, query } from '$app/server';
 import { userCanWrite } from '$lib/server/auth/permissions';
+import * as aiService from '$lib/server/services/ai.service';
 import * as imageService from '$lib/server/services/image.service';
 import * as ingredientService from '$lib/server/services/ingredient.service';
 import * as instructionService from '$lib/server/services/instruction.service';
@@ -171,9 +172,19 @@ export const createRecipe = form(
 		tagCuisine: z.array(z.string()).optional().default([]),
 		tagNutrition: z.array(z.string()).optional().default([]),
 		tagDiet: z.array(z.string()).optional().default([]),
-		imageUrl: z.string().optional()
+		imageUrl: z.string().optional(),
+		importImage: z.instanceof(File).optional()
 	}),
-	async ({ name, description, tagType, tagCuisine, tagNutrition, tagDiet, imageUrl }) => {
+	async ({
+		name,
+		description,
+		tagType,
+		tagCuisine,
+		tagNutrition,
+		tagDiet,
+		imageUrl,
+		importImage
+	}) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
 		}
@@ -185,12 +196,17 @@ export const createRecipe = form(
 			diet: tagDiet
 		});
 
+		const extracted =
+			importImage && importImage.size > 0
+				? await aiService.extractRecipeFromImage(importImage)
+				: { ingredients: [], instructions: [] };
+
 		const recipe = await recipeService.createRecipe({
 			name: name.trim(),
 			description: description.trim(),
 			imageUrl,
-			ingredients: [],
-			instructions: [],
+			ingredients: extracted.ingredients,
+			instructions: extracted.instructions.map((item, i) => ({ ...item, stepOrder: i + 1 })),
 			tags
 		});
 
