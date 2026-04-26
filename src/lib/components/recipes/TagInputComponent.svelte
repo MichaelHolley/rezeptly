@@ -30,13 +30,21 @@
 		const input = normalizeTag(tagInputValue);
 		const selectedTags = new Set(tags.map((tag) => normalizeTag(tag)));
 
+		const seen = new Set<string>();
 		return availableTags
-			.filter(
-				(tag) =>
+			.filter((tag) => {
+				const normalized = normalizeTag(tag.name);
+				if (
 					(!category || tag.category === category) &&
-					!selectedTags.has(normalizeTag(tag.name)) &&
-					(!input || normalizeTag(tag.name).includes(input))
-			)
+					!selectedTags.has(normalized) &&
+					(!input || normalized.includes(input)) &&
+					!seen.has(normalized)
+				) {
+					seen.add(normalized);
+					return true;
+				}
+				return false;
+			})
 			.slice(0, 3)
 			.map((tag) => tag.name);
 	});
