@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Label } from '$lib/components/ui/label';
-	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import type { TagCategory } from '$lib/server/types';
+	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import XIcon from '@lucide/svelte/icons/x';
+	import { SvelteSet } from 'svelte/reactivity';
 	import * as InputGroup from '../ui/input-group';
 	import TagComponent from './TagComponent.svelte';
 
@@ -30,7 +31,7 @@
 		const input = normalizeTag(tagInputValue);
 		const selectedTags = new Set(tags.map((tag) => normalizeTag(tag)));
 
-		const seen = new Set<string>();
+		const seen = new SvelteSet<string>();
 		return availableTags
 			.filter((tag) => {
 				const normalized = normalizeTag(tag.name);
