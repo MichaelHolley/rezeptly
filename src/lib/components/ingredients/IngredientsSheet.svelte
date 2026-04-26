@@ -16,6 +16,7 @@
 	}: { recipeId: number; recipeSlug: string; ingredients: Ingredient[] } = $props();
 
 	let inputRef = $state<HTMLInputElement | null>(null);
+	let editingId = $state<number | null>(null);
 </script>
 
 <Sheet.Root>
@@ -61,7 +62,14 @@
 		<div class="h-full overflow-y-auto px-4">
 			<div class="flex flex-col gap-2 py-1">
 				{#each ingredients as ingr, i (ingr.id)}
-					<IngredientItem ingredient={ingr} {recipeId} {recipeSlug} />
+					<IngredientItem
+						ingredient={ingr}
+						{recipeId}
+						{recipeSlug}
+						isEditing={editingId === ingr.id}
+						onEditStart={() => (editingId = ingr.id)}
+						onEditEnd={() => (editingId = null)}
+					/>
 					{#if i !== ingredients.length - 1}
 						<Separator />
 					{/if}

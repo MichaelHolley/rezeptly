@@ -10,21 +10,30 @@
 	const {
 		ingredient,
 		recipeId,
-		recipeSlug
-	}: { ingredient: Ingredient; recipeId: number; recipeSlug: string } = $props();
+		recipeSlug,
+		isEditing,
+		onEditStart,
+		onEditEnd
+	}: {
+		ingredient: Ingredient;
+		recipeId: number;
+		recipeSlug: string;
+		isEditing: boolean;
+		onEditStart: () => void;
+		onEditEnd: () => void;
+	} = $props();
 
-	let isEditing = $state(false);
 	let inputRef = $state<HTMLInputElement | null>(null);
 	let editValue = $state('');
 
 	function editItem() {
-		isEditing = true;
 		editValue = ingredient.name;
+		onEditStart();
 		setTimeout(() => inputRef?.focus(), 50);
 	}
 
 	function cancelEdit() {
-		isEditing = false;
+		onEditEnd();
 	}
 </script>
 
@@ -43,7 +52,7 @@
 							}))
 						)
 						.then(() => {
-							isEditing = false;
+							onEditEnd();
 						});
 				} catch (error) {
 					console.error(error);
