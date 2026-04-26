@@ -1,5 +1,5 @@
 import type { Ingredient } from '$lib/server/types';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import IngredientItem from './IngredientItem.svelte';
@@ -18,7 +18,10 @@ describe('IngredientItem.svelte', () => {
 			render(IngredientItem, {
 				ingredient: mockIngredient,
 				recipeId: 1,
-				recipeSlug: mockRecipeSlug
+				recipeSlug: mockRecipeSlug,
+				isEditing: false,
+				onEditStart: vi.fn(),
+				onEditEnd: vi.fn()
 			});
 
 			const ingredientName = await page.getByText('2 cups flour');
@@ -29,7 +32,10 @@ describe('IngredientItem.svelte', () => {
 			render(IngredientItem, {
 				ingredient: mockIngredient,
 				recipeId: 1,
-				recipeSlug: mockRecipeSlug
+				recipeSlug: mockRecipeSlug,
+				isEditing: false,
+				onEditStart: vi.fn(),
+				onEditEnd: vi.fn()
 			});
 
 			const deleteButton = await page.getByTitle('Delete ingredient');
@@ -46,7 +52,10 @@ describe('IngredientItem.svelte', () => {
 			render(IngredientItem, {
 				ingredient: specialIngredient,
 				recipeId: 1,
-				recipeSlug: mockRecipeSlug
+				recipeSlug: mockRecipeSlug,
+				isEditing: false,
+				onEditStart: vi.fn(),
+				onEditEnd: vi.fn()
 			});
 
 			const ingredientName = await page.getByText('½ cup milk & cream');
@@ -63,7 +72,10 @@ describe('IngredientItem.svelte', () => {
 			render(IngredientItem, {
 				ingredient: longNameIngredient,
 				recipeId: 1,
-				recipeSlug: mockRecipeSlug
+				recipeSlug: mockRecipeSlug,
+				isEditing: false,
+				onEditStart: vi.fn(),
+				onEditEnd: vi.fn()
 			});
 
 			const ingredientName = await page.getByText(
@@ -75,10 +87,13 @@ describe('IngredientItem.svelte', () => {
 
 	describe('edit mode', () => {
 		it('should show form when ingredient name is clicked', async () => {
-			const { container } = render(IngredientItem, {
+			const { container, rerender } = render(IngredientItem, {
 				ingredient: mockIngredient,
 				recipeId: 1,
-				recipeSlug: mockRecipeSlug
+				recipeSlug: mockRecipeSlug,
+				isEditing: false,
+				onEditStart: () => rerender({ isEditing: true }),
+				onEditEnd: vi.fn()
 			});
 
 			const nameButton = await page.getByText('2 cups flour');
@@ -89,10 +104,13 @@ describe('IngredientItem.svelte', () => {
 		});
 
 		it('should show input field when ingredient name is clicked', async () => {
-			render(IngredientItem, {
+			const { rerender } = render(IngredientItem, {
 				ingredient: mockIngredient,
 				recipeId: 1,
-				recipeSlug: mockRecipeSlug
+				recipeSlug: mockRecipeSlug,
+				isEditing: false,
+				onEditStart: () => rerender({ isEditing: true }),
+				onEditEnd: vi.fn()
 			});
 
 			const nameButton = await page.getByText('2 cups flour');
@@ -103,10 +121,13 @@ describe('IngredientItem.svelte', () => {
 		});
 
 		it('should show save and cancel buttons in edit mode', async () => {
-			render(IngredientItem, {
+			const { rerender } = render(IngredientItem, {
 				ingredient: mockIngredient,
 				recipeId: 1,
-				recipeSlug: mockRecipeSlug
+				recipeSlug: mockRecipeSlug,
+				isEditing: false,
+				onEditStart: () => rerender({ isEditing: true }),
+				onEditEnd: vi.fn()
 			});
 
 			const nameButton = await page.getByText('2 cups flour');
@@ -120,10 +141,13 @@ describe('IngredientItem.svelte', () => {
 		});
 
 		it('should display ingredient name in input when editing', async () => {
-			render(IngredientItem, {
+			const { rerender } = render(IngredientItem, {
 				ingredient: mockIngredient,
 				recipeId: 1,
-				recipeSlug: mockRecipeSlug
+				recipeSlug: mockRecipeSlug,
+				isEditing: false,
+				onEditStart: () => rerender({ isEditing: true }),
+				onEditEnd: vi.fn()
 			});
 
 			const nameButton = await page.getByText('2 cups flour');
