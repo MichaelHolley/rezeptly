@@ -15,6 +15,7 @@
 	let nutritionTags = $state<string[]>([]);
 	let dietTags = $state<string[]>([]);
 	let importImageName = $state<string | null>(null);
+	let importImageInput = $state<HTMLInputElement | null>(null);
 </script>
 
 <svelte:head>
@@ -52,21 +53,18 @@
 	{/each}
 	{#if data.features.imageImport}
 		<div class="form-group mt-6">
-			<Label for="importImage"
-				>Import from image <span class="text-muted-foreground">(optional)</span></Label
-			>
 			<input
-				id="importImage"
+				bind:this={importImageInput}
 				accept="image/jpeg,image/png,image/webp"
 				{...createRecipe.fields.importImage.as('file')}
 				oninput={(e) => {
 					importImageName = e.currentTarget.files?.[0]?.name ?? null;
 				}}
-				class="text-sm"
+				class="hidden"
 			/>
-			{#if importImageName}
-				<p class="text-muted-foreground text-xs">{importImageName}</p>
-			{/if}
+			<Button type="button" variant="outline" onclick={() => importImageInput?.click()}>
+				{importImageName ?? 'Import from image (optional)'}
+			</Button>
 		</div>
 	{/if}
 	<div class="flex flex-row justify-end">
