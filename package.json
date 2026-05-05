@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "^2.9.0",
-    "@vercel/blob": "^2.3.1",
+    "@vercel/blob": "^2.3.3",
     "ai": "^6.0.168",
     "drizzle-orm": "^0.45.1",
     "jsonwebtoken": "^9.0.3",
