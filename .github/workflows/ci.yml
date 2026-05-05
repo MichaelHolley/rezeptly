@@ -9,6 +9,8 @@ env:
   JWT_SECRET: supersecretkey
   PUBLIC_UPLOAD_ALLOWED_TYPES: image/jpeg,image/png,image/webp
   DATABASE_URL: postgresql://test:test@localhost:5432/testdb
+  OPENROUTER_API_KEY: openrouterapikey
+  OPENROUTER_MODEL_NAME: openai/gpt-5.4-mini
 
 jobs:
   setup:

@@ -1,4 +1,4 @@
-import { OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
@@ -30,8 +30,8 @@ const extractionSchema = z.object({
 export type ExtractedRecipeData = z.infer<typeof extractionSchema>;
 
 export async function extractRecipeFromImage(file: File): Promise<ExtractedRecipeData> {
-	const apiKey = OPENROUTER_API_KEY;
-	const modelName = OPENROUTER_MODEL_NAME;
+	const apiKey = env.OPENROUTER_API_KEY;
+	const modelName = env.OPENROUTER_MODEL_NAME;
 
 	if (!apiKey || !modelName) {
 		return { ingredients: [], instructions: [] };
