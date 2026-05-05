@@ -74,7 +74,7 @@
     "ai": "^6.0.174",
     "drizzle-orm": "^0.45.2",
     "jsonwebtoken": "^9.0.3",
-    "postgres": "^3.4.8",
+    "postgres": "^3.4.9",
     "runed": "^0.37.1",
     "sharp": "^0.34.5",
     "slugify": "^1.6.9"
