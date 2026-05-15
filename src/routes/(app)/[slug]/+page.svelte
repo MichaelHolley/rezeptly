@@ -2,13 +2,14 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { env as publicEnv } from '$env/dynamic/public';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
-	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
+	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
+	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
@@ -16,6 +17,7 @@
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	const { params } = $props();
 
@@ -23,6 +25,7 @@
 	let fileUploadFormSubmitButton = $state<HTMLButtonElement | null>(null);
 	let showInstructionsForm = $state(false);
 	let isImageBroken = $state(false);
+	let doneSteps = $state(new Set<number>());
 
 	const recipeQuery = getRecipeBySlug(params.slug);
 
@@ -34,21 +37,6 @@
 		showInstructionsForm = !showInstructionsForm;
 	};
 
-	const getStepOrderByIndex = (index: number) => {
-		if (!recipeQuery.current || !recipeQuery.current.instructions) {
-			return 0;
-		}
-
-		let order = 1;
-		for (let i = 0; i < index; i++) {
-			if (recipeQuery.current.instructions[i].heading) {
-				order++;
-			}
-		}
-
-		return order;
-	};
-
 	beforeNavigate(async ({ cancel }) => {
 		if (showInstructionsForm) {
 			const r = confirm(
@@ -58,6 +46,16 @@
 			if (!r) cancel();
 		}
 	});
+
+	const toggleStep = (id: number) => {
+		const next = new SvelteSet(doneSteps);
+		if (next.has(id)) {
+			next.delete(id);
+		} else {
+			next.add(id);
+		}
+		doneSteps = next;
+	};
 </script>
 
 <svelte:head>
@@ -106,14 +104,14 @@
 				{#if showInstructionsForm}
 					<InstructionsFormComponent {recipe} onSave={() => (showInstructionsForm = false)} />
 				{:else}
-					<div class="flex flex-col gap-4">
+					<div class="flex flex-col gap-3">
 						{#each recipe.instructions as instr, i (instr.id)}
-							<div>
-								{#if instr.heading}
-									<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
-								{/if}
-								<p class="whitespace-pre-wrap text-sm">{instr.instructions}</p>
-							</div>
+							<InstructionStep
+								{instr}
+								stepNumber={i + 1}
+								done={doneSteps.has(instr.id)}
+								onToggle={() => toggleStep(instr.id)}
+							/>
 						{/each}
 					</div>
 				{/if}
