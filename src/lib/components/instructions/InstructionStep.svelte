@@ -19,7 +19,12 @@
 >
 	<div class="shrink-0 pt-0.5">
 		<button
+			type="button"
 			onclick={onToggle}
+			aria-pressed={done}
+			aria-label={done
+				? `Unmark step ${stepNumber} as complete`
+				: `Mark step ${stepNumber} as complete`}
 			class="flex size-10 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-150 {done
 				? 'bg-orange-500 text-white'
 				: 'bg-zinc-100 text-zinc-800 group-hover:bg-zinc-900 group-hover:text-white'}"
