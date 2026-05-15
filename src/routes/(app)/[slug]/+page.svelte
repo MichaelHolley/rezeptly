@@ -106,13 +106,24 @@
 				{#if showInstructionsForm}
 					<InstructionsFormComponent {recipe} onSave={() => (showInstructionsForm = false)} />
 				{:else}
-					<div class="flex flex-col gap-4">
+					<div class="flex flex-col gap-3">
 						{#each recipe.instructions as instr, i (instr.id)}
-							<div>
-								{#if instr.heading}
-									<h4>{getStepOrderByIndex(i)}. {instr.heading}</h4>
-								{/if}
-								<p class="whitespace-pre-wrap text-sm">{instr.instructions}</p>
+							<div
+								class="group flex flex-row gap-4 rounded-xl border border-zinc-200 bg-white p-5 shadow-xs"
+							>
+								<div class="shrink-0 pt-0.5">
+									<div
+										class="flex size-10 items-center justify-center rounded-full bg-zinc-100 text-sm font-semibold text-zinc-800 transition-colors duration-150 group-hover:bg-zinc-900 group-hover:text-white"
+									>
+										{i + 1}
+									</div>
+								</div>
+								<div class="min-w-0 flex-1">
+									{#if instr.heading}
+										<h4 class="mb-2 font-semibold">{instr.heading}</h4>
+									{/if}
+									<p class="whitespace-pre-wrap text-sm text-zinc-700">{instr.instructions}</p>
+								</div>
 							</div>
 						{/each}
 					</div>
