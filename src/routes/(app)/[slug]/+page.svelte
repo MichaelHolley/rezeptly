@@ -27,16 +27,6 @@
 	let isImageBroken = $state(false);
 	let doneSteps = $state(new Set<number>());
 
-	const toggleStep = (id: number) => {
-		const next = new SvelteSet(doneSteps);
-		if (next.has(id)) {
-			next.delete(id);
-		} else {
-			next.add(id);
-		}
-		doneSteps = next;
-	};
-
 	const recipeQuery = getRecipeBySlug(params.slug);
 
 	const handleImageError = () => {
@@ -56,6 +46,16 @@
 			if (!r) cancel();
 		}
 	});
+
+	const toggleStep = (id: number) => {
+		const next = new SvelteSet(doneSteps);
+		if (next.has(id)) {
+			next.delete(id);
+		} else {
+			next.add(id);
+		}
+		doneSteps = next;
+	};
 </script>
 
 <svelte:head>
