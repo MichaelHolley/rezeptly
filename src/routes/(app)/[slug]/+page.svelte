@@ -2,13 +2,14 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { env as publicEnv } from '$env/dynamic/public';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
-	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
+	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
+	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
@@ -16,6 +17,7 @@
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	const { params } = $props();
 
@@ -23,6 +25,17 @@
 	let fileUploadFormSubmitButton = $state<HTMLButtonElement | null>(null);
 	let showInstructionsForm = $state(false);
 	let isImageBroken = $state(false);
+	let doneSteps = $state(new Set<number>());
+
+	const toggleStep = (id: number) => {
+		const next = new SvelteSet(doneSteps);
+		if (next.has(id)) {
+			next.delete(id);
+		} else {
+			next.add(id);
+		}
+		doneSteps = next;
+	};
 
 	const recipeQuery = getRecipeBySlug(params.slug);
 
@@ -32,21 +45,6 @@
 
 	const toggleEditInstructions = () => {
 		showInstructionsForm = !showInstructionsForm;
-	};
-
-	const getStepOrderByIndex = (index: number) => {
-		if (!recipeQuery.current || !recipeQuery.current.instructions) {
-			return 0;
-		}
-
-		let order = 1;
-		for (let i = 0; i < index; i++) {
-			if (recipeQuery.current.instructions[i].heading) {
-				order++;
-			}
-		}
-
-		return order;
 	};
 
 	beforeNavigate(async ({ cancel }) => {
@@ -108,23 +106,12 @@
 				{:else}
 					<div class="flex flex-col gap-3">
 						{#each recipe.instructions as instr, i (instr.id)}
-							<div
-								class="group flex flex-row gap-4 rounded-xl border border-zinc-200 bg-white p-5 shadow-xs"
-							>
-								<div class="shrink-0 pt-0.5">
-									<div
-										class="flex size-10 items-center justify-center rounded-full bg-zinc-100 text-sm font-semibold text-zinc-800 transition-colors duration-150 group-hover:bg-zinc-900 group-hover:text-white"
-									>
-										{i + 1}
-									</div>
-								</div>
-								<div class="min-w-0 flex-1">
-									{#if instr.heading}
-										<h4 class="mb-2 font-semibold">{instr.heading}</h4>
-									{/if}
-									<p class="whitespace-pre-wrap text-sm text-zinc-700">{instr.instructions}</p>
-								</div>
-							</div>
+							<InstructionStep
+								{instr}
+								stepNumber={i + 1}
+								done={doneSteps.has(instr.id)}
+								onToggle={() => toggleStep(instr.id)}
+							/>
 						{/each}
 					</div>
 				{/if}
