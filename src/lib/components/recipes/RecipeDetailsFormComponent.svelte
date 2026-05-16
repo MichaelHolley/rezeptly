@@ -3,7 +3,6 @@
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import NumberStepper from '$lib/components/ui/NumberStepper.svelte';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
@@ -27,7 +26,6 @@
 	let nutritionTags = $state(getTagsByCategory('nutrition'));
 	let dietTags = $state(getTagsByCategory('diet'));
 	let durationMinutes = $state<number | null>(untrack(() => recipe.durationMinutes));
-	let portions = $state<number | null>(untrack(() => recipe.portions));
 
 	const durationOptions = DURATION_BUCKETS.map((min) => ({
 		value: min,
@@ -59,18 +57,12 @@
 		value={recipe.description}
 		required
 	/>
-	<div class="flex flex-row flex-wrap items-center gap-4">
+	<div class="flex flex-row flex-wrap gap-2">
 		<SingleSelectComponent
 			label="Duration"
 			options={durationOptions}
 			value={durationMinutes}
 			onchange={(v) => (durationMinutes = v)}
-		/>
-		<NumberStepper
-			label="Portions"
-			value={portions}
-			onchange={(v) => (portions = v)}
-			placeholder="—"
 		/>
 	</div>
 	{#if durationMinutes != null}
@@ -78,9 +70,6 @@
 			{...updateRecipeDetails.fields.durationMinutes.as('number', durationMinutes)}
 			class="hidden"
 		/>
-	{/if}
-	{#if portions != null}
-		<input {...updateRecipeDetails.fields.portions.as('number', portions)} class="hidden" />
 	{/if}
 	<CategoryTagInputComponent
 		bind:typeTags

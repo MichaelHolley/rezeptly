@@ -79,6 +79,7 @@
 							ingredients={recipe.ingredients}
 							recipeId={recipe.id}
 							recipeSlug={recipe.slug}
+							portions={recipe.portions}
 						/>
 					{/if}
 				</div>
@@ -128,6 +129,7 @@
 						ingredients={recipe.ingredients}
 						recipeId={recipe.id}
 						recipeSlug={recipe.slug}
+						portions={recipe.portions}
 					/>
 				{/if}
 			</div>

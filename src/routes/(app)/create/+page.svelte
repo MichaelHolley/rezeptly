@@ -6,7 +6,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import NumberStepper from '$lib/components/ui/NumberStepper.svelte';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
 	import type { PageData } from './$types';
@@ -18,7 +17,6 @@
 	let nutritionTags = $state<string[]>([]);
 	let dietTags = $state<string[]>([]);
 	let durationMinutes = $state<number | null>(null);
-	let portions = $state<number | null>(null);
 	let importImageName = $state<string | null>(null);
 	let importImageInput = $state<HTMLInputElement | null>(null);
 
@@ -48,25 +46,16 @@
 			{...createRecipe.fields.description.as('text')}
 		/>
 	</div>
-	<div class="flex flex-row flex-wrap items-center gap-4">
+	<div class="flex flex-row flex-wrap gap-2">
 		<SingleSelectComponent
 			label="Duration"
 			options={durationOptions}
 			value={durationMinutes}
 			onchange={(v) => (durationMinutes = v)}
 		/>
-		<NumberStepper
-			label="Portions"
-			value={portions}
-			onchange={(v) => (portions = v)}
-			placeholder="—"
-		/>
 	</div>
 	{#if durationMinutes != null}
 		<input {...createRecipe.fields.durationMinutes.as('number', durationMinutes)} class="hidden" />
-	{/if}
-	{#if portions != null}
-		<input {...createRecipe.fields.portions.as('number', portions)} class="hidden" />
 	{/if}
 	<CategoryTagInputComponent bind:typeTags bind:cuisineTags bind:nutritionTags bind:dietTags />
 	{#each typeTags as tag, i (tag)}

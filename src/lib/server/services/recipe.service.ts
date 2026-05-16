@@ -125,8 +125,7 @@ export const createRecipe = async (
 				slug,
 				description: data.description,
 				imageUrl: data.imageUrl,
-				durationMinutes: data.durationMinutes,
-				portions: data.portions
+				durationMinutes: data.durationMinutes
 			})
 			.returning();
 

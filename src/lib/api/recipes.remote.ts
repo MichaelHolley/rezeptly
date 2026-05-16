@@ -134,8 +134,7 @@ export const updateRecipeDetails = form(
 		tagNutrition: z.array(z.string()).optional().default([]),
 		tagDiet: z.array(z.string()).optional().default([]),
 		imageUrl: z.string().optional(),
-		durationMinutes: z.number().int().nonnegative().optional(),
-		portions: z.number().int().min(1).max(99).optional()
+		durationMinutes: z.number().int().nonnegative().optional()
 	}),
 	async ({
 		recipeId,
@@ -146,8 +145,7 @@ export const updateRecipeDetails = form(
 		tagNutrition,
 		tagDiet,
 		imageUrl,
-		durationMinutes,
-		portions
+		durationMinutes
 	}) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
@@ -168,7 +166,6 @@ export const updateRecipeDetails = form(
 			description,
 			imageUrl,
 			durationMinutes: durationMinutes ?? null,
-			portions: portions ?? null,
 			tags
 		});
 
@@ -189,8 +186,7 @@ export const createRecipe = form(
 		tagDiet: z.array(z.string()).optional().default([]),
 		imageUrl: z.string().optional(),
 		importImage: z.instanceof(File).optional(),
-		durationMinutes: z.number().int().nonnegative().optional(),
-		portions: z.number().int().min(1).max(99).optional()
+		durationMinutes: z.number().int().nonnegative().optional()
 	}),
 	async ({
 		name,
@@ -201,8 +197,7 @@ export const createRecipe = form(
 		tagDiet,
 		imageUrl,
 		importImage,
-		durationMinutes,
-		portions
+		durationMinutes
 	}) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
@@ -225,7 +220,6 @@ export const createRecipe = form(
 			description: description.trim(),
 			imageUrl,
 			durationMinutes: durationMinutes ?? null,
-			portions: portions ?? null,
 			ingredients: extracted.ingredients,
 			instructions: extracted.instructions.map((item, i) => ({ ...item, stepOrder: i + 1 })),
 			tags
@@ -291,6 +285,22 @@ export const uploadRecipeImage = form(
 		await getRecipeBySlug(result.slug).refresh();
 
 		return { url };
+	}
+);
+
+export const updateRecipePortions = command(
+	z.object({
+		recipeId: z.number(),
+		portions: z.number().int().min(1).max(99).nullable()
+	}),
+	async ({ recipeId, portions }) => {
+		if (!userCanWrite()) {
+			throwNewPermissionError();
+		}
+
+		const recipe = await recipeService.getRecipeById(recipeId);
+		await recipeService.updateRecipe(recipeId, { portions });
+		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
 
