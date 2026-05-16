@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { addIngredient, getRecipeBySlug } from '$lib/api/recipes.remote';
+	import { addIngredient, getRecipeBySlug, updateRecipePortions } from '$lib/api/recipes.remote';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import NumberStepper from '$lib/components/ui/NumberStepper.svelte';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
@@ -12,8 +13,18 @@
 	const {
 		recipeId,
 		recipeSlug,
-		ingredients
-	}: { recipeId: number; recipeSlug: string; ingredients: Ingredient[] } = $props();
+		ingredients,
+		portions
+	}: {
+		recipeId: number;
+		recipeSlug: string;
+		ingredients: Ingredient[];
+		portions: number | null;
+	} = $props();
+
+	async function handlePortionsChange(value: number | null) {
+		await updateRecipePortions({ recipeId, portions: value });
+	}
 
 	let inputRef = $state<HTMLInputElement | null>(null);
 	let editingId = $state<number | null>(null);
@@ -27,6 +38,14 @@
 		<Sheet.Header>
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
+			<div class="mt-4">
+				<NumberStepper
+					label="Portions"
+					value={portions}
+					onchange={handlePortionsChange}
+					placeholder="—"
+				/>
+			</div>
 			<form
 				{...addIngredient.enhance(async ({ form, data, submit }) => {
 					try {

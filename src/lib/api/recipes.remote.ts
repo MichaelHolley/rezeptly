@@ -288,6 +288,22 @@ export const uploadRecipeImage = form(
 	}
 );
 
+export const updateRecipePortions = command(
+	z.object({
+		recipeId: z.number(),
+		portions: z.number().int().min(1).max(99).nullable()
+	}),
+	async ({ recipeId, portions }) => {
+		if (!userCanWrite()) {
+			throwNewPermissionError();
+		}
+
+		const recipe = await recipeService.getRecipeById(recipeId);
+		await recipeService.updateRecipe(recipeId, { portions });
+		await getRecipeBySlug(recipe.slug).refresh();
+	}
+);
+
 export const deleteRecipeImage = command(z.number(), async (recipeId) => {
 	if (!userCanWrite()) {
 		throwNewPermissionError();

@@ -192,7 +192,8 @@ export const updateRecipe = async (
 				slug,
 				description: data.description,
 				imageUrl: data.imageUrl,
-				durationMinutes: data.durationMinutes
+				durationMinutes: data.durationMinutes,
+				portions: data.portions
 			})
 			.where(eq(recipes.id, id))
 			.returning();

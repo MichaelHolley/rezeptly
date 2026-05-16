@@ -71,7 +71,13 @@
 			class="hidden"
 		/>
 	{/if}
-	<CategoryTagInputComponent bind:typeTags bind:cuisineTags bind:nutritionTags bind:dietTags />
+	<CategoryTagInputComponent
+		bind:typeTags
+		bind:cuisineTags
+		bind:nutritionTags
+		bind:dietTags
+		class="mt-4"
+	/>
 	{#each typeTags as tag, i (tag)}
 		<input {...updateRecipeDetails.fields.tagType[i].as('hidden', tag)} />
 	{/each}
