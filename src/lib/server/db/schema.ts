@@ -19,6 +19,7 @@ export const recipes = pgTable('recipes', {
 	slug: text('slug').notNull().unique(),
 	description: text('description'),
 	imageUrl: text('image_url'),
+	durationMinutes: integer('duration_minutes'),
 	createdAt: timestamp('created_at').defaultNow()
 });
 

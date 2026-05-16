@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { createRecipe } from '$lib/api/recipes.remote';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import CategoryTagInputComponent from '$lib/components/recipes/CategoryTagInputComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import { DURATION_BUCKETS, formatDuration } from '$lib/utils';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -14,8 +16,14 @@
 	let cuisineTags = $state<string[]>([]);
 	let nutritionTags = $state<string[]>([]);
 	let dietTags = $state<string[]>([]);
+	let durationMinutes = $state<number | null>(null);
 	let importImageName = $state<string | null>(null);
 	let importImageInput = $state<HTMLInputElement | null>(null);
+
+	const durationOptions = DURATION_BUCKETS.map((min) => ({
+		value: min,
+		label: formatDuration(min)!
+	}));
 </script>
 
 <svelte:head>
@@ -38,6 +46,17 @@
 			{...createRecipe.fields.description.as('text')}
 		/>
 	</div>
+	<div class="flex flex-row flex-wrap gap-2">
+		<SingleSelectComponent
+			label="Duration"
+			options={durationOptions}
+			value={durationMinutes}
+			onchange={(v) => (durationMinutes = v)}
+		/>
+	</div>
+	{#if durationMinutes != null}
+		<input {...createRecipe.fields.durationMinutes.as('number', durationMinutes)} class="hidden" />
+	{/if}
 	<CategoryTagInputComponent bind:typeTags bind:cuisineTags bind:nutritionTags bind:dietTags />
 	{#each typeTags as tag, i (tag)}
 		<input {...createRecipe.fields.tagType[i].as('hidden', tag)} />

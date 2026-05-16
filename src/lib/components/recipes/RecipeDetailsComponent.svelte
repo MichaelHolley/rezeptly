@@ -1,8 +1,11 @@
 <script lang="ts">
+	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import type { RecipeWithDetails, Tag } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import { formatDuration } from '$lib/utils';
+	import ClockIcon from '@lucide/svelte/icons/clock';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
@@ -67,12 +70,18 @@
 			</div>
 		</div>
 
-		<div class="mt-2 flex flex-row justify-between gap-3">
+		<div class="mt-2 flex flex-row flex-wrap items-center gap-1">
 			{#if recipe.tags?.length > 0}
 				<TagsContainer
 					tags={recipe.tags.map((tag: Tag) => tag.name)}
 					viewTransitionPrefix={`recipe-tag-${recipe.id}`}
 				/>
+			{/if}
+			{#if recipe.durationMinutes != null}
+				<Badge variant="secondary" class="gap-1">
+					<ClockIcon class="size-3.5" />
+					{formatDuration(recipe.durationMinutes)}
+				</Badge>
 			{/if}
 		</div>
 

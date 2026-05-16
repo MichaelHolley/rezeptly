@@ -120,7 +120,13 @@ export const createRecipe = async (
 
 		const [createdRecipe] = await tx
 			.insert(recipes)
-			.values({ name: data.name, slug, description: data.description, imageUrl: data.imageUrl })
+			.values({
+				name: data.name,
+				slug,
+				description: data.description,
+				imageUrl: data.imageUrl,
+				durationMinutes: data.durationMinutes
+			})
 			.returning();
 
 		if (data.ingredients && data.ingredients.length > 0) {
@@ -181,7 +187,13 @@ export const updateRecipe = async (
 
 		const [updatedRecipe] = await tx
 			.update(recipes)
-			.set({ name: data.name, slug, description: data.description, imageUrl: data.imageUrl })
+			.set({
+				name: data.name,
+				slug,
+				description: data.description,
+				imageUrl: data.imageUrl,
+				durationMinutes: data.durationMinutes
+			})
 			.where(eq(recipes.id, id))
 			.returning();
 
