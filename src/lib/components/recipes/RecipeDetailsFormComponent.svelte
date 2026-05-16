@@ -5,7 +5,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
-	import { DURATION_BUCKETS, formatDuration } from '$lib/utils';
+	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
 	import CategoryTagInputComponent from './CategoryTagInputComponent.svelte';

@@ -4,7 +4,7 @@
 	import type { RecipeWithDetails, Tag } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
-	import { formatDuration } from '$lib/utils';
+	import { formatDuration } from '$lib/shared/duration';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';

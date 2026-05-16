@@ -7,7 +7,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { DURATION_BUCKETS, formatDuration } from '$lib/utils';
+	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
