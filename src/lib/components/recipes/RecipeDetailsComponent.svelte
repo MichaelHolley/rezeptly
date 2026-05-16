@@ -39,21 +39,6 @@
 	{#if editDetails}
 		<RecipeDetailsFormComponent {recipe} onSave={closeForm} onCancel={closeForm} />
 	{:else}
-		{#if PermissionsStore.canEdit}
-			<div class="flex flex-row justify-end gap-2">
-				<Button
-					variant="secondary"
-					onclick={() => {
-						editDetails = true;
-					}}
-					title="Edit Recipe Details"
-				>
-					<PenIcon />
-				</Button>
-				<DeleteRecipeConfirmationModal recipeId={recipe.id} />
-			</div>
-		{/if}
-
 		<h2
 			style:view-transition-name="recipe-title-{recipe.id}"
 			class="mt-2 text-3xl font-extrabold tracking-tight text-shadow-xs sm:text-4xl"
@@ -102,7 +87,7 @@
 			</div>
 		{/if}
 
-		<div class="mt-4">
+		<div class="mt-4 flex flex-row gap-2">
 			<Button onclick={toggleFavorite} variant="outline" title="Toggle Favorite">
 				{#if favorites.current.includes(recipe.id)}
 					<StarIcon class="fill-yellow-400 text-yellow-400" />
@@ -111,6 +96,18 @@
 				{/if}
 				Favorite
 			</Button>
+			{#if PermissionsStore.canEdit}
+				<Button
+					variant="secondary"
+					onclick={() => {
+						editDetails = true;
+					}}
+					title="Edit Recipe Details"
+				>
+					<PenIcon />
+				</Button>
+				<DeleteRecipeConfirmationModal recipeId={recipe.id} />
+			{/if}
 		</div>
 
 		{#if recipe.tags.length > 0}
