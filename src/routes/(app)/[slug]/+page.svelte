@@ -27,7 +27,7 @@
 	let isImageBroken = $state(false);
 	let doneSteps = $state(new Set<number>());
 
-	const recipeQuery = getRecipeBySlug(params.slug);
+	const recipeQuery = $derived(getRecipeBySlug(params.slug));
 
 	const handleImageError = () => {
 		isImageBroken = true;

@@ -8,13 +8,14 @@
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
+	import { untrack } from 'svelte';
 	import CategoryTagInputComponent from './CategoryTagInputComponent.svelte';
 
 	const {
 		onSave,
 		onCancel,
 		recipe
-	}: { onSave?: () => void; onCancel?: () => void; recipe: RecipeWithDetails } = $props();
+	}: { recipe: RecipeWithDetails; onSave?: () => void; onCancel?: () => void } = $props();
 
 	function getTagsByCategory(category: TagCategory): string[] {
 		return recipe.tags.filter((t) => t.category === category).map((t) => t.name);
@@ -24,7 +25,7 @@
 	let cuisineTags = $state(getTagsByCategory('cuisine'));
 	let nutritionTags = $state(getTagsByCategory('nutrition'));
 	let dietTags = $state(getTagsByCategory('diet'));
-	let durationMinutes = $state<number | null>(recipe.durationMinutes);
+	let durationMinutes = $state<number | null>(untrack(() => recipe.durationMinutes));
 
 	const durationOptions = DURATION_BUCKETS.map((min) => ({
 		value: min,
