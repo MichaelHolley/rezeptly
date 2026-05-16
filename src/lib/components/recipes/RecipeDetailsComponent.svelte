@@ -70,20 +70,18 @@
 			</div>
 		</div>
 
-		<div class="mt-2 flex flex-row flex-wrap items-center gap-1">
-			{#if recipe.tags?.length > 0}
-				<TagsContainer
-					tags={recipe.tags.map((tag: Tag) => tag.name)}
-					viewTransitionPrefix={`recipe-tag-${recipe.id}`}
-				/>
-			{/if}
+		<TagsContainer
+			tags={recipe.tags.map((tag: Tag) => tag.name)}
+			viewTransitionPrefix={`recipe-tag-${recipe.id}`}
+			class="mt-2"
+		>
 			{#if recipe.durationMinutes != null}
-				<Badge variant="secondary" class="gap-1">
-					<ClockIcon class="size-3.5" />
+				<Badge class="border-orange-300 bg-orange-50/40 text-orange-700">
+					<ClockIcon />
 					{formatDuration(recipe.durationMinutes)}
 				</Badge>
 			{/if}
-		</div>
+		</TagsContainer>
 
 		<p class="mt-3 text-sm text-zinc-500 max-w-3xl">
 			{recipe.description}

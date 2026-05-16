@@ -1,8 +1,11 @@
 <script lang="ts">
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card/';
 	import type { RecipeMetadata } from '$lib/server/types';
+	import { formatDuration } from '$lib/shared/duration';
+	import ClockIcon from '@lucide/svelte/icons/clock';
 
 	interface Props {
 		recipe: RecipeMetadata;
@@ -47,7 +50,14 @@
 			tags={recipe.tags.map((t) => t.name)}
 			class="-mx-1 mb-3"
 			viewTransitionPrefix={`recipe-tag-${recipe.id}`}
-		/>
+		>
+			{#if recipe.durationMinutes != null}
+				<Badge class="border-orange-300 bg-orange-50/40 text-orange-700">
+					<ClockIcon />
+					{formatDuration(recipe.durationMinutes)}
+				</Badge>
+			{/if}
+		</TagsContainerComponent>
 		<p class="line-clamp-3 text-sm text-zinc-500">
 			{recipe.description}
 		</p>
