@@ -6,12 +6,14 @@
 		typeTags = $bindable([]),
 		cuisineTags = $bindable([]),
 		nutritionTags = $bindable([]),
-		dietTags = $bindable([])
+		dietTags = $bindable([]),
+		class: className
 	}: {
 		typeTags?: string[];
 		cuisineTags?: string[];
 		nutritionTags?: string[];
 		dietTags?: string[];
+		class?: string;
 	} = $props();
 
 	const PLACEHOLDERS: Record<TagCategory, string> = {
@@ -22,7 +24,7 @@
 	};
 </script>
 
-<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-4 {className}">
 	<TagInputComponent
 		label="Type"
 		placeholder={PLACEHOLDERS.type}

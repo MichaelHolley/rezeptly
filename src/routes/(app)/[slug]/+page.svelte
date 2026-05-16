@@ -82,6 +82,9 @@
 						/>
 					{/if}
 				</div>
+				{#if recipe.portions != null}
+					<p class="pb-2 text-sm text-zinc-500">for {recipe.portions} portions</p>
+				{/if}
 				<IngredientsListComponent ingredients={recipe.ingredients} />
 			</div>
 			<div>
@@ -128,6 +131,9 @@
 					/>
 				{/if}
 			</div>
+			{#if recipe.portions != null}
+				<p class="pb-2 text-sm text-zinc-500">for {recipe.portions} portions</p>
+			{/if}
 			<IngredientsListComponent ingredients={recipe.ingredients} />
 		</div>
 	</div>
