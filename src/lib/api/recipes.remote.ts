@@ -133,9 +133,20 @@ export const updateRecipeDetails = form(
 		tagCuisine: z.array(z.string()).optional().default([]),
 		tagNutrition: z.array(z.string()).optional().default([]),
 		tagDiet: z.array(z.string()).optional().default([]),
-		imageUrl: z.string().optional()
+		imageUrl: z.string().optional(),
+		durationMinutes: z.number().int().nonnegative().optional()
 	}),
-	async ({ recipeId, name, description, tagType, tagCuisine, tagNutrition, tagDiet, imageUrl }) => {
+	async ({
+		recipeId,
+		name,
+		description,
+		tagType,
+		tagCuisine,
+		tagNutrition,
+		tagDiet,
+		imageUrl,
+		durationMinutes
+	}) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
 		}
@@ -154,6 +165,7 @@ export const updateRecipeDetails = form(
 			name,
 			description,
 			imageUrl,
+			durationMinutes: durationMinutes ?? null,
 			tags
 		});
 
@@ -173,7 +185,8 @@ export const createRecipe = form(
 		tagNutrition: z.array(z.string()).optional().default([]),
 		tagDiet: z.array(z.string()).optional().default([]),
 		imageUrl: z.string().optional(),
-		importImage: z.instanceof(File).optional()
+		importImage: z.instanceof(File).optional(),
+		durationMinutes: z.number().int().nonnegative().optional()
 	}),
 	async ({
 		name,
@@ -183,7 +196,8 @@ export const createRecipe = form(
 		tagNutrition,
 		tagDiet,
 		imageUrl,
-		importImage
+		importImage,
+		durationMinutes
 	}) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
@@ -205,6 +219,7 @@ export const createRecipe = form(
 			name: name.trim(),
 			description: description.trim(),
 			imageUrl,
+			durationMinutes: durationMinutes ?? null,
 			ingredients: extracted.ingredients,
 			instructions: extracted.instructions.map((item, i) => ({ ...item, stepOrder: i + 1 })),
 			tags
