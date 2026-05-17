@@ -30,7 +30,11 @@
 	let editingId = $state<number | null>(null);
 </script>
 
-<Sheet.Root>
+<Sheet.Root
+	onOpenChange={(open) => {
+		if (!open) editingId = null;
+	}}
+>
 	<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })} title="Edit Ingredients">
 		<PenIcon />
 	</Sheet.Trigger>
