@@ -207,7 +207,10 @@
 				{#if !!uploadRecipeImage.pending}
 					<LoadingComponent />
 				{:else}
-					<PlusIcon class="size-8 text-zinc-500" />
+					<div class="flex flex-col items-center gap-1">
+						<PlusIcon class="size-8 text-zinc-500" />
+						<span class="text-sm text-zinc-500">Add image</span>
+					</div>
 				{/if}
 			</button>
 			<form {...uploadRecipeImage} enctype="multipart/form-data" class="hidden">
