@@ -20,6 +20,8 @@ const db = drizzle(client, { schema: { recipes, ingredients, instructions, tags,
 const sampleData = [
 	{
 		name: 'Classic Scrambled Eggs',
+		durationMinutes: 10,
+		portions: 2,
 		description: 'Fluffy, creamy scrambled eggs perfect for breakfast',
 		ingredients: [
 			{ name: '4 large eggs' },
@@ -58,6 +60,8 @@ const sampleData = [
 	},
 	{
 		name: 'Homemade Margherita Pizza',
+		durationMinutes: 45,
+		portions: 4,
 		description: 'Traditional Italian pizza with fresh mozzarella, basil, and tomato sauce',
 		ingredients: [
 			{ name: '1 pound pizza dough' },
@@ -105,6 +109,8 @@ const sampleData = [
 	},
 	{
 		name: 'Chicken Stir-Fry',
+		durationMinutes: 25,
+		portions: 4,
 		description: 'Quick and healthy Asian-inspired chicken with colorful vegetables',
 		ingredients: [
 			{ name: '1 lb boneless chicken breast, sliced' },
@@ -159,6 +165,8 @@ const sampleData = [
 	},
 	{
 		name: 'Classic Chocolate Chip Cookies',
+		durationMinutes: 35,
+		portions: 24,
 		description: 'Soft and chewy cookies loaded with chocolate chips',
 		ingredients: [
 			{ name: '2 1/4 cups all-purpose flour' },
@@ -211,6 +219,8 @@ const sampleData = [
 	},
 	{
 		name: 'Greek Salad',
+		durationMinutes: 15,
+		portions: 2,
 		description: 'Fresh Mediterranean salad with feta cheese and olives',
 		ingredients: [
 			{ name: '4 cups romaine lettuce, chopped' },
@@ -256,6 +266,8 @@ const sampleData = [
 	},
 	{
 		name: 'Beef Tacos',
+		durationMinutes: 30,
+		portions: 4,
 		description: 'Flavorful Mexican-style tacos with seasoned ground beef',
 		ingredients: [
 			{ name: '1 lb ground beef' },
@@ -305,6 +317,8 @@ const sampleData = [
 	},
 	{
 		name: 'Blueberry Pancakes',
+		durationMinutes: 20,
+		portions: 4,
 		description: 'Fluffy buttermilk pancakes studded with fresh blueberries',
 		ingredients: [
 			{ name: '2 cups all-purpose flour' },
@@ -360,6 +374,8 @@ const sampleData = [
 	},
 	{
 		name: 'Caprese Salad',
+		durationMinutes: 10,
+		portions: 2,
 		description: 'Simple Italian salad with tomatoes, mozzarella, and basil',
 		ingredients: [
 			{ name: '4 large ripe tomatoes, sliced' },
@@ -483,7 +499,9 @@ async function seed() {
 					.values({
 						name: recipeData.name,
 						slug: slugify(recipeData.name, { lower: true, strict: true }),
-						description: recipeData.description
+						description: recipeData.description,
+						durationMinutes: recipeData.durationMinutes,
+						portions: recipeData.portions
 					})
 					.returning();
 
