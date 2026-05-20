@@ -1,15 +1,8 @@
 # Agent Guidelines for rezeptly
 
-## Build & Test Commands
+## Commands
 
-- **Dev**: `pnpm dev` - starts dev server at localhost:5173
-- **Build**: `pnpm build` - builds for production
-- **Lint**: `pnpm lint` - runs prettier check and eslint
-- **Format**: `pnpm format` - formats code with prettier
-- **Type-check**: `pnpm check` - runs svelte-check with TypeScript
-- **Database**: `pnpm db:start` (Docker), `pnpm db:push` (schema changes), `pnpm db:generate` (new migration), `pnpm db:migrate` (apply migrations)
-- **Test**: `pnpm test` - runs vitest unit tests once
-- **Unit Test**: `pnpm test:unit` - runs vitest in watch mode
+Commands and Scripts are defined in the `package.json` file. Prefer scripts over `pnpx` or `npx` commands.
 
 ## Code Style
 
