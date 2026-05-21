@@ -39,3 +39,6 @@ Stores with global state must reset between tests to prevent cross-test pollutio
 
 **No mocking the DB**
 Integration tests hit real services. Only mock at the boundary of the unit under test (e.g. `onchange` callbacks with `vi.fn()`).
+
+**Don't test constants**
+Asserting that `TAG_CATEGORIES` contains `['type', 'cuisine', ...]` tests the data, not behavior. Only test code that transforms or makes decisions.
