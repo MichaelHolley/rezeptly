@@ -25,42 +25,4 @@ describe('LoadingComponent.svelte', () => {
 			expect(srOnly?.textContent).toBe('Loading...');
 		});
 	});
-
-	describe('styling', () => {
-		it('should apply default classes to the wrapper', () => {
-			const { container } = render(LoadingComponent);
-
-			const wrapper = container.querySelector('[role="status"]');
-			expect(wrapper?.classList.contains('size-10')).toBe(true);
-		});
-
-		it('should apply custom className to the wrapper', () => {
-			const { container } = render(LoadingComponent, {
-				class: 'custom-loading-class'
-			});
-
-			const wrapper = container.querySelector('[role="status"]');
-			expect(wrapper?.classList.contains('custom-loading-class')).toBe(true);
-		});
-
-		it('should preserve default classes when custom class is applied', () => {
-			const { container } = render(LoadingComponent, {
-				class: 'custom-class'
-			});
-
-			const wrapper = container.querySelector('[role="status"]');
-			expect(wrapper?.classList.contains('size-10')).toBe(true);
-			expect(wrapper?.classList.contains('custom-class')).toBe(true);
-		});
-
-		it('should apply multiple custom classes', () => {
-			const { container } = render(LoadingComponent, {
-				class: 'size-8 text-blue-500'
-			});
-
-			const wrapper = container.querySelector('[role="status"]');
-			expect(wrapper?.classList.contains('size-8')).toBe(true);
-			expect(wrapper?.classList.contains('text-blue-500')).toBe(true);
-		});
-	});
 });

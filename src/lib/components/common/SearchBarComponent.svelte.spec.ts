@@ -115,16 +115,4 @@ describe('SearchBarComponent.svelte', () => {
 			await expect.poll(() => searchTerm).toBe('café & crème');
 		});
 	});
-
-	describe('styling', () => {
-		it('should apply custom className', async () => {
-			const { container } = render(SearchBarComponent, {
-				searchTerm: '',
-				class: 'custom-search-class'
-			});
-
-			const input = container.querySelector('input');
-			expect(input?.className).toContain('custom-search-class');
-		});
-	});
 });

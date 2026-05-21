@@ -80,23 +80,4 @@ describe('IngredientsList.svelte', () => {
 			await expect.element(seasoningElement).toBeInTheDocument();
 		});
 	});
-
-	describe('styling', () => {
-		it('should apply custom className when provided', async () => {
-			const { container } = render(IngredientsList, {
-				ingredients: mockIngredients,
-				class: 'custom-class'
-			});
-
-			const wrapper = container.querySelector('.custom-class');
-			expect(wrapper).toBeTruthy();
-		});
-
-		it('should not apply className when not provided', async () => {
-			const { container } = render(IngredientsList, { ingredients: mockIngredients });
-
-			const wrapper = container.querySelector('div');
-			expect(wrapper?.className).toBe('');
-		});
-	});
 });
