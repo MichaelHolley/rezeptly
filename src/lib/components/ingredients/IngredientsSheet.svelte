@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { addIngredient, getRecipeBySlug, updateRecipePortions } from '$lib/api/recipes.remote';
+	import NumberStepper from '$lib/components/common/NumberStepper.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import NumberStepper from '$lib/components/ui/NumberStepper.svelte';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
 	import type { Ingredient } from '$lib/server/types';
