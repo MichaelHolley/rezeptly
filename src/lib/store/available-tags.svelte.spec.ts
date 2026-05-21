@@ -12,8 +12,8 @@ describe('AvailableTagsStore', () => {
 
 	it('should store assigned tags', () => {
 		const tags = [
-			{ id: 1, name: 'Italian', category: 'cuisine' as const, recipeId: null },
-			{ id: 2, name: 'Vegan', category: 'diet' as const, recipeId: null }
+			{ id: 1, name: 'Italian', slug: 'italian', category: 'cuisine' as const },
+			{ id: 2, name: 'Vegan', slug: 'vegan', category: 'diet' as const }
 		];
 
 		AvailableTagsStore.tags = tags;
@@ -23,7 +23,7 @@ describe('AvailableTagsStore', () => {
 
 	it('should reflect updated tags after reassignment', () => {
 		AvailableTagsStore.tags = [
-			{ id: 1, name: 'Italian', category: 'cuisine' as const, recipeId: null }
+			{ id: 1, name: 'Italian', slug: 'italian', category: 'cuisine' as const }
 		];
 		AvailableTagsStore.tags = [];
 
