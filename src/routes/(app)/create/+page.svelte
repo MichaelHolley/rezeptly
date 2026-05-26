@@ -19,6 +19,18 @@
 	let durationMinutes = $state<number | null>(null);
 	let importImageName = $state<string | null>(null);
 	let importImageInput = $state<HTMLInputElement | null>(null);
+	let isImportDragOver = $state(false);
+
+	const handleImportDrop = (e: DragEvent) => {
+		e.preventDefault();
+		isImportDragOver = false;
+		const file = e.dataTransfer?.files?.[0];
+		if (!file || !importImageInput) return;
+		const dt = new DataTransfer();
+		dt.items.add(file);
+		importImageInput.files = dt.files;
+		importImageName = file.name;
+	};
 
 	const durationOptions = DURATION_BUCKETS.map((min) => ({
 		value: min,
@@ -81,9 +93,26 @@
 				}}
 				class="hidden"
 			/>
-			<Button type="button" variant="outline" onclick={() => importImageInput?.click()}>
-				{importImageName ?? 'Import from image (optional)'}
-			</Button>
+			<button
+				type="button"
+				onclick={() => importImageInput?.click()}
+				ondragover={(e) => {
+					e.preventDefault();
+					isImportDragOver = true;
+				}}
+				ondragleave={() => {
+					isImportDragOver = false;
+				}}
+				ondrop={handleImportDrop}
+				class="flex w-full flex-col items-center justify-center gap-1 rounded-sm border-2 border-dashed py-6 transition-colors hover:cursor-pointer {isImportDragOver
+					? 'border-zinc-400 bg-zinc-100'
+					: 'border-zinc-300 bg-transparent hover:bg-zinc-50'}"
+			>
+				<span class="text-sm text-zinc-500"
+					>{importImageName ?? 'Import from image (optional)'}</span
+				>
+				<span class="text-xs text-zinc-400">Click or drag & drop</span>
+			</button>
 		</div>
 	{/if}
 	<div class="flex flex-row justify-end">
