@@ -26,6 +26,18 @@
 	let showInstructionsForm = $state(false);
 	let isImageBroken = $state(false);
 	let doneSteps = $state(new Set<number>());
+	let isDragOver = $state(false);
+
+	const handleDrop = (e: DragEvent) => {
+		e.preventDefault();
+		isDragOver = false;
+		const file = e.dataTransfer?.files?.[0];
+		if (!file || !fileUploadInput) return;
+		const dt = new DataTransfer();
+		dt.items.add(file);
+		fileUploadInput.files = dt.files;
+		fileUploadFormSubmitButton?.click();
+	};
 
 	const recipeQuery = $derived(getRecipeBySlug(params.slug));
 
@@ -198,10 +210,18 @@
 			</div>
 		{:else if PermissionsStore.canEdit}
 			<button
-				class="flex size-32 items-center justify-center rounded-sm border bg-zinc-100 hover:cursor-pointer shadow-xs"
-				onclick={() => {
-					fileUploadInput?.click();
+				class="flex size-32 items-center justify-center rounded-sm border-2 border-dashed hover:cursor-pointer transition-colors {isDragOver
+					? 'border-zinc-400 bg-zinc-100'
+					: 'border-zinc-300 bg-transparent hover:bg-zinc-50'}"
+				onclick={() => fileUploadInput?.click()}
+				ondragover={(e) => {
+					e.preventDefault();
+					isDragOver = true;
 				}}
+				ondragleave={() => {
+					isDragOver = false;
+				}}
+				ondrop={handleDrop}
 				disabled={!!uploadRecipeImage.pending}
 			>
 				{#if !!uploadRecipeImage.pending}
