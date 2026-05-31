@@ -3,8 +3,6 @@ name: do-gh-issue
 description: Read a GitHub issue via gh CLI, create a feature branch from origin/main, explore the codebase, interview the user on open questions, then implement the changes. Use when user says "do issue", "implement issue", "work on issue N", or provides a GitHub issue number or URL to implement.
 ---
 
-# do-gh-issue
-
 ## Workflow
 
 ### 1. Read the issue
