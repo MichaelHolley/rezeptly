@@ -95,10 +95,7 @@
 						/>
 					{/if}
 				</div>
-				{#if recipe.portions != null}
-					<p class="pb-2 text-sm text-zinc-500">for {recipe.portions} portions</p>
-				{/if}
-				<IngredientsListComponent ingredients={recipe.ingredients} />
+				<IngredientsListComponent ingredients={recipe.ingredients} portions={recipe.portions} />
 			</div>
 			<div>
 				<div class="flex flex-row gap-1 pb-2">
@@ -145,10 +142,7 @@
 					/>
 				{/if}
 			</div>
-			{#if recipe.portions != null}
-				<p class="pb-2 text-sm text-zinc-500">for {recipe.portions} portions</p>
-			{/if}
-			<IngredientsListComponent ingredients={recipe.ingredients} />
+			<IngredientsListComponent ingredients={recipe.ingredients} portions={recipe.portions} />
 		</div>
 	</div>
 

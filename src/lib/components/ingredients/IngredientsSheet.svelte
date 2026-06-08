@@ -8,6 +8,7 @@
 	import type { Ingredient } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import UsersIcon from '@lucide/svelte/icons/users';
 	import IngredientItem from './IngredientItem.svelte';
 
 	const {
@@ -43,12 +44,15 @@
 			<Sheet.Title>Edit Ingredients</Sheet.Title>
 			<Sheet.Description>Make changes to the ingredients for this recipe.</Sheet.Description>
 			<div class="mt-4">
-				<NumberStepper
-					label="Portions"
-					value={portions}
-					onchange={handlePortionsChange}
-					placeholder="—"
-				/>
+				<div class="inline-flex items-center gap-2">
+					<UsersIcon class="h-5 w-5" />
+					<NumberStepper
+						label="Portions"
+						value={portions}
+						onchange={handlePortionsChange}
+						placeholder="—"
+					/>
+				</div>
 			</div>
 			<form
 				{...addIngredient.enhance(async ({ form, data, submit }) => {
