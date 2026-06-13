@@ -20,7 +20,7 @@ const db = drizzle(client, { schema: { recipes, ingredients, instructions, tags,
 const sampleData = [
 	{
 		name: 'Classic Scrambled Eggs',
-		durationMinutes: 10,
+		durationMinutes: 15,
 		portions: 2,
 		description: 'Fluffy, creamy scrambled eggs perfect for breakfast',
 		ingredients: [
@@ -109,7 +109,7 @@ const sampleData = [
 	},
 	{
 		name: 'Chicken Stir-Fry',
-		durationMinutes: 25,
+		durationMinutes: 30,
 		portions: 4,
 		description: 'Quick and healthy Asian-inspired chicken with colorful vegetables',
 		ingredients: [
@@ -165,7 +165,7 @@ const sampleData = [
 	},
 	{
 		name: 'Classic Chocolate Chip Cookies',
-		durationMinutes: 35,
+		durationMinutes: 30,
 		portions: 24,
 		description: 'Soft and chewy cookies loaded with chocolate chips',
 		ingredients: [
@@ -317,7 +317,7 @@ const sampleData = [
 	},
 	{
 		name: 'Blueberry Pancakes',
-		durationMinutes: 20,
+		durationMinutes: 15,
 		portions: 4,
 		description: 'Fluffy buttermilk pancakes studded with fresh blueberries',
 		ingredients: [
@@ -374,7 +374,7 @@ const sampleData = [
 	},
 	{
 		name: 'Caprese Salad',
-		durationMinutes: 10,
+		durationMinutes: 15,
 		portions: 2,
 		description: 'Simple Italian salad with tomatoes, mozzarella, and basil',
 		ingredients: [
