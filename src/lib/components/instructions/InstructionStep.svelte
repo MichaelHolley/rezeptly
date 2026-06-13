@@ -25,7 +25,7 @@
 			aria-label={done
 				? `Unmark step ${stepNumber} as complete`
 				: `Mark step ${stepNumber} as complete`}
-			class="flex size-10 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-150 {done
+			class="flex size-8 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-150 sm:size-10 {done
 				? 'bg-orange-500 text-white'
 				: 'bg-zinc-100 text-zinc-800 group-hover:bg-zinc-900 group-hover:text-white'}"
 		>
@@ -38,13 +38,15 @@
 	</div>
 	<div class="min-w-0 flex-1">
 		{#if instr.heading}
-			<h4
-				class="mb-2 font-semibold transition-colors duration-150 {done
+			<button
+				type="button"
+				onclick={onToggle}
+				class="mb-2 cursor-pointer text-left font-semibold transition-colors duration-150 {done
 					? 'text-zinc-500 line-through'
 					: ''}"
 			>
 				{instr.heading}
-			</h4>
+			</button>
 		{/if}
 		<p
 			class="whitespace-pre-wrap text-sm transition-colors duration-150 {done
