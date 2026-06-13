@@ -16,6 +16,7 @@
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
+	import UsersIcon from '@lucide/svelte/icons/users';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -84,8 +85,13 @@
 	<div class="flex flex-row items-start justify-between gap-12">
 		<div class="grow">
 			<div class="mb-8 block md:hidden">
-				<div class="flex flex-row gap-1 pb-2">
+				<div class="flex flex-row items-center gap-2 pb-2">
 					<h3>Ingredients</h3>
+					{#if recipe.portions != null}
+						<span class="flex items-center gap-1 text-sm text-zinc-500">
+							<UsersIcon class="h-4 w-4" />{recipe.portions}
+						</span>
+					{/if}
 					{#if PermissionsStore.canEdit}
 						<IngredientsSheet
 							ingredients={recipe.ingredients}
@@ -95,7 +101,7 @@
 						/>
 					{/if}
 				</div>
-				<IngredientsListComponent ingredients={recipe.ingredients} portions={recipe.portions} />
+				<IngredientsListComponent ingredients={recipe.ingredients} />
 			</div>
 			<div>
 				<div class="flex flex-row gap-1 pb-2">
@@ -131,8 +137,13 @@
 			</div>
 		</div>
 		<div class="hidden md:block">
-			<div class="flex flex-row gap-1 pb-2">
+			<div class="flex flex-row items-center gap-2 pb-2">
 				<h3>Ingredients</h3>
+				{#if recipe.portions != null}
+					<span class="flex items-center gap-1 text-sm text-zinc-500">
+						<UsersIcon class="h-4 w-4" />{recipe.portions}
+					</span>
+				{/if}
 				{#if PermissionsStore.canEdit}
 					<IngredientsSheet
 						ingredients={recipe.ingredients}
@@ -142,7 +153,7 @@
 					/>
 				{/if}
 			</div>
-			<IngredientsListComponent ingredients={recipe.ingredients} portions={recipe.portions} />
+			<IngredientsListComponent ingredients={recipe.ingredients} />
 		</div>
 	</div>
 
