@@ -76,7 +76,7 @@
     "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.9",
     "runed": "^0.37.1",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.2",
     "slugify": "^1.6.9"
   },
   "lint-staged": {
