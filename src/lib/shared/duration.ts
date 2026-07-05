@@ -1,13 +1,9 @@
-export const DURATION_BUCKETS = [15, 30, 45, 60, 90, 120, 180] as const;
+export const DURATION_BUCKETS = [5, 15, 30, 45, 60, 90, 120, 180] as const;
 export type DurationBucket = (typeof DURATION_BUCKETS)[number];
 
 export function formatDuration(minutes: number | null | undefined): string | null {
 	if (minutes == null) return null;
 	switch (minutes) {
-		case 15:
-		case 30:
-		case 45:
-			return `${minutes} min`;
 		case 60:
 			return '1 h';
 		case 90:

@@ -13,6 +13,10 @@ describe('formatDuration', () => {
 	});
 
 	describe('known buckets', () => {
+		it('should format 5 as "5 min"', () => {
+			expect(formatDuration(5)).toBe('5 min');
+		});
+
 		it('should format 15 as "15 min"', () => {
 			expect(formatDuration(15)).toBe('15 min');
 		});
