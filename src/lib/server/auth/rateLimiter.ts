@@ -18,6 +18,11 @@ type Attempt = { count: number; expiresAt: number };
 
 const attempts = new Map<string, Attempt>();
 
+/**
+ * Drops keys whose window has elapsed, capping map growth.
+ *
+ * @param now - Current time in epoch ms.
+ */
 function prune(now: number): void {
 	for (const [key, attempt] of attempts) {
 		if (attempt.expiresAt <= now) {
@@ -29,7 +34,11 @@ function prune(now: number): void {
 export type RateLimitResult = { limited: boolean; retryAfterMs: number };
 
 /**
- * Returns whether the given key is currently rate limited without recording an attempt.
+ * Reports whether a key is over its budget, without mutating state.
+ *
+ * @param key - Caller identifier (e.g. client IP).
+ * @param now - Current time in epoch ms; defaults to `Date.now()`.
+ * @returns `limited` plus `retryAfterMs` of lockout remaining (0 when not limited).
  */
 export function checkRateLimit(key: string, now: number = Date.now()): RateLimitResult {
 	const attempt = attempts.get(key);
@@ -46,7 +55,10 @@ export function checkRateLimit(key: string, now: number = Date.now()): RateLimit
 }
 
 /**
- * Records a failed attempt for the given key, opening a new window if none is active.
+ * Records one failed attempt, opening a new window if none is active.
+ *
+ * @param key - Caller identifier (e.g. client IP).
+ * @param now - Current time in epoch ms; defaults to `Date.now()`.
  */
 export function recordFailedAttempt(key: string, now: number = Date.now()): void {
 	if (attempts.size >= MAX_TRACKED_KEYS) {
@@ -64,7 +76,9 @@ export function recordFailedAttempt(key: string, now: number = Date.now()): void
 }
 
 /**
- * Clears any tracked attempts for the given key (call after a successful login).
+ * Clears a key's attempts, restoring its full budget (call on successful login).
+ *
+ * @param key - Caller identifier (e.g. client IP).
  */
 export function resetAttempts(key: string): void {
 	attempts.delete(key);
