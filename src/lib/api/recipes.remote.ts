@@ -272,7 +272,9 @@ export const uploadRecipeImage = form(
 				z.transform((id) => Number(id))
 			)
 			.or(z.number()),
-		file: z.instanceof(File)
+		file: z.instanceof(File).refine((f) => f.size <= imageService.getMaxUploadBytes(), {
+			message: 'File is too large.'
+		})
 	}),
 	async ({ recipeId, file }) => {
 		if (!userCanWrite()) {
