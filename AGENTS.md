@@ -15,8 +15,10 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 ## Documentation
 
-- **JSDoc**: Do not add JSDoc to functions whose name already explains their purpose. Only document a function when its name is not self-explanatory. The same rule applies to parameters — document a param only when its name does not convey its meaning.
-- **Exception**: JSDoc may be added when a function's complexity is very high, even if the name is clear.
+- Only add comments to functions when the logic is non-obvious and a reader would need context beyond the function name and types to understand it.
+- Skip comments on straightforward functions — well-named identifiers are sufficient.
+- When a comment is warranted, use JSDoc syntax.
+- Keep documentation comments short and concise.
 
 ## Remote Functions Pattern
 
