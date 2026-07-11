@@ -12,6 +12,7 @@ declare global {
 				| 'PERMISSION_DENIED'
 				| 'CONFIGURATION_ERROR'
 				| 'INVALID_CREDENTIALS'
+				| 'RATE_LIMITED'
 				| 'UNHANDLED_ERROR';
 			details?: unknown;
 		}
