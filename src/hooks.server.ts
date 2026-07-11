@@ -1,5 +1,10 @@
 import { JWT_SECRET } from '$env/static/private';
-import { deleteSessionTokenCookie, sessionCookieName } from '$lib/server/auth/auth';
+import {
+	deleteSessionTokenCookie,
+	SESSION_ALGORITHM,
+	SESSION_ISSUER,
+	sessionCookieName
+} from '$lib/server/auth/auth';
 import type { ROLE } from '$lib/server/auth/permissions';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
@@ -16,7 +21,10 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 
 	if (sessionToken) {
 		try {
-			const token = jwt.verify(sessionToken, JWT_SECRET);
+			const token = jwt.verify(sessionToken, JWT_SECRET, {
+				algorithms: [SESSION_ALGORITHM],
+				issuer: SESSION_ISSUER
+			});
 			event.locals.roles = (token as { roles: ROLE[] }).roles;
 		} catch {
 			console.warn('Session token is invalid, deleting cookie and redirecting to /auth');
