@@ -47,7 +47,7 @@ export async function extractRecipeFromImage(file: File): Promise<ExtractedRecip
 			schema: extractionSchema
 		}),
 		system:
-			'You are a recipe parser. Extract ingredients and cooking instructions from recipe images. Return empty arrays if the information is not visible or unclear in the image. Ingredient-values must include both amount and title. Fix typos. For instruction section headings: never use step numbers (e.g. "Step 1", "1.", "Schritt 1") as the heading — instead derive a short descriptive title that summarises the action (e.g. "Teig kneten", "Prepare the dough", "Faire revenir les oignons"). Keep the heading in the original language of the recipe.',
+			'You are a recipe parser. Extract ingredients and cooking instructions from recipe images. Return empty arrays if the information is not visible or unclear in the image. Ingredient-values must include both amount and title. Fix typos. For instruction section headings: never use step numbers (e.g. "Step 1", "1.", "Schritt 1") as the heading — instead derive a short descriptive title that summarises the action (e.g. "Teig kneten", "Prepare the dough", "Faire revenir les oignons"). Keep the heading in the original language of the recipe. If the ingredients list is grouped, it is recommended to write the list of ingredients again to the according step without their amount.',
 		messages: [
 			{
 				role: 'user',
