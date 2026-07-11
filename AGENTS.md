@@ -15,7 +15,10 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 ## Documentation
 
-- **External Docs**: Use `context7` mcp tools for searching and querying up-to-date documentation for libraries and frameworks. Always call `resolve-library-id` first to get the correct ID before using `query-docs`.
+- Only add comments to functions when the logic is non-obvious and a reader would need context beyond the function name and types to understand it.
+- Skip comments on straightforward functions — well-named identifiers are sufficient.
+- When a comment is warranted, use JSDoc syntax.
+- Keep documentation comments short and concise.
 
 ## Remote Functions Pattern
 

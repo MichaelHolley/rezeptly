@@ -11,12 +11,27 @@ const getAllowedTypes = () => {
 
 const getTargetWidth = () => parseInt(env.TARGET_IMAGE_WIDTH || '800');
 
-const validateImageFile = (file: File): void => {
+export const DEFAULT_MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+export const getMaxUploadBytes = (): number => {
+	const parsed = parseInt(publicEnv.PUBLIC_UPLOAD_MAX_BYTES || '', 10);
+	return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_MAX_UPLOAD_BYTES;
+};
+
+export const validateImageFile = (file: File): void => {
 	const allowedTypes = getAllowedTypes();
 
 	if (!allowedTypes.includes(file.type)) {
 		error(400, {
 			message: `Invalid file type. Allowed types are: ${allowedTypes.join(', ')}`,
+			code: 'VALIDATION_ERROR'
+		});
+	}
+
+	const maxBytes = getMaxUploadBytes();
+	if (file.size > maxBytes) {
+		error(400, {
+			message: `File is too large. Maximum allowed size is ${(maxBytes / (1024 * 1024)).toFixed(1)} MB.`,
 			code: 'VALIDATION_ERROR'
 		});
 	}
