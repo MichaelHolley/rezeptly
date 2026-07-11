@@ -15,7 +15,8 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 ## Documentation
 
-- **External Docs**: Use `context7` mcp tools for searching and querying up-to-date documentation for libraries and frameworks. Always call `resolve-library-id` first to get the correct ID before using `query-docs`.
+- **JSDoc**: Do not add JSDoc to functions whose name already explains their purpose. Only document a function when its name is not self-explanatory. The same rule applies to parameters — document a param only when its name does not convey its meaning.
+- **Exception**: JSDoc may be added when a function's complexity is very high, even if the name is clear.
 
 ## Remote Functions Pattern
 

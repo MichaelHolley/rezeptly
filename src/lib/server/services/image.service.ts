@@ -11,13 +11,8 @@ const getAllowedTypes = () => {
 
 const getTargetWidth = () => parseInt(env.TARGET_IMAGE_WIDTH || '800');
 
-/** Default maximum accepted upload size when PUBLIC_UPLOAD_MAX_BYTES is unset (5 MB). */
 export const DEFAULT_MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
-/**
- * Resolves the maximum accepted upload size in bytes from PUBLIC_UPLOAD_MAX_BYTES,
- * falling back to {@link DEFAULT_MAX_UPLOAD_BYTES} when unset or invalid.
- */
 export const getMaxUploadBytes = (): number => {
 	const parsed = parseInt(publicEnv.PUBLIC_UPLOAD_MAX_BYTES || '', 10);
 	return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_MAX_UPLOAD_BYTES;
