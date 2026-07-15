@@ -55,17 +55,19 @@
 				</div>
 			</div>
 			<form
-				{...addIngredient.enhance(async ({ form, data, submit }) => {
+				{...addIngredient.enhance(async (form) => {
 					try {
-						await submit()
+						const name = form.fields.name.value() ?? '';
+						await form
+							.submit()
 							.updates(
 								getRecipeBySlug(recipeSlug).withOverride((recipe) => ({
 									...recipe,
-									ingredients: [...recipe.ingredients, { name: data.name, id: 0, recipeId }]
+									ingredients: [...recipe.ingredients, { name, id: 0, recipeId }]
 								}))
 							)
 							.then(() => {
-								form.reset();
+								form.element.reset();
 								setTimeout(() => inputRef?.focus(), 50);
 							});
 					} catch (error) {
