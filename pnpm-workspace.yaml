@@ -3,3 +3,18 @@ packages: []
 allowBuilds:
   esbuild: true
   sharp: true
+
+# Ensure the linux/musl sharp binaries are installed alongside the host's own,
+# so @vercel/nft can trace them during the Vercel build (avoids ENOENT on
+# @img/sharp-linuxmusl-x64).
+supportedArchitectures:
+  os:
+    - current
+    - linux
+  cpu:
+    - current
+    - x64
+  libc:
+    - current
+    - glibc
+    - musl
