@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
-import { count, countDistinct, desc, eq, inArray } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { db } from '../db';
-import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
+import { ingredients, instructions, recipes, recipesToTags } from '../db/schema';
 import type {
 	NewIngredient,
 	NewInstruction,
@@ -60,23 +60,6 @@ const toRecipeMetadata = (row: Recipe & { tags: { tag: Tag }[] }): RecipeMetadat
 	tags: row.tags.map((rt) => rt.tag)
 });
 
-/**
- * Selects recipe ids matching the given tag slugs. With `matchAll`, a recipe must carry every
- * slug; otherwise any single match qualifies. Slugs are not unique across tag categories, so
- * matching counts distinct slugs rather than tag rows.
- */
-const buildTagMatchQuery = (tagSlugs: string[], matchAll: boolean) => {
-	const base = db
-		.select({ id: recipes.id })
-		.from(recipes)
-		.innerJoin(recipesToTags, eq(recipesToTags.recipeId, recipes.id))
-		.innerJoin(tags, eq(tags.id, recipesToTags.tagId))
-		.where(inArray(tags.slug, tagSlugs))
-		.groupBy(recipes.id);
-
-	return matchAll ? base.having(eq(countDistinct(tags.slug), tagSlugs.length)) : base;
-};
-
 export const getRecipesMetadataPage = async ({
 	limit,
 	offset
@@ -92,46 +75,6 @@ export const getRecipesMetadataPage = async ({
 		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)],
 		limit,
 		offset
-	});
-
-	return { items: rows.map(toRecipeMetadata), total };
-};
-
-export const getRecipesMetadataByTagSlugs = async ({
-	tagSlugs,
-	matchAll = false,
-	limit,
-	offset
-}: {
-	tagSlugs: string[];
-	matchAll?: boolean;
-	limit: number;
-	offset: number;
-}): Promise<PaginatedRecipeMetadata> => {
-	const uniqueSlugs = [...new Set(tagSlugs)];
-	if (!uniqueSlugs.length) {
-		return { items: [], total: 0 };
-	}
-
-	const [totals] = await db
-		.select({ value: count() })
-		.from(buildTagMatchQuery(uniqueSlugs, matchAll).as('matched'));
-	const total = totals?.value ?? 0;
-
-	const matched = await buildTagMatchQuery(uniqueSlugs, matchAll)
-		.orderBy(desc(recipes.createdAt))
-		.limit(limit)
-		.offset(offset);
-
-	const ids = matched.map((r) => r.id);
-	if (!ids.length) {
-		return { items: [], total };
-	}
-
-	const rows = await db.query.recipes.findMany({
-		where: inArray(recipes.id, ids),
-		with: { tags: { with: { tag: true } } },
-		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
 	});
 
 	return { items: rows.map(toRecipeMetadata), total };

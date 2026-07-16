@@ -14,7 +14,7 @@ export function createMcpServer(): McpServer {
 		{
 			capabilities: { tools: {} },
 			instructions:
-				'Read-only access to the rezeptly recipe collection. Browse with "list_recipes", discover tags with "list_tags", filter with "search_recipes_by_tag", and fetch full detail with "get_recipe".'
+				'Read-only access to the rezeptly recipe collection. Browse with "list_recipes", then fetch a recipe\'s full detail with "get_recipe".'
 		}
 	);
 
