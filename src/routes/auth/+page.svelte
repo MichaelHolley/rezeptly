@@ -24,11 +24,11 @@
 		<RezeptlyHeader />
 	</div>
 	<form
-		{...login.enhance(async ({ submit, form }) => {
+		{...login.enhance(async (form) => {
 			try {
 				errorMessage = undefined;
-				await submit();
-				form.reset();
+				await form.submit();
+				form.element.reset();
 			} catch (error) {
 				errorMessage = (error as HttpError).body.message;
 			}
