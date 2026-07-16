@@ -12,8 +12,11 @@ import jwt from 'jsonwebtoken';
 
 const protectedRoutes = ['/create'];
 
+// Public, session-less endpoints: an invalid cookie must not turn these into an /auth redirect.
+const unauthenticatedRoutes = ['/auth', '/api/mcp'];
+
 const handleAuth: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname === '/auth') {
+	if (unauthenticatedRoutes.includes(event.url.pathname)) {
 		return await resolve(event);
 	}
 

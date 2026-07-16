@@ -29,3 +29,8 @@ export type RecipeWithDetails = Recipe & {
 export type RecipeMetadata = Recipe & {
 	tags: Tag[];
 };
+
+export type PaginatedRecipeMetadata = {
+	items: RecipeMetadata[];
+	total: number;
+};
