@@ -12,15 +12,9 @@ import jwt from 'jsonwebtoken';
 
 const protectedRoutes = ['/create'];
 
-// Public, session-less endpoints: an invalid cookie must not turn these into an /auth redirect.
-const unauthenticatedRoutes = ['/auth', '/api/mcp'];
-
 const handleAuth: Handle = async ({ event, resolve }) => {
-	if (unauthenticatedRoutes.includes(event.url.pathname)) {
-		return await resolve(event);
-	}
-
 	const sessionToken = event.cookies.get(sessionCookieName);
+	let authenticated = false;
 
 	if (sessionToken) {
 		try {
@@ -29,15 +23,15 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 				issuer: SESSION_ISSUER
 			});
 			event.locals.roles = (token as { roles: ROLE[] }).roles;
+			authenticated = true;
 		} catch {
-			console.warn('Session token is invalid, deleting cookie and redirecting to /auth');
+			console.warn('Session token is invalid, deleting cookie');
 			deleteSessionTokenCookie(event);
-			redirect(307, '/auth');
 		}
-	} else {
-		if (protectedRoutes.includes(event.url.pathname)) {
-			redirect(307, `/auth?returnTo=${encodeURIComponent(event.url.pathname)}`);
-		}
+	}
+
+	if (!authenticated && protectedRoutes.includes(event.url.pathname)) {
+		redirect(307, `/auth?returnTo=${encodeURIComponent(event.url.pathname)}`);
 	}
 
 	return await resolve(event);
