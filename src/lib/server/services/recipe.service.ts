@@ -6,7 +6,6 @@ import type {
 	NewIngredient,
 	NewInstruction,
 	NewRecipe,
-	PaginatedRecipeMetadata,
 	Recipe,
 	RecipeMetadata,
 	RecipeWithDetails,
@@ -17,67 +16,40 @@ import { deleteImage } from './image.service';
 import { upsertTags } from './tag.service';
 import { generateSlug } from './util/generate-slug';
 
-export const getRecipesMetadata = async (): Promise<RecipeMetadata[]> => {
+const flattenTags = <T extends { tags: { tag: Tag }[] }>(row: T) => ({
+	...row,
+	tags: row.tags.map((rt) => rt.tag)
+});
+
+export const getRecipesMetadata = async (page?: {
+	limit: number;
+	offset: number;
+}): Promise<RecipeMetadata[]> => {
 	const result = await db.query.recipes.findMany({
-		with: {
-			tags: {
-				with: {
-					tag: true
-				}
-			}
-		},
-		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
+		with: { tags: { with: { tag: true } } },
+		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)],
+		...page
 	});
 
-	return result.map((r) => ({
-		...r,
-		tags: r.tags.map((rt) => rt.tag)
-	}));
+	return result.map(flattenTags);
+};
+
+export const countRecipes = async (): Promise<number> => {
+	const [totals] = await db.select({ value: count() }).from(recipes);
+	return totals?.value ?? 0;
 };
 
 export const getRecipes = async (): Promise<RecipeWithDetails[]> => {
 	const result = await db.query.recipes.findMany({
 		with: {
 			ingredients: true,
-			instructions: true,
-			tags: {
-				with: {
-					tag: true
-				}
-			}
+			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
+			tags: { with: { tag: true } }
 		},
 		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
 	});
 
-	return result.map((r) => ({
-		...r,
-		tags: r.tags.map((rt) => rt.tag)
-	}));
-};
-
-const toRecipeMetadata = (row: Recipe & { tags: { tag: Tag }[] }): RecipeMetadata => ({
-	...row,
-	tags: row.tags.map((rt) => rt.tag)
-});
-
-export const getRecipesMetadataPage = async ({
-	limit,
-	offset
-}: {
-	limit: number;
-	offset: number;
-}): Promise<PaginatedRecipeMetadata> => {
-	const [totals] = await db.select({ value: count() }).from(recipes);
-	const total = totals?.value ?? 0;
-
-	const rows = await db.query.recipes.findMany({
-		with: { tags: { with: { tag: true } } },
-		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)],
-		limit,
-		offset
-	});
-
-	return { items: rows.map(toRecipeMetadata), total };
+	return result.map(flattenTags);
 };
 
 export const getRecipeById = async (id: number): Promise<RecipeWithDetails> => {
@@ -85,12 +57,8 @@ export const getRecipeById = async (id: number): Promise<RecipeWithDetails> => {
 		where: eq(recipes.id, id),
 		with: {
 			ingredients: true,
-			instructions: true,
-			tags: {
-				with: {
-					tag: true
-				}
-			}
+			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
+			tags: { with: { tag: true } }
 		}
 	});
 
@@ -98,10 +66,7 @@ export const getRecipeById = async (id: number): Promise<RecipeWithDetails> => {
 		error(404, { message: `Recipe with ID ${id} not found`, code: 'NOT_FOUND' });
 	}
 
-	return {
-		...result,
-		tags: result.tags.map((rt) => rt.tag)
-	};
+	return flattenTags(result);
 };
 
 export const getRecipeBySlug = async (slug: string): Promise<RecipeWithDetails> => {
@@ -109,12 +74,8 @@ export const getRecipeBySlug = async (slug: string): Promise<RecipeWithDetails> 
 		where: eq(recipes.slug, slug),
 		with: {
 			ingredients: true,
-			instructions: true,
-			tags: {
-				with: {
-					tag: true
-				}
-			}
+			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
+			tags: { with: { tag: true } }
 		}
 	});
 
@@ -122,10 +83,7 @@ export const getRecipeBySlug = async (slug: string): Promise<RecipeWithDetails> 
 		error(404, { message: `Recipe with slug ${slug} not found`, code: 'NOT_FOUND' });
 	}
 
-	return {
-		...result,
-		tags: result.tags.map((rt) => rt.tag)
-	};
+	return flattenTags(result);
 };
 
 export const createRecipe = async (
