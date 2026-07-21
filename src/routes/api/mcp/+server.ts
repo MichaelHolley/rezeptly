@@ -1,4 +1,4 @@
-import { createMcpServer } from '$lib/server/mcp/tools';
+import { createMcpServer } from '$lib/server/mcp/server';
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import type { RequestHandler } from './$types';
 

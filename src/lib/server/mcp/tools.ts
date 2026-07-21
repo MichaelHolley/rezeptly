@@ -1,97 +1,14 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { TAG_CATEGORIES } from '$lib/shared/tags';
-import { isHttpError } from '@sveltejs/kit';
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import * as recipeService from '../services/recipe.service';
-import type { RecipeMetadata, RecipeWithDetails, Tag, TagCategory } from '../types';
+import { toToolError, toolResult } from './result';
+import { recipeDetailSchema, recipeSummarySchema } from './schemas';
+import { serializeDetail, serializeSummary } from './serializers';
 
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 20;
-const GENERIC_ERROR = 'An unexpected error occurred while handling the request.';
 
-const tagSchema = z.object({
-	name: z.string(),
-	slug: z.string(),
-	category: z.enum(TAG_CATEGORIES as [TagCategory, ...TagCategory[]])
-});
-
-const recipeSummarySchema = z.object({
-	slug: z.string(),
-	name: z.string(),
-	description: z.string().nullable(),
-	imageUrl: z.string().nullable(),
-	durationMinutes: z.number().nullable(),
-	portions: z.number().nullable(),
-	createdAt: z.string().nullable(),
-	tags: z.array(tagSchema)
-});
-
-const recipeDetailSchema = recipeSummarySchema.extend({
-	ingredients: z.array(z.string()),
-	instructions: z.array(
-		z.object({
-			heading: z.string().nullable(),
-			instructions: z.string(),
-			stepOrder: z.number()
-		})
-	)
-});
-
-/** Internal row ids are omitted; `slug` is the public handle for a recipe. */
-const serializeSummary = (recipe: RecipeMetadata): z.infer<typeof recipeSummarySchema> => ({
-	slug: recipe.slug,
-	name: recipe.name,
-	description: recipe.description,
-	imageUrl: recipe.imageUrl,
-	durationMinutes: recipe.durationMinutes,
-	portions: recipe.portions,
-	createdAt: recipe.createdAt?.toISOString() ?? null,
-	tags: recipe.tags.map((t: Tag) => ({ name: t.name, slug: t.slug, category: t.category }))
-});
-
-const serializeDetail = (recipe: RecipeWithDetails): z.infer<typeof recipeDetailSchema> => ({
-	...serializeSummary(recipe),
-	ingredients: recipe.ingredients.map((i) => i.name),
-	instructions: recipe.instructions.map((i) => ({
-		heading: i.heading,
-		instructions: i.instructions,
-		stepOrder: i.stepOrder
-	}))
-});
-
-/** Wraps structured output in the text block non-structured clients read. */
-const toolResult = <T extends object>(structuredContent: T) => ({
-	structuredContent,
-	content: [{ type: 'text' as const, text: JSON.stringify(structuredContent, null, 2) }]
-});
-
-/**
- * Maps a thrown service error to an MCP tool result. Client-side failures (4xx `HttpError`, e.g. an
- * unknown slug) keep their message so the model can recover; anything else is logged and replaced
- * with a generic message to avoid leaking internals over a public endpoint.
- */
-export function toToolError(err: unknown) {
-	if (isHttpError(err) && err.status < 500) {
-		return { isError: true as const, content: [{ type: 'text' as const, text: err.body.message }] };
-	}
-
-	console.error('MCP tool error:', err);
-	return { isError: true as const, content: [{ type: 'text' as const, text: GENERIC_ERROR }] };
-}
-
-/**
- * Builds a fresh MCP server. Transports carry per-request state, so a new instance must be created
- * per request rather than shared across invocations.
- */
-export function createMcpServer(): McpServer {
-	const server = new McpServer(
-		{ name: 'rezeptly', version: '1.0.0' },
-		{
-			instructions:
-				'Read-only access to the rezeptly recipe collection. Browse with "list_recipes", then fetch a recipe\'s full detail with "get_recipe".'
-		}
-	);
-
+export function registerListRecipes(server: McpServer): void {
 	server.registerTool(
 		'list_recipes',
 		{
@@ -129,7 +46,9 @@ export function createMcpServer(): McpServer {
 			}
 		}
 	);
+}
 
+export function registerGetRecipe(server: McpServer): void {
 	server.registerTool(
 		'get_recipe',
 		{
@@ -148,6 +67,4 @@ export function createMcpServer(): McpServer {
 			}
 		}
 	);
-
-	return server;
 }
