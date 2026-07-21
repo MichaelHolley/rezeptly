@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
-import { count, eq } from 'drizzle-orm';
+import { and, count, eq, ilike, inArray, or, sql, type SQL } from 'drizzle-orm';
 import { db } from '../db';
-import { ingredients, instructions, recipes, recipesToTags } from '../db/schema';
+import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
 import type {
 	NewIngredient,
 	NewInstruction,
@@ -21,11 +21,44 @@ const flattenTags = <T extends { tags: { tag: Tag }[] }>(row: T) => ({
 	tags: row.tags.map((rt) => rt.tag)
 });
 
-export const getRecipesMetadata = async (page?: {
-	limit: number;
-	offset: number;
-}): Promise<RecipeMetadata[]> => {
+export type RecipeFilter = {
+	search?: string;
+	tags?: string[];
+};
+
+/** Escapes ILIKE wildcards so a user-supplied term matches literally. */
+const escapeLike = (term: string) => term.replace(/[\\%_]/g, '\\$&');
+
+const buildRecipeWhere = (filter?: RecipeFilter): SQL | undefined => {
+	const conditions: SQL[] = [];
+
+	const search = filter?.search?.trim();
+	if (search) {
+		const pattern = `%${escapeLike(search)}%`;
+		conditions.push(or(ilike(recipes.name, pattern), ilike(recipes.description, pattern))!);
+	}
+
+	if (filter?.tags?.length) {
+		const matchingIds = db
+			.select({ recipeId: recipesToTags.recipeId })
+			.from(recipesToTags)
+			.innerJoin(tags, eq(recipesToTags.tagId, tags.id))
+			.where(inArray(tags.slug, filter.tags))
+			.groupBy(recipesToTags.recipeId)
+			.having(sql`count(distinct ${tags.slug}) = ${filter.tags.length}`);
+
+		conditions.push(inArray(recipes.id, matchingIds));
+	}
+
+	return conditions.length ? and(...conditions) : undefined;
+};
+
+export const getRecipesMetadata = async (
+	filter?: RecipeFilter,
+	page?: { limit: number; offset: number }
+): Promise<RecipeMetadata[]> => {
 	const result = await db.query.recipes.findMany({
+		where: buildRecipeWhere(filter),
 		with: { tags: { with: { tag: true } } },
 		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)],
 		...page
@@ -34,8 +67,11 @@ export const getRecipesMetadata = async (page?: {
 	return result.map(flattenTags);
 };
 
-export const countRecipes = async (): Promise<number> => {
-	const [totals] = await db.select({ value: count() }).from(recipes);
+export const countRecipes = async (filter?: RecipeFilter): Promise<number> => {
+	const [totals] = await db
+		.select({ value: count() })
+		.from(recipes)
+		.where(buildRecipeWhere(filter));
 	return totals?.value ?? 0;
 };
 
