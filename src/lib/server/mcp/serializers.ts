@@ -14,8 +14,12 @@ export const serializeSummary = (recipe: RecipeMetadata): z.infer<typeof recipeS
 	tags: recipe.tags.map((t: Tag) => ({ name: t.name, slug: t.slug, category: t.category }))
 });
 
-export const serializeDetail = (recipe: RecipeWithDetails): z.infer<typeof recipeDetailSchema> => ({
+export const serializeDetail = (
+	recipe: RecipeWithDetails,
+	baseUrl: string
+): z.infer<typeof recipeDetailSchema> => ({
 	...serializeSummary(recipe),
+	url: `${baseUrl}/${recipe.slug}`,
 	ingredients: recipe.ingredients.map((i) => i.name),
 	instructions: recipe.instructions.map((i) => ({
 		heading: i.heading,

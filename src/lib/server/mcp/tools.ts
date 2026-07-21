@@ -48,7 +48,7 @@ export function registerListRecipes(server: McpServer): void {
 	);
 }
 
-export function registerGetRecipe(server: McpServer): void {
+export function registerGetRecipe(server: McpServer, baseUrl: string): void {
 	server.registerTool(
 		'get_recipe',
 		{
@@ -61,7 +61,9 @@ export function registerGetRecipe(server: McpServer): void {
 		},
 		async ({ slug }) => {
 			try {
-				return toolResult({ recipe: serializeDetail(await recipeService.getRecipeBySlug(slug)) });
+				return toolResult({
+					recipe: serializeDetail(await recipeService.getRecipeBySlug(slug), baseUrl)
+				});
 			} catch (err) {
 				return toToolError(err);
 			}

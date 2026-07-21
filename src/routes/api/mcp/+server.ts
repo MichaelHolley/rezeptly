@@ -7,8 +7,8 @@ export const config = { runtime: 'nodejs22.x' };
 const methodNotAllowed = () =>
 	new Response('Method Not Allowed', { status: 405, headers: { Allow: 'POST' } });
 
-export const POST: RequestHandler = async ({ request }) => {
-	const server = createMcpServer();
+export const POST: RequestHandler = async ({ request, url }) => {
+	const server = createMcpServer(url.origin);
 	const transport = new WebStandardStreamableHTTPServerTransport({
 		sessionIdGenerator: undefined,
 		enableJsonResponse: true

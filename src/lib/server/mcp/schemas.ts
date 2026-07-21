@@ -20,6 +20,7 @@ export const recipeSummarySchema = z.object({
 });
 
 export const recipeDetailSchema = recipeSummarySchema.extend({
+	url: z.string(),
 	ingredients: z.array(z.string()),
 	instructions: z.array(
 		z.object({

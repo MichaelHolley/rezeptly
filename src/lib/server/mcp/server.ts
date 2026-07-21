@@ -5,7 +5,7 @@ import { registerGetRecipe, registerListRecipes } from './tools';
  * Builds a fresh MCP server. Transports carry per-request state, so a new instance must be created
  * per request rather than shared across invocations.
  */
-export function createMcpServer(): McpServer {
+export function createMcpServer(baseUrl: string): McpServer {
 	const server = new McpServer(
 		{ name: 'rezeptly', version: '1.0.0' },
 		{
@@ -15,7 +15,7 @@ export function createMcpServer(): McpServer {
 	);
 
 	registerListRecipes(server);
-	registerGetRecipe(server);
+	registerGetRecipe(server, baseUrl);
 
 	return server;
 }
