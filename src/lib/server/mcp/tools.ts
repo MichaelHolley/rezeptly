@@ -6,7 +6,7 @@ import { recipeDetailSchema, recipeSummarySchema } from './schemas';
 import { serializeDetail, serializeSummary } from './serializers';
 
 const MAX_LIMIT = 100;
-const DEFAULT_LIMIT = 20;
+const DEFAULT_LIMIT = 25;
 
 export function registerListRecipes(server: McpServer): void {
 	server.registerTool(
