@@ -1,8 +1,9 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import * as recipeService from '../services/recipe.service';
+import * as tagService from '../services/tag.service';
 import { toToolError, toolResult } from './result';
-import { recipeDetailSchema, recipeSummarySchema } from './schemas';
+import { recipeDetailSchema, recipeSummarySchema, tagSchema } from './schemas';
 import { serializeDetail, serializeSummary } from './serializers';
 
 const MAX_LIMIT = 100;
@@ -65,6 +66,30 @@ export function registerListRecipes(server: McpServer): void {
 					limit,
 					offset,
 					hasMore: offset + items.length < total
+				});
+			} catch (err) {
+				return toToolError(err);
+			}
+		}
+	);
+}
+
+export function registerListTags(server: McpServer): void {
+	server.registerTool(
+		'list_tags',
+		{
+			title: 'List tags',
+			description:
+				'List every tag in use, grouped conceptually by category (type, cuisine, nutrition, diet). Use a tag\'s "slug" to filter "list_recipes".',
+			inputSchema: {},
+			outputSchema: { tags: z.array(tagSchema) },
+			annotations: { readOnlyHint: true, openWorldHint: false }
+		},
+		async () => {
+			try {
+				const tags = await tagService.getAllActiveTags();
+				return toolResult({
+					tags: tags.map((t) => ({ name: t.name, slug: t.slug, category: t.category }))
 				});
 			} catch (err) {
 				return toToolError(err);
