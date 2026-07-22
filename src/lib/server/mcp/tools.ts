@@ -1,4 +1,4 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import * as recipeService from '../services/recipe.service';
 import * as tagService from '../services/tag.service';
@@ -15,7 +15,7 @@ export function registerListRecipes(server: McpServer): void {
 		{
 			title: 'List recipes',
 			description: `List recipes newest first, without ingredients or instructions. Optionally narrow with "search" (matches name and description) and "tags" (recipe must have every tag slug given; discover slugs from the "tags" field in results). Returns at most ${MAX_LIMIT} per call; page through them with "offset". Use "get_recipe" for a recipe's full detail.`,
-			inputSchema: {
+			inputSchema: z.object({
 				search: z
 					.string()
 					.min(1)
@@ -42,14 +42,14 @@ export function registerListRecipes(server: McpServer): void {
 					.min(0)
 					.default(0)
 					.describe('Number of recipes to skip from the start; use with "limit" to page.')
-			},
-			outputSchema: {
+			}),
+			outputSchema: z.object({
 				recipes: z.array(recipeSummarySchema),
 				total: z.number(),
 				limit: z.number(),
 				offset: z.number(),
 				hasMore: z.boolean()
-			},
+			}),
 			annotations: { readOnlyHint: true, openWorldHint: false }
 		},
 		async ({ search, tags, limit, offset }) => {
@@ -81,8 +81,8 @@ export function registerListTags(server: McpServer): void {
 			title: 'List tags',
 			description:
 				'List every tag in use, grouped conceptually by category (type, cuisine, nutrition, diet). Use a tag\'s "slug" to filter "list_recipes".',
-			inputSchema: {},
-			outputSchema: { tags: z.array(tagSchema) },
+			inputSchema: z.object({}),
+			outputSchema: z.object({ tags: z.array(tagSchema) }),
 			annotations: { readOnlyHint: true, openWorldHint: false }
 		},
 		async () => {
@@ -105,14 +105,14 @@ export function registerGetRecipe(server: McpServer, baseUrl: string): void {
 			title: 'Get recipe',
 			description:
 				'Get a single recipe by its slug, including its ingredients and ordered instructions.',
-			inputSchema: {
+			inputSchema: z.object({
 				slug: z
 					.string()
 					.min(1)
 					.max(200)
 					.describe('The recipe\'s unique slug, e.g. from the "slug" field of a list result.')
-			},
-			outputSchema: { recipe: recipeDetailSchema },
+			}),
+			outputSchema: z.object({ recipe: recipeDetailSchema }),
 			annotations: { readOnlyHint: true, openWorldHint: false }
 		},
 		async ({ slug }) => {
