@@ -7,7 +7,7 @@ import { registerGetRecipe, registerListRecipes, registerListTags } from './tool
  */
 export function createMcpServer(baseUrl: string): McpServer {
 	const server = new McpServer(
-		{ name: 'rezeptly', version: '1.2.0' },
+		{ name: 'rezeptly', version: '1.3.0' },
 		{
 			instructions:
 				'Read-only access to the rezeptly recipe collection. Browse with "list_recipes", optionally narrowing by search text or tags. Call "list_tags" first to discover valid tag slugs for filtering. Fetch a recipe\'s full detail with "get_recipe".'
