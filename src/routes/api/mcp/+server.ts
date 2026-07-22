@@ -1,5 +1,5 @@
 import { createMcpServer } from '$lib/server/mcp/server';
-import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
+import { createMcpHandler } from '@modelcontextprotocol/server';
 import type { RequestHandler } from './$types';
 
 export const config = { runtime: 'nodejs22.x' };
@@ -8,21 +8,17 @@ const methodNotAllowed = () =>
 	new Response('Method Not Allowed', { status: 405, headers: { Allow: 'POST' } });
 
 export const POST: RequestHandler = async ({ request, url }) => {
-	const server = createMcpServer(url.origin);
-	const transport = new WebStandardStreamableHTTPServerTransport({
-		sessionIdGenerator: undefined,
-		enableJsonResponse: true
+	const handler = createMcpHandler(() => createMcpServer(url.origin), {
+		onerror: (err) => console.error('MCP handler error:', err)
 	});
 
-	await server.connect(transport);
-	request.signal.addEventListener('abort', () => void server.close());
-
 	try {
-		return await transport.handleRequest(request);
+		return await handler.fetch(request);
 	} catch (err) {
 		console.error('MCP request failed:', err);
-		await server.close();
 		return new Response('Internal Server Error', { status: 500 });
+	} finally {
+		await handler.close();
 	}
 };
 
