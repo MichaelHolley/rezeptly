@@ -8,11 +8,11 @@ rezeptly is a modern, web-based application designed to help you discover, organ
 
 ## ✨ Features
 
-- **Create & Manage Recipes:** Easily add, edit, and delete your own recipes.
-- **Detailed Instructions:** Add structured instructions with step-by-step guidance.
-- **Ingredient Lists:** Keep track of all the necessary ingredients for your recipes.
-- **Responsive Design:** Access your recipes from any device—desktop, tablet, or mobile.
-- **AI Import:** Restore family recipes by image and AI migration,
+- **Create & Manage Recipes:** Add, edit, and delete recipes with images.
+- **Detailed Instructions:** Structured, step-by-step instructions.
+- **Ingredient Lists:** Manage ingredients and scale by portions.
+- **AI Import:** Extract recipes from a photo via AI.
+- **MCP Server:** Read-only access for AI clients (`list_recipes`, `get_recipe`, `list_tags`).
 
 ## 🚀 Getting Started
 
