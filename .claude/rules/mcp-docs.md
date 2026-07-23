@@ -1,7 +1,7 @@
 ---
 paths:
-  - 'src/routes/api/mcp/**'
-  - 'src/lib/server/mcp/**'
+  - 'src/routes/api/mcp/**/*'
+  - 'src/lib/server/mcp/**/*'
 ---
 
 # MCP Documentation
