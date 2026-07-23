@@ -12,14 +12,7 @@ rezeptly is a modern, web-based application designed to help you discover, organ
 - **Detailed Instructions:** Add structured instructions with step-by-step guidance.
 - **Ingredient Lists:** Keep track of all the necessary ingredients for your recipes.
 - **Responsive Design:** Access your recipes from any device—desktop, tablet, or mobile.
-
-## 🏗 Architecture
-
-- Server logic lives in `src/lib/server/services/`; routes and remote functions stay thin.
-- Remote functions live in `src/lib/api/*.remote.ts` and use `query()`, `command()`, and `form()` with Zod validation.
-- Server failures use SvelteKit `error()` / `redirect()` with typed payloads shaped by `App.Error`.
-- Permission failures use the shared `throwNewPermissionError()` helper.
-- Shared error UI renders the server `message` and `code` fields.
+- **AI Import:** Restore family recipes by image and AI migration,
 
 ## 🚀 Getting Started
 
@@ -107,31 +100,3 @@ pnpm dev
 ```
 
 The application will be available at `http://localhost:5173`.
-
-## 📜 Available Scripts
-
-- `pnpm dev`: Starts the development server with hot-reloading.
-- `pnpm build`: Builds the application for production.
-- `pnpm preview`: Serves the production build locally for previewing.
-- `pnpm check`: Runs Svelte check for type-checking.
-- `pnpm lint`: Lints the codebase using ESLint and Prettier.
-- `pnpm format`: Formats the code using Prettier.
-
-### Database Management
-
-- `pnpm db:start`: Starts the PostgreSQL database using Docker Compose.
-- `pnpm db:push`: Pushes the current Drizzle schema to the database.
-- `pnpm db:generate`: Creates a new SQL migration file based on schema changes.
-- `pnpm db:studio`: Opens Drizzle Studio to browse and manage your data.
-- `pnpm db:seed`: Opens an interactive menu to seed or clear the database (requires `db:start` and `db:push` first).
-  - Use `pnpm db:seed -- --clear` to clear and reseed without the interactive menu.
-  - Use `pnpm db:seed -- --seed` to seed without the interactive menu.
-
-## 🛠️ Built With
-
-- [SvelteKit](https://kit.svelte.dev/) - The core web framework.
-- [Drizzle ORM](https://orm.drizzle.team/) - TypeScript ORM for database access.
-- [PostgreSQL](https://www.postgresql.org/) - The relational database.
-- [Tailwind CSS](https://tailwindcss.com/) - For styling the user interface.
-- [TypeScript](https://www.typescriptlang.org/) - For type-safe code.
-- [Vite](https://vitejs.dev/) - The build tool and development server.
