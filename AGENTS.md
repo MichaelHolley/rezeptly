@@ -15,6 +15,10 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 ## Documentation
 
+- Changes to MCP tools must be covered and updated in the routes/(app)/mcp page.
+
+### Code-Comments
+
 - Only add comments to functions when the logic is non-obvious and a reader would need context beyond the function name and types to understand it.
 - Skip comments on straightforward functions — well-named identifiers are sufficient.
 - When a comment is warranted, use JSDoc syntax.
