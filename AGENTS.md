@@ -6,7 +6,7 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 ## Coding Guidelines
 
-- **Components**: Use Svelte 5 runes (`$props`, `$state`, `$derived`) not legacy stores.
+- **Components**: Use Svelte 5 runes (`$props`, `$state`, `$derived`).
 - **Styling**: Tailwind CSS (v4) with `clsx` and `tailwind-merge` for dynamic classes
 - **Database**: Use Drizzle ORM with transactions for multi-step operations. Use `pnpm db:push` for rapid prototyping and `pnpm db:generate` for production migrations. Migration files must be generated. Hand-edits require approval.
 - **Services**: Keep business logic in `$lib/server/services/`, database queries in services not routes, and blob/file side effects in services too.
