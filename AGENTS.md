@@ -16,7 +16,6 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 ## Documentation
 
 - Prefer clear, concise, short instructions over excessive text.
-- Changes to MCP tools must be covered and updated in the routes/(app)/mcp page.
 
 ### Code-Comments
 
