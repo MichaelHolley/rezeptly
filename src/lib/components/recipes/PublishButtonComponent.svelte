@@ -14,6 +14,9 @@
 {#if PermissionsStore.canEdit}
 	<Button
 		variant={isDraft ? 'default' : 'outline'}
+		class={isDraft
+			? 'bg-draft text-draft-foreground hover:bg-draft/90'
+			: 'border-draft/30 text-draft hover:bg-draft/10 hover:text-draft'}
 		title={isDraft ? 'Publish this recipe' : 'Unpublish this recipe'}
 		disabled={!!setRecipePublished.pending}
 		onclick={async () => await setRecipePublished({ recipeId, published: isDraft })}

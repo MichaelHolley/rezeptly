@@ -6,6 +6,7 @@
 </script>
 
 {#if publishedAt === null}
-	<Badge class={cn('border-transparent bg-purple-600 text-white shadow-sm', className)}>Draft</Badge
+	<Badge class={cn('bg-draft text-draft-foreground border-transparent shadow-sm', className)}
+		>Draft</Badge
 	>
 {/if}

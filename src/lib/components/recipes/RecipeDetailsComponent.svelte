@@ -49,7 +49,9 @@
 				{recipe.name}
 			</h2>
 			<DraftBadgeComponent publishedAt={recipe.publishedAt} />
-			<PublishButtonComponent recipeId={recipe.id} publishedAt={recipe.publishedAt} />
+			<div class="ml-auto">
+				<PublishButtonComponent recipeId={recipe.id} publishedAt={recipe.publishedAt} />
+			</div>
 		</div>
 
 		{#if recipe.description}
