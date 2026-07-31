@@ -49,6 +49,10 @@
 			server. Any MCP-capable client can connect to it and read the collection. Access is read-only and
 			needs no account or API key.
 		</p>
+		<p class="text-zinc-600">
+			The tools expose released recipes only. Recipes still in draft are never returned, so the tool
+			results are exactly the public view of the collection.
+		</p>
 	</section>
 
 	<section class="flex flex-col gap-2">

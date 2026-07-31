@@ -1,0 +1,30 @@
+<script lang="ts">
+	import { setRecipePublished } from '$lib/api/recipes.remote';
+	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import EyeOffIcon from '@lucide/svelte/icons/eye-off';
+	import SendIcon from '@lucide/svelte/icons/send';
+
+	const { recipeId, publishedAt }: { recipeId: number; publishedAt: Date | null } = $props();
+
+	const isDraft = $derived(publishedAt === null);
+</script>
+
+{#if PermissionsStore.canEdit}
+	<Button
+		variant={isDraft ? 'default' : 'outline'}
+		title={isDraft ? 'Publish this recipe' : 'Unpublish this recipe'}
+		disabled={!!setRecipePublished.pending}
+		onclick={async () => await setRecipePublished({ recipeId, published: isDraft })}
+	>
+		{#if !!setRecipePublished.pending}
+			<LoadingComponent class="size-4" />
+		{:else if isDraft}
+			<SendIcon />
+		{:else}
+			<EyeOffIcon />
+		{/if}
+		{isDraft ? 'Publish' : 'Unpublish'}
+	</Button>
+{/if}

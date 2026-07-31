@@ -1,5 +1,5 @@
 import { command, form, query } from '$app/server';
-import { userCanWrite } from '$lib/server/auth/permissions';
+import { guardedQuery, userCanWrite } from '$lib/server/auth/permissions';
 import * as aiService from '$lib/server/services/ai.service';
 import * as imageService from '$lib/server/services/image.service';
 import * as ingredientService from '$lib/server/services/ingredient.service';
@@ -21,16 +21,20 @@ export const getRecipesMetadata = query(async () => {
 	return await recipeService.getRecipesMetadata();
 });
 
+export const getDraftRecipesMetadata = guardedQuery(async () => {
+	return await recipeService.getRecipesMetadata(undefined, undefined, { onlyDrafts: true });
+});
+
 export const getAvailableTags = query(async () => {
 	return await tagService.getAllActiveTags();
 });
 
 export const getRecipes = query(async () => {
-	return await recipeService.getRecipes();
+	return await recipeService.getRecipes({ includeDrafts: userCanWrite() });
 });
 
 export const getRecipeBySlug = query(z.string(), async (slug) => {
-	const recipe = await recipeService.getRecipeBySlug(slug);
+	const recipe = await recipeService.getRecipeBySlug(slug, { includeDrafts: userCanWrite() });
 	return recipe;
 });
 
@@ -69,7 +73,7 @@ export const addIngredient = form(
 			throwNewPermissionError();
 		}
 
-		const recipe = await recipeService.getRecipeById(recipeId);
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 		await ingredientService.createIngredient({ name: name.trim(), recipeId });
 
 		await getRecipeBySlug(recipe.slug).refresh();
@@ -86,7 +90,7 @@ export const removeIngredient = command(
 			throwNewPermissionError();
 		}
 
-		const recipe = await recipeService.getRecipeById(recipeId);
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 		await ingredientService.deleteIngredient(ingrId);
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
@@ -113,7 +117,7 @@ export const editIngredient = form(
 			throwNewPermissionError();
 		}
 
-		const recipe = await recipeService.getRecipeById(recipeId);
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 		await ingredientService.updateIngredient(ingrId, name.trim());
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
@@ -158,7 +162,7 @@ export const updateRecipeDetails = form(
 			diet: tagDiet
 		});
 
-		const recipe = await recipeService.getRecipeById(recipeId);
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 		const oldSlug = recipe.slug;
 
 		const result = await recipeService.updateRecipe(recipeId, {
@@ -249,7 +253,7 @@ export const updateInstructions = form(
 			throwNewPermissionError();
 		}
 
-		const recipe = await recipeService.getRecipeById(recipeId);
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 
 		await instructionService.upsertInstructionsForRecipe(
 			recipeId,
@@ -300,9 +304,27 @@ export const updateRecipePortions = command(
 			throwNewPermissionError();
 		}
 
-		const recipe = await recipeService.getRecipeById(recipeId);
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 		await recipeService.updateRecipe(recipeId, { portions });
 		await getRecipeBySlug(recipe.slug).refresh();
+	}
+);
+
+export const setRecipePublished = command(
+	z.object({
+		recipeId: z.number(),
+		published: z.boolean()
+	}),
+	async ({ recipeId, published }) => {
+		if (!userCanWrite()) {
+			throwNewPermissionError();
+		}
+
+		const recipe = await recipeService.setRecipePublished(recipeId, published);
+
+		await getRecipeBySlug(recipe.slug).refresh();
+		await getRecipesMetadata().refresh();
+		await getDraftRecipesMetadata().refresh();
 	}
 );
 
@@ -311,7 +333,7 @@ export const deleteRecipeImage = command(z.number(), async (recipeId) => {
 		throwNewPermissionError();
 	}
 
-	const recipe = await recipeService.getRecipeById(recipeId);
+	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 
 	if (!recipe.imageUrl) {
 		error(400, { message: 'Recipe does not have an image to delete', code: 'VALIDATION_ERROR' });

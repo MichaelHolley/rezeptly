@@ -1,16 +1,19 @@
 <script lang="ts">
-	import { getRecipesMetadata } from '$lib/api/recipes.remote';
+	import { getDraftRecipesMetadata } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import RecipeListComponent from '$lib/components/recipes/RecipeListComponent.svelte';
 </script>
 
 <svelte:head>
-	<title>rezeptly</title>
+	<title>rezeptly | Drafts</title>
 </svelte:head>
 
+<BreadcrumbComponent breadcrumbs={[{ name: 'Drafts', href: '/drafts' }]} />
+
 <svelte:boundary>
-	{@const recipes = await getRecipesMetadata()}
+	{@const recipes = await getDraftRecipesMetadata()}
 
 	<RecipeListComponent {recipes} />
 

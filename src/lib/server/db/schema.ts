@@ -21,7 +21,8 @@ export const recipes = pgTable('recipes', {
 	imageUrl: text('image_url'),
 	durationMinutes: integer('duration_minutes'),
 	portions: integer('portions'),
-	createdAt: timestamp('created_at').defaultNow()
+	createdAt: timestamp('created_at').defaultNow(),
+	publishedAt: timestamp('published_at')
 });
 
 export const recipesRelations = relations(recipes, ({ many }) => ({
