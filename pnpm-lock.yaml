@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@openrouter/ai-sdk-provider':
         specifier: ^2.10.0
-        version: 2.10.0(ai@6.0.231(zod@4.4.3))(zod@4.4.3)
+        version: 2.10.0(ai@6.0.236(zod@4.4.3))(zod@4.4.3)
       '@vercel/blob':
         specifier: ^2.5.0
         version: 2.6.1
       ai:
-        specifier: ^6.0.231
-        version: 6.0.231(zod@4.4.3)
+        specifier: ^6.0.236
+        version: 6.0.236(zod@4.4.3)
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@opentelemetry/api@1.9.1)(postgres@3.4.9)
@@ -165,8 +165,8 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@3.0.154':
-    resolution: {integrity: sha512-pKJmMnTxdTOfo+iz7pCAgmnMt4uan2yIw8nChFVIk3yYBeX2A9p2MCGyP8jZ1zpqSYXBmczQZU7Pjvlj1aLbIQ==}
+  '@ai-sdk/gateway@3.0.158':
+    resolution: {integrity: sha512-7yQXeK84iQTwlvPi+02kfde9mtr9/yMUOxcbuByK8qKLZnzRN+equz3vXk8MeSe6OW3VVWx+j24nqrwRHRv5Rw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -2327,8 +2327,8 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  ai@6.0.231:
-    resolution: {integrity: sha512-7uI0uSZoHEVBFxKdhZ3EiwtOyPl+Gr5JiV9khXeia8sV5Y36ESiGRRoer1pFVPd+XAcZ3XtAufiYtXwh5AZXCg==}
+  ai@6.0.236:
+    resolution: {integrity: sha512-qo9hEgJ11FQk/cyrug+89cBsuiiHG/a7Cwoce79J8SR18WpufmgPzEvQTDvt/kdHufGwf2oLJNVEQbBtkK3Rvg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -5057,7 +5057,7 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@3.0.154(zod@4.4.3)':
+  '@ai-sdk/gateway@3.0.158(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 3.0.14
       '@ai-sdk/provider-utils': 4.0.40(zod@4.4.3)
@@ -6447,9 +6447,9 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 27.0.0
 
-  '@openrouter/ai-sdk-provider@2.10.0(ai@6.0.231(zod@4.4.3))(zod@4.4.3)':
+  '@openrouter/ai-sdk-provider@2.10.0(ai@6.0.236(zod@4.4.3))(zod@4.4.3)':
     dependencies:
-      ai: 6.0.231(zod@4.4.3)
+      ai: 6.0.236(zod@4.4.3)
       zod: 4.4.3
 
   '@opentelemetry/api@1.9.1': {}
@@ -7048,9 +7048,9 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  ai@6.0.231(zod@4.4.3):
+  ai@6.0.236(zod@4.4.3):
     dependencies:
-      '@ai-sdk/gateway': 3.0.154(zod@4.4.3)
+      '@ai-sdk/gateway': 3.0.158(zod@4.4.3)
       '@ai-sdk/provider': 3.0.14
       '@ai-sdk/provider-utils': 4.0.40(zod@4.4.3)
       '@opentelemetry/api': 1.9.1
