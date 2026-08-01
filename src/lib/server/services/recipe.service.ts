@@ -87,20 +87,6 @@ export const countRecipes = async (
 	return totals?.value ?? 0;
 };
 
-export const getRecipes = async (options?: ReadOptions): Promise<RecipeWithDetails[]> => {
-	const result = await db.query.recipes.findMany({
-		where: recipeVisibility(options),
-		with: {
-			ingredients: true,
-			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
-			tags: { with: { tag: true } }
-		},
-		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
-	});
-
-	return result.map(flattenTags);
-};
-
 export const getRecipeById = async (
 	id: number,
 	options?: ReadOptions

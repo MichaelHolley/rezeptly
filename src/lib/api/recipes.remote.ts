@@ -29,10 +29,6 @@ export const getAvailableTags = query(async () => {
 	return await tagService.getAllActiveTags();
 });
 
-export const getRecipes = query(async () => {
-	return await recipeService.getRecipes({ includeDrafts: userCanWrite() });
-});
-
 export const getRecipeBySlug = query(z.string(), async (slug) => {
 	const recipe = await recipeService.getRecipeBySlug(slug, { includeDrafts: userCanWrite() });
 	return recipe;
