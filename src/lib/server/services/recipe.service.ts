@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { and, count, eq, ilike, inArray, or, sql, type SQL } from 'drizzle-orm';
+import { and, count, eq, ilike, inArray, like, ne, or, sql, type SQL } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
 import type {
@@ -31,6 +31,29 @@ export type RecipeFilter = {
 
 /** Escapes ILIKE wildcards so a user-supplied term matches literally. */
 const escapeLike = (term: string) => term.replace(/[\\%_]/g, '\\$&');
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/** Appends `-2`, `-3`, … until the slug is free. `excludeId` keeps a recipe from colliding with itself. */
+const resolveUniqueSlug = async (tx: Tx, base: string, excludeId?: number): Promise<string> => {
+	const taken = await tx
+		.select({ slug: recipes.slug })
+		.from(recipes)
+		.where(
+			and(
+				or(eq(recipes.slug, base), like(recipes.slug, `${base}-%`)),
+				excludeId === undefined ? undefined : ne(recipes.id, excludeId)
+			)
+		);
+
+	const slugs = new Set(taken.map((row) => row.slug));
+	if (!slugs.has(base)) return base;
+
+	let suffix = 2;
+	while (slugs.has(`${base}-${suffix}`)) suffix++;
+
+	return `${base}-${suffix}`;
+};
 
 const buildRecipeWhere = (filter?: RecipeFilter, options?: ReadOptions): SQL | undefined => {
 	const conditions: SQL[] = [];
@@ -135,14 +158,16 @@ export const createRecipe = async (
 	}
 ): Promise<Recipe> => {
 	const newRecipe = await db.transaction(async (tx) => {
-		const slug = generateSlug(data.name);
+		const baseSlug = generateSlug(data.name);
 
-		if (!slug) {
+		if (!baseSlug) {
 			error(400, {
 				message: 'Generated slug is empty. Please provide a valid name for the recipe.',
 				code: 'VALIDATION_ERROR'
 			});
 		}
+
+		const slug = await resolveUniqueSlug(tx, baseSlug);
 
 		const [createdRecipe] = await tx
 			.insert(recipes)
@@ -203,13 +228,15 @@ export const updateRecipe = async (
 			error(404, { message: `Recipe with ID ${id} not found`, code: 'NOT_FOUND' });
 		}
 
-		const slug = data.name ? generateSlug(data.name) : currentRecipe.slug;
-		if (!slug) {
+		const baseSlug = data.name ? generateSlug(data.name) : currentRecipe.slug;
+		if (!baseSlug) {
 			error(400, {
 				message: 'Generated slug is empty. Please provide a valid name for the recipe.',
 				code: 'VALIDATION_ERROR'
 			});
 		}
+
+		const slug = data.name ? await resolveUniqueSlug(tx, baseSlug, id) : baseSlug;
 
 		const [updatedRecipe] = await tx
 			.update(recipes)
