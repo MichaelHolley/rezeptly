@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
+	import DraftBadgeComponent from '$lib/components/recipes/DraftBadgeComponent.svelte';
 	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card/';
@@ -22,7 +23,8 @@
 
 <Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
 	<Card.Header class="p-0">
-		<div class="h-48 overflow-hidden">
+		<div class="relative h-48 overflow-hidden">
+			<DraftBadgeComponent publishedAt={recipe.publishedAt} class="absolute top-2 left-2 z-10" />
 			{#if recipe.imageUrl && !isImageBroken}
 				<img
 					src={recipe.imageUrl}

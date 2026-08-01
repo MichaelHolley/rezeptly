@@ -31,8 +31,8 @@ export const GET: RequestHandler = async ({ request }) => {
 		const { blobs } = await list({ token });
 		const blobUrls = new Set(blobs.map((b) => b.url));
 
-		// Get all image URLs from recipes using recipe service
-		const allRecipes = await getRecipesMetadata();
+		// Drafts must be included, otherwise their images count as orphaned and get deleted
+		const allRecipes = await getRecipesMetadata(undefined, undefined, { includeDrafts: true });
 		const dbImageUrls = new Set(allRecipes.map((r) => r.imageUrl).filter(Boolean) as string[]);
 
 		// Find orphaned blobs (in Vercel Blob but not in database)

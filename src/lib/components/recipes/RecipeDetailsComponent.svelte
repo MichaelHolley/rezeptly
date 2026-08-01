@@ -9,6 +9,8 @@
 	import StarIcon from '@lucide/svelte/icons/star';
 	import UsersIcon from '@lucide/svelte/icons/users';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
+	import DraftBadgeComponent from './DraftBadgeComponent.svelte';
+	import PublishButtonComponent from './PublishButtonComponent.svelte';
 	import RecipeDetailsFormComponent from './RecipeDetailsFormComponent.svelte';
 	import TagsContainer from './TagsContainerComponent.svelte';
 
@@ -39,12 +41,18 @@
 	{#if editDetails}
 		<RecipeDetailsFormComponent {recipe} onSave={closeForm} onCancel={closeForm} />
 	{:else}
-		<h2
-			style:view-transition-name="recipe-title-{recipe.id}"
-			class="mt-2 text-3xl font-extrabold tracking-tight text-shadow-xs sm:text-4xl"
-		>
-			{recipe.name}
-		</h2>
+		<div class="mt-2 flex flex-row flex-wrap items-center gap-3">
+			<h2
+				style:view-transition-name="recipe-title-{recipe.id}"
+				class="text-3xl font-extrabold tracking-tight text-shadow-xs sm:text-4xl"
+			>
+				{recipe.name}
+			</h2>
+			<DraftBadgeComponent publishedAt={recipe.publishedAt} />
+			<div class="ml-auto">
+				<PublishButtonComponent recipeId={recipe.id} publishedAt={recipe.publishedAt} />
+			</div>
+		</div>
 
 		{#if recipe.description}
 			<p class="mt-3 text-sm text-zinc-500 max-w-3xl">

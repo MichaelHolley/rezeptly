@@ -6,6 +6,7 @@
 	import { Button } from '$lib/components/ui/button/';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte.js';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import FileTextIcon from '@lucide/svelte/icons/file-text';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
 
@@ -31,6 +32,10 @@
 			</div>
 			<div class="flex flex-row items-center gap-3">
 				{#if PermissionsStore.canEdit}
+					<Button href="/drafts" variant="ghost">
+						<FileTextIcon />
+						Drafts
+					</Button>
 					<Button href="/create" variant="default">+ Create</Button>
 				{/if}
 				{#if PermissionsStore.isLoggedIn}

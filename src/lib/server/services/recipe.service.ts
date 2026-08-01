@@ -15,6 +15,9 @@ import type {
 import { deleteImage } from './image.service';
 import { upsertTags } from './tag.service';
 import { generateSlug } from './util/generate-slug';
+import { recipeVisibility, type ReadOptions } from './util/recipe-visibility';
+
+export type { ReadOptions };
 
 const flattenTags = <T extends { tags: { tag: Tag }[] }>(row: T) => ({
 	...row,
@@ -29,8 +32,13 @@ export type RecipeFilter = {
 /** Escapes ILIKE wildcards so a user-supplied term matches literally. */
 const escapeLike = (term: string) => term.replace(/[\\%_]/g, '\\$&');
 
-const buildRecipeWhere = (filter?: RecipeFilter): SQL | undefined => {
+const buildRecipeWhere = (filter?: RecipeFilter, options?: ReadOptions): SQL | undefined => {
 	const conditions: SQL[] = [];
+
+	const visibility = recipeVisibility(options);
+	if (visibility) {
+		conditions.push(visibility);
+	}
 
 	const search = filter?.search?.trim();
 	if (search) {
@@ -55,10 +63,11 @@ const buildRecipeWhere = (filter?: RecipeFilter): SQL | undefined => {
 
 export const getRecipesMetadata = async (
 	filter?: RecipeFilter,
-	page?: { limit: number; offset: number }
+	page?: { limit: number; offset: number },
+	options?: ReadOptions
 ): Promise<RecipeMetadata[]> => {
 	const result = await db.query.recipes.findMany({
-		where: buildRecipeWhere(filter),
+		where: buildRecipeWhere(filter, options),
 		with: { tags: { with: { tag: true } } },
 		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)],
 		...page
@@ -67,30 +76,23 @@ export const getRecipesMetadata = async (
 	return result.map(flattenTags);
 };
 
-export const countRecipes = async (filter?: RecipeFilter): Promise<number> => {
+export const countRecipes = async (
+	filter?: RecipeFilter,
+	options?: ReadOptions
+): Promise<number> => {
 	const [totals] = await db
 		.select({ value: count() })
 		.from(recipes)
-		.where(buildRecipeWhere(filter));
+		.where(buildRecipeWhere(filter, options));
 	return totals?.value ?? 0;
 };
 
-export const getRecipes = async (): Promise<RecipeWithDetails[]> => {
-	const result = await db.query.recipes.findMany({
-		with: {
-			ingredients: true,
-			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
-			tags: { with: { tag: true } }
-		},
-		orderBy: (recipes, { desc }) => [desc(recipes.createdAt)]
-	});
-
-	return result.map(flattenTags);
-};
-
-export const getRecipeById = async (id: number): Promise<RecipeWithDetails> => {
+export const getRecipeById = async (
+	id: number,
+	options?: ReadOptions
+): Promise<RecipeWithDetails> => {
 	const result = await db.query.recipes.findFirst({
-		where: eq(recipes.id, id),
+		where: and(eq(recipes.id, id), recipeVisibility(options)),
 		with: {
 			ingredients: true,
 			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
@@ -105,9 +107,12 @@ export const getRecipeById = async (id: number): Promise<RecipeWithDetails> => {
 	return flattenTags(result);
 };
 
-export const getRecipeBySlug = async (slug: string): Promise<RecipeWithDetails> => {
+export const getRecipeBySlug = async (
+	slug: string,
+	options?: ReadOptions
+): Promise<RecipeWithDetails> => {
 	const result = await db.query.recipes.findFirst({
-		where: eq(recipes.slug, slug),
+		where: and(eq(recipes.slug, slug), recipeVisibility(options)),
 		with: {
 			ingredients: true,
 			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
@@ -248,9 +253,23 @@ export const updateRecipe = async (
 	return updatedRecipe;
 };
 
+export const setRecipePublished = async (id: number, published: boolean): Promise<Recipe> => {
+	const [updatedRecipe] = await db
+		.update(recipes)
+		.set({ publishedAt: published ? new Date() : null })
+		.where(eq(recipes.id, id))
+		.returning();
+
+	if (!updatedRecipe) {
+		error(404, { message: `Recipe with ID ${id} not found`, code: 'NOT_FOUND' });
+	}
+
+	return updatedRecipe;
+};
+
 export const deleteRecipe = async (id: number): Promise<void> => {
 	// Get recipe to find image URL before deletion (getRecipeById throws if not found)
-	const recipe = await getRecipeById(id);
+	const recipe = await getRecipeById(id, { includeDrafts: true });
 
 	await db.delete(recipes).where(eq(recipes.id, id));
 
