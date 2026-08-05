@@ -1,4 +1,4 @@
-# Getting Started
+# Contributing
 
 Local setup for development and testing.
 

@@ -14,6 +14,6 @@ rezeptly is a modern, web-based application designed to help you discover, organ
 - **AI Import:** Extract recipes from a photo via AI.
 - **MCP Server:** Read-only access for AI clients (`list_recipes`, `get_recipe`, `list_tags`).
 
-## 🚀 Getting Started
+## 🚀 Contributing
 
-See [docs/getting-started.md](docs/getting-started.md) for setup and development instructions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and development instructions.
