@@ -6,6 +6,7 @@ import * as ingredientService from '$lib/server/services/ingredient.service';
 import * as instructionService from '$lib/server/services/instruction.service';
 import * as recipeService from '$lib/server/services/recipe.service';
 import * as tagService from '$lib/server/services/tag.service';
+import { buildRecipeInput } from '$lib/server/services/util/build-recipe-input';
 import type { TagCategory, TagInput } from '$lib/server/types';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -228,6 +229,39 @@ export const createRecipe = form(
 		redirect(303, `/${recipe.slug}`);
 	}
 );
+
+export const importRecipeFromImage = command(z.instanceof(File), async (image) => {
+	if (!userCanWrite()) {
+		throwNewPermissionError();
+	}
+
+	imageService.validateImageFile(image);
+
+	const existingTags = await tagService.getAllTags();
+	const extracted = await aiService.extractRecipeFromImage(image, existingTags);
+
+	if (!extracted.isRecipe) {
+		error(422, {
+			message: 'This image does not look like a recipe. Nothing was imported.',
+			code: 'VALIDATION_ERROR'
+		});
+	}
+
+	const input = buildRecipeInput(extracted, existingTags);
+
+	if (!input.name) {
+		error(422, {
+			message: 'Could not determine a recipe name from this image. Nothing was imported.',
+			code: 'VALIDATION_ERROR'
+		});
+	}
+
+	const recipe = await recipeService.createRecipe({ ...input, imageUrl: null });
+
+	await getDraftRecipesMetadata().refresh();
+
+	return { slug: recipe.slug };
+});
 
 export const updateInstructions = form(
 	z.object({

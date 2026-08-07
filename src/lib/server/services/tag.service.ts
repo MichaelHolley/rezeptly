@@ -59,6 +59,16 @@ export async function upsertTags(
 	return allTags;
 }
 
+/**
+ * Returns every tag, including ones not yet attached to a recipe — unlike
+ * {@link getAllActiveTags}, so a freshly created tag is available to the next AI import.
+ */
+export const getAllTags = async (): Promise<Tag[]> => {
+	return await db.query.tags.findMany({
+		orderBy: (tags, { asc }) => [asc(tags.category), asc(tags.name)]
+	});
+};
+
 export const getAllActiveTags = async (): Promise<Tag[]> => {
 	const result = await db.query.tags.findMany({
 		where: (tags, { exists }) =>

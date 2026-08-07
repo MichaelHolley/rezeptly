@@ -7,6 +7,7 @@
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte.js';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import FileTextIcon from '@lucide/svelte/icons/file-text';
+	import ImageIcon from '@lucide/svelte/icons/image-plus';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
 
@@ -36,6 +37,12 @@
 						<FileTextIcon />
 						Drafts
 					</Button>
+					{#if data.features.imageImport}
+						<Button href="/import" variant="ghost">
+							<ImageIcon />
+							Import
+						</Button>
+					{/if}
 					<Button href="/create" variant="default">+ Create</Button>
 				{/if}
 				{#if PermissionsStore.isLoggedIn}
