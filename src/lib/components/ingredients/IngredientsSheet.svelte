@@ -9,6 +9,8 @@
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import UsersIcon from '@lucide/svelte/icons/users';
+	import { useDebounce } from 'runed';
+	import { untrack } from 'svelte';
 	import IngredientItem from './IngredientItem.svelte';
 
 	const {
@@ -23,8 +25,18 @@
 		portions: number | null;
 	} = $props();
 
-	async function handlePortionsChange(value: number | null) {
-		await updateRecipePortions({ recipeId, portions: value });
+	let draftPortions = $state(untrack(() => portions));
+
+	const savePortions = useDebounce(
+		(value: number | null) => updateRecipePortions({ recipeId, portions: value }),
+		400
+	);
+
+	function handlePortionsChange(value: number | null) {
+		draftPortions = value;
+		savePortions(value).catch(() => {
+			draftPortions = portions;
+		});
 	}
 
 	let inputRef = $state<HTMLInputElement | null>(null);
@@ -48,7 +60,7 @@
 					<UsersIcon class="h-5 w-5" />
 					<NumberStepper
 						label="Portions"
-						value={portions}
+						value={draftPortions}
 						onchange={handlePortionsChange}
 						placeholder="—"
 					/>
