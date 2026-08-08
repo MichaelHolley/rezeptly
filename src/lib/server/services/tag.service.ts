@@ -6,9 +6,6 @@ import { generateSlug } from './util/generate-slug';
 
 export { TAG_CATEGORIES, TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 
-/**
- * Upserts tags within a transaction and returns resolved Tag rows.
- */
 export async function upsertTags(
 	tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
 	inputs: TagInput[]
@@ -59,10 +56,6 @@ export async function upsertTags(
 	return allTags;
 }
 
-/**
- * Returns every tag, including ones not yet attached to a recipe — unlike
- * {@link getAllActiveTags}, so a freshly created tag is available to the next AI import.
- */
 export const getAllTags = async (): Promise<Tag[]> => {
 	return await db.query.tags.findMany({
 		orderBy: (tags, { asc }) => [asc(tags.category), asc(tags.name)]
