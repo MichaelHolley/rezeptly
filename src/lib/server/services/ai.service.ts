@@ -117,8 +117,7 @@ export async function extractRecipeFromImage(
 					{
 						type: 'image',
 						image: base64
-					},
-					{ type: 'text', text: 'Extract the full recipe from this image.' }
+					}
 				]
 			}
 		]
