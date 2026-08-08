@@ -6,9 +6,6 @@ import { generateSlug } from './util/generate-slug';
 
 export { TAG_CATEGORIES, TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 
-/**
- * Upserts tags within a transaction and returns resolved Tag rows.
- */
 export async function upsertTags(
 	tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
 	inputs: TagInput[]
@@ -58,6 +55,12 @@ export async function upsertTags(
 
 	return allTags;
 }
+
+export const getAllTags = async (): Promise<Tag[]> => {
+	return await db.query.tags.findMany({
+		orderBy: (tags, { asc }) => [asc(tags.category), asc(tags.name)]
+	});
+};
 
 export const getAllActiveTags = async (): Promise<Tag[]> => {
 	const result = await db.query.tags.findMany({
