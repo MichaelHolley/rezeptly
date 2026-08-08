@@ -3,6 +3,7 @@
 	import { importRecipeFromImage } from '$lib/api/recipes.remote';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -56,7 +57,7 @@
 		<input
 			bind:this={fileInput}
 			type="file"
-			accept="image/jpeg,image/png,image/webp"
+			accept={getUploadAllowedTypes()}
 			oninput={(e) => runImport(e.currentTarget.files?.[0])}
 			class="hidden"
 		/>

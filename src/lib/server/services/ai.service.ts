@@ -1,12 +1,12 @@
 import { env } from '$env/dynamic/private';
-import { OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME } from '$env/static/private';
 import { TAG_CATEGORIES } from '$lib/shared/tags';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import type { Tag, TagCategory } from '../types';
 
-export const imageImportEnabled = Boolean(OPENROUTER_API_KEY) && Boolean(OPENROUTER_MODEL_NAME);
+export const imageImportEnabled = (): boolean =>
+	Boolean(env.OPENROUTER_API_KEY) && Boolean(env.OPENROUTER_MODEL_NAME);
 
 const tagCategorySchema = z.enum(TAG_CATEGORIES as [TagCategory, ...TagCategory[]]);
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
-	import { env as publicEnv } from '$env/dynamic/public';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
@@ -11,6 +10,7 @@
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
 	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
+	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import { Button } from '$lib/components/ui/button';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
@@ -241,7 +241,7 @@
 			<form {...uploadRecipeImage} enctype="multipart/form-data" class="hidden">
 				<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
 				<input
-					accept={publicEnv.PUBLIC_UPLOAD_ALLOWED_TYPES}
+					accept={getUploadAllowedTypes()}
 					hidden
 					{...uploadRecipeImage.fields.file.as('file')}
 					bind:this={fileUploadInput}

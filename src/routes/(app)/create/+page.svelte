@@ -8,6 +8,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
+	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -86,7 +87,7 @@
 		<div class="form-group mt-6">
 			<input
 				bind:this={importImageInput}
-				accept="image/jpeg,image/png,image/webp"
+				accept={getUploadAllowedTypes()}
 				{...createRecipe.fields.importImage.as('file')}
 				oninput={(e) => {
 					importImageName = e.currentTarget.files?.[0]?.name ?? null;

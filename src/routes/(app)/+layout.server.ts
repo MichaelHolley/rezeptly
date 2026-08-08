@@ -7,7 +7,7 @@ export const load: LayoutServerLoad = () => {
 	return {
 		roles: roles ?? [],
 		features: {
-			imageImport: imageImportEnabled
+			imageImport: imageImportEnabled()
 		}
 	};
 };

@@ -1,13 +1,11 @@
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { getUploadAllowedTypes } from '$lib/shared/upload';
 import { error } from '@sveltejs/kit';
 import { del, put } from '@vercel/blob';
 import sharp from 'sharp';
 
-const getAllowedTypes = () => {
-	const types = publicEnv.PUBLIC_UPLOAD_ALLOWED_TYPES || 'image/jpeg,image/png,image/webp';
-	return types.split(',');
-};
+const getAllowedTypes = () => getUploadAllowedTypes().split(',');
 
 const getTargetWidth = () => parseInt(env.TARGET_IMAGE_WIDTH || '800');
 
