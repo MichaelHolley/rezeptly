@@ -41,7 +41,7 @@
 
 <BreadcrumbComponent breadcrumbs={[{ name: 'Import Recipe', href: '/import' }]} />
 
-<div class="flex flex-col gap-4">
+<div class="mt-10 flex flex-col gap-4 md:max-w-[50%]">
 	<p class="text-sm text-zinc-500">
 		Upload a photo of a recipe. It is read once and discarded — the imported recipe is saved as a
 		draft for you to review.
