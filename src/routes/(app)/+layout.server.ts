@@ -1,5 +1,5 @@
-import { OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME } from '$env/static/private';
 import { getRoles } from '$lib/server/auth/permissions';
+import { imageImportEnabled } from '$lib/server/services/ai.service';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = () => {
@@ -7,7 +7,7 @@ export const load: LayoutServerLoad = () => {
 	return {
 		roles: roles ?? [],
 		features: {
-			imageImport: Boolean(OPENROUTER_API_KEY) && Boolean(OPENROUTER_MODEL_NAME)
+			imageImport: imageImportEnabled
 		}
 	};
 };

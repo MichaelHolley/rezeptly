@@ -3,6 +3,9 @@
 	import { importRecipeFromImage } from '$lib/api/recipes.remote';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	let fileInput = $state<HTMLInputElement | null>(null);
 	let isDragOver = $state(false);
@@ -42,43 +45,47 @@
 <BreadcrumbComponent breadcrumbs={[{ name: 'Import Recipe', href: '/import' }]} />
 
 <div class="mt-10 flex flex-col gap-4 md:max-w-[50%]">
-	<p class="text-sm text-zinc-500">
-		Upload a photo of a recipe. It is read once and discarded — the imported recipe is saved as a
-		draft for you to review.
-	</p>
+	{#if !data.features.imageImport}
+		<p class="text-sm text-zinc-500">Recipe import is not configured on this instance.</p>
+	{:else}
+		<p class="text-sm text-zinc-500">
+			Upload a photo of a recipe. It is read once and discarded — the imported recipe is saved as a
+			draft for you to review.
+		</p>
 
-	<input
-		bind:this={fileInput}
-		type="file"
-		accept="image/jpeg,image/png,image/webp"
-		oninput={(e) => runImport(e.currentTarget.files?.[0])}
-		class="hidden"
-	/>
+		<input
+			bind:this={fileInput}
+			type="file"
+			accept="image/jpeg,image/png,image/webp"
+			oninput={(e) => runImport(e.currentTarget.files?.[0])}
+			class="hidden"
+		/>
 
-	<button
-		type="button"
-		disabled={isImporting}
-		onclick={() => fileInput?.click()}
-		ondragover={(e) => {
-			e.preventDefault();
-			isDragOver = true;
-		}}
-		ondragleave={() => (isDragOver = false)}
-		ondrop={handleDrop}
-		class="flex w-full flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed py-16 transition-colors disabled:cursor-default {isDragOver
-			? 'border-zinc-400 bg-zinc-100'
-			: 'border-zinc-300 bg-transparent hover:cursor-pointer hover:bg-zinc-50'}"
-	>
-		{#if isImporting}
-			<LoadingComponent class="h-8 w-8" />
-			<span class="text-sm text-zinc-500">Reading the recipe…</span>
-		{:else}
-			<span class="text-sm text-zinc-500">Import from image</span>
-			<span class="text-xs text-zinc-400">Click or drag & drop</span>
+		<button
+			type="button"
+			disabled={isImporting}
+			onclick={() => fileInput?.click()}
+			ondragover={(e) => {
+				e.preventDefault();
+				isDragOver = true;
+			}}
+			ondragleave={() => (isDragOver = false)}
+			ondrop={handleDrop}
+			class="flex w-full flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed py-16 transition-colors disabled:cursor-default {isDragOver
+				? 'border-zinc-400 bg-zinc-100'
+				: 'border-zinc-300 bg-transparent hover:cursor-pointer hover:bg-zinc-50'}"
+		>
+			{#if isImporting}
+				<LoadingComponent class="h-8 w-8" />
+				<span class="text-sm text-zinc-500">Reading the recipe…</span>
+			{:else}
+				<span class="text-sm text-zinc-500">Import from image</span>
+				<span class="text-xs text-zinc-400">Click or drag & drop</span>
+			{/if}
+		</button>
+
+		{#if errorMessage}
+			<p class="text-sm text-red-600">{errorMessage}</p>
 		{/if}
-	</button>
-
-	{#if errorMessage}
-		<p class="text-sm text-red-600">{errorMessage}</p>
 	{/if}
 </div>

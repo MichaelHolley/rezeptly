@@ -10,7 +10,7 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import jwt from 'jsonwebtoken';
 
-const protectedRoutes = ['/create', '/drafts'];
+const protectedRoutes = ['/create', '/drafts', '/import'];
 
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const sessionToken = event.cookies.get(sessionCookieName);
