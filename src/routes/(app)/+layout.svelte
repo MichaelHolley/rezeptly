@@ -25,7 +25,7 @@
 	};
 </script>
 
-<nav class="bg-zinc-50 py-2 shadow-sm">
+<nav class="bg-zinc-50 py-1 shadow-sm">
 	<div class="container mx-auto px-3 md:px-6">
 		<div class="flex flex-row justify-between gap-2">
 			<div>

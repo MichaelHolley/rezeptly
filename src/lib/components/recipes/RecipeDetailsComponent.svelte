@@ -44,7 +44,7 @@
 		<div class="mt-2 flex flex-row flex-wrap items-center gap-3">
 			<h2
 				style:view-transition-name="recipe-title-{recipe.id}"
-				class="text-3xl font-extrabold tracking-tight text-shadow-xs sm:text-4xl"
+				class="font-fraunces text-3xl font-extrabold tracking-tight text-shadow-xs sm:text-4xl"
 			>
 				{recipe.name}
 			</h2>
