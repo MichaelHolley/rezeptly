@@ -1,6 +1,6 @@
 <script lang="ts">
-	import CheckIcon from '@lucide/svelte/icons/check';
 	import type { Instruction } from '$lib/server/types';
+	import CheckIcon from '@lucide/svelte/icons/check';
 
 	type Props = {
 		instr: Instruction;
@@ -41,7 +41,7 @@
 			<button
 				type="button"
 				onclick={onToggle}
-				class="mb-2 cursor-pointer text-left font-semibold transition-colors duration-150 {done
+				class="mb-2 cursor-pointer text-left font-semibold transition-colors duration-150 tracking-tight {done
 					? 'text-zinc-500 line-through'
 					: ''}"
 			>

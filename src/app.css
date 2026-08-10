@@ -78,6 +78,7 @@
 }
 
 @theme {
+	--font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
 	--font-modak: 'Modak', cursive;
 	--font-fraunces: 'Fraunces', ui-serif, Georgia, serif;
 }
