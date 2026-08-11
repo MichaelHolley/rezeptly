@@ -37,7 +37,7 @@
 
 <div class="flex max-w-3xl flex-col gap-8">
 	<section class="flex flex-col gap-2">
-		<h2 class="text-2xl font-semibold">MCP Server</h2>
+		<h2 class="text-2xl font-semibold font-fraunces">MCP Server</h2>
 		<p class="text-zinc-600">
 			rezeptly exposes its recipes through a
 			<a

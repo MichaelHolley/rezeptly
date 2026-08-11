@@ -6,7 +6,9 @@
 	<div class="p-2 rounded-full bg-orange-500 drop-shadow-md">
 		<UtensilsIcon class="size-6 sm:size-6 stroke-3 drop-shadow-sm stroke-neutral-100" />
 	</div>
-	<h1 class="font-modak hidden pt-2 text-orange-500 text-shadow-md sm:block italic">rezeptly</h1>
+	<h1 class="font-modak hidden pt-2 text-4xl text-orange-500 text-shadow-md sm:block italic">
+		rezeptly
+	</h1>
 </a>
 
 <style>

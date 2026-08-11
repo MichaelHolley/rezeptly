@@ -10,8 +10,8 @@
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
 	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
-	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import { Button } from '$lib/components/ui/button';
+	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -86,7 +86,7 @@
 		<div class="grow">
 			<div class="mb-8 block md:hidden">
 				<div class="flex flex-row items-center gap-2 pb-2">
-					<h3 class="font-fraunces tracking-tight">Ingredients</h3>
+					<h3 class="font-fraunces text-3xl font-semibold tracking-tight">Ingredients</h3>
 					{#if recipe.portions != null}
 						<span class="flex items-center gap-1 text-sm text-zinc-500">
 							<UsersIcon class="h-4 w-4" />{recipe.portions}
@@ -105,7 +105,7 @@
 			</div>
 			<div>
 				<div class="flex flex-row gap-1 pb-2">
-					<h3 class="font-fraunces tracking-tight">Instructions</h3>
+					<h3 class="font-fraunces text-3xl font-semibold tracking-tight">Instructions</h3>
 					{#if PermissionsStore.canEdit}
 						<Button
 							variant="ghost"
@@ -138,7 +138,7 @@
 		</div>
 		<div class="hidden md:block">
 			<div class="flex flex-row items-center gap-2 pb-2">
-				<h3 class="font-fraunces tracking-tight">Ingredients</h3>
+				<h3 class="font-fraunces text-3xl font-semibold tracking-tight">Ingredients</h3>
 				{#if recipe.portions != null}
 					<span class="flex items-center gap-1 text-sm text-zinc-500">
 						<UsersIcon class="h-4 w-4" />{recipe.portions}
