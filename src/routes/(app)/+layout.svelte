@@ -10,6 +10,7 @@
 	import ImageIcon from '@lucide/svelte/icons/image-plus';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import LogoutIcon from '@lucide/svelte/icons/log-out';
+	import TagIcon from '@lucide/svelte/icons/tag';
 
 	let { children, data } = $props();
 	const availableTags = $derived(getAvailableTags());
@@ -36,6 +37,10 @@
 					<Button href="/drafts" variant="ghost">
 						<FileTextIcon />
 						Drafts
+					</Button>
+					<Button href="/tags" variant="ghost">
+						<TagIcon />
+						Tags
 					</Button>
 					{#if data.features.imageImport}
 						<Button href="/import" variant="ghost">
