@@ -2,7 +2,6 @@
 	import { deleteTag } from '$lib/api/tags.remote';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { getErrorMessage } from '$lib/shared/error';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 
@@ -19,7 +18,6 @@
 	const deleteForm = $derived(deleteTag.for(tagId));
 
 	let open = $state(false);
-	let errorMessage = $state<string | null>(null);
 </script>
 
 <Dialog.Root bind:open>
@@ -32,12 +30,11 @@
 	<Dialog.Content>
 		<form
 			{...deleteForm.enhance(async ({ submit }) => {
-				errorMessage = null;
 				try {
 					await submit();
 					open = false;
 				} catch (error) {
-					errorMessage = getErrorMessage(error, 'Could not delete the tag. Please try again.');
+					console.error(error);
 				}
 			})}
 		>
@@ -54,9 +51,6 @@
 					{/if}
 				</Dialog.Description>
 			</Dialog.Header>
-			{#if errorMessage}
-				<p class="text-destructive mt-2 text-sm">{errorMessage}</p>
-			{/if}
 			<Dialog.Footer>
 				<div class="mt-4 flex flex-row justify-between gap-2 sm:justify-end">
 					<Dialog.Close>

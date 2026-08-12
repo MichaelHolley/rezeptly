@@ -4,7 +4,6 @@
 	import { Input } from '$lib/components/ui/input';
 	import type { TagWithUsage } from '$lib/server/services/tag.service';
 	import type { TagCategory } from '$lib/server/types';
-	import { getErrorMessage } from '$lib/shared/error';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -18,25 +17,22 @@
 
 	let editing = $state(false);
 	let category = $state<TagCategory>(untrack(() => tag.category));
-	let errorMessage = $state<string | null>(null);
 
 	const stopEditing = () => {
 		editing = false;
 		category = tag.category;
-		errorMessage = null;
 	};
 </script>
 
-<li class="flex flex-col gap-1 border-b border-zinc-100 py-2 last:border-b-0">
+<li class="border-b border-zinc-100 py-2 last:border-b-0">
 	{#if editing}
 		<form
 			{...editForm.enhance(async ({ submit }) => {
-				errorMessage = null;
 				try {
 					await submit();
 					editing = false;
 				} catch (error) {
-					errorMessage = getErrorMessage(error, 'Could not save the tag. Please try again.');
+					console.error(error);
 				}
 			})}
 			class="flex flex-row flex-wrap items-center gap-2"
@@ -77,8 +73,5 @@
 			</Button>
 			<DeleteTagConfirmationModal tagId={tag.id} tagName={tag.name} recipeCount={tag.recipeCount} />
 		</div>
-	{/if}
-	{#if errorMessage}
-		<p class="text-destructive text-sm">{errorMessage}</p>
 	{/if}
 </li>
