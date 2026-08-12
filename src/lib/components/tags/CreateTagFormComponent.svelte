@@ -5,8 +5,11 @@
 	import { Label } from '$lib/components/ui/label';
 	import type { TagCategory } from '$lib/server/types';
 	import { getErrorMessage } from '$lib/shared/error';
+	import { cn } from '$lib/utils';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TagCategorySelectComponent from './TagCategorySelectComponent.svelte';
+
+	const { class: className }: { class?: string } = $props();
 
 	let category = $state<TagCategory>('type');
 	let errorMessage = $state<string | null>(null);
@@ -21,7 +24,7 @@
 			errorMessage = getErrorMessage(error, 'Could not create the tag. Please try again.');
 		}
 	})}
-	class="flex flex-col gap-2 rounded-md border border-zinc-200 p-4"
+	class={cn('flex flex-col gap-2 rounded-md border border-zinc-200 p-4', className)}
 >
 	<div class="flex flex-col gap-2 sm:flex-row sm:items-end">
 		<div class="form-group flex-1">
