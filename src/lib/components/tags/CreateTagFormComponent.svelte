@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { createTag } from '$lib/api/tags.remote';
+	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import type { TagCategory } from '$lib/server/types';
+	import { TAG_CATEGORY_SELECT_OPTIONS } from '$lib/shared/tags';
 	import { cn } from '$lib/utils';
 	import PlusIcon from '@lucide/svelte/icons/plus';
-	import TagCategorySelectComponent from './TagCategorySelectComponent.svelte';
 
 	const { class: className }: { class?: string } = $props();
 
@@ -33,14 +34,14 @@
 				{...createTag.fields.name.as('text')}
 			/>
 		</div>
-		<div class="form-group">
-			<Label for="new-tag-category">Category</Label>
-			<TagCategorySelectComponent
-				id="new-tag-category"
-				bind:value={category}
-				class="w-full sm:w-40"
-			/>
-		</div>
+		<SingleSelectComponent
+			label="Category"
+			options={TAG_CATEGORY_SELECT_OPTIONS}
+			value={category}
+			onchange={(v) => (category = v ?? category)}
+			clearable={false}
+			hideLabel
+		/>
 		<Button type="submit" disabled={!!createTag.pending}>
 			<PlusIcon />
 			Create

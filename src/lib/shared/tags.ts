@@ -13,3 +13,8 @@ export const TAG_CATEGORY_CONFIG: TagCategoryOption[] = [
 ];
 
 export const TAG_CATEGORIES: TagCategory[] = TAG_CATEGORY_CONFIG.map((c) => c.key);
+
+export const TAG_CATEGORY_SELECT_OPTIONS = TAG_CATEGORY_CONFIG.map(({ key, label }) => ({
+	value: key,
+	label
+}));

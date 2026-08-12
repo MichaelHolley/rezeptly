@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { updateTag } from '$lib/api/tags.remote';
+	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import type { TagWithUsage } from '$lib/server/services/tag.service';
 	import type { TagCategory } from '$lib/server/types';
+	import { TAG_CATEGORY_SELECT_OPTIONS } from '$lib/shared/tags';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { untrack } from 'svelte';
 	import DeleteTagConfirmationModal from './DeleteTagConfirmationModal.svelte';
-	import TagCategorySelectComponent from './TagCategorySelectComponent.svelte';
 
 	const { tag }: { tag: TagWithUsage } = $props();
 
@@ -46,7 +47,14 @@
 				aria-label="Tag name"
 				class="w-auto flex-1"
 			/>
-			<TagCategorySelectComponent bind:value={category} aria-label="Tag category" class="w-36" />
+			<SingleSelectComponent
+				label="Category"
+				options={TAG_CATEGORY_SELECT_OPTIONS}
+				value={category}
+				onchange={(v) => (category = v ?? category)}
+				clearable={false}
+				hideLabel
+			/>
 			<Button type="submit" size="icon" title="Save" disabled={!!editForm.pending}>
 				<CheckIcon />
 			</Button>

@@ -12,20 +12,22 @@
 		options,
 		value,
 		onchange,
-		clearable = true
+		clearable = true,
+		hideLabel = false
 	}: {
 		label: string;
 		options: { value: V; label: string }[];
 		value: V | null;
 		onchange: (value: V | null) => void;
 		clearable?: boolean;
+		hideLabel?: boolean;
 	} = $props();
 
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
 
 	const selectedLabel = $derived(options.find((o) => o.value === value)?.label);
-	const showClear = $derived(clearable && value != null);
+	const active = $derived(clearable && value != null);
 
 	function select(v: V) {
 		onchange(v === value ? null : v);
@@ -36,7 +38,7 @@
 <InputGroup.Root
 	class={cn(
 		'w-auto rounded-full',
-		value != null ? 'border-orange-400 bg-orange-50 dark:bg-orange-950' : 'bg-background'
+		active ? 'border-orange-400 bg-orange-50 dark:bg-orange-950' : 'bg-background'
 	)}
 >
 	<Popover.Root bind:open>
@@ -49,13 +51,15 @@
 					size="sm"
 					role="combobox"
 					aria-expanded={open}
+					aria-label={hideLabel ? label : undefined}
 					class={cn(
 						'rounded-full shadow-none hover:bg-transparent',
-						showClear && 'rounded-r-none',
-						value != null && 'text-orange-700 dark:text-orange-300'
+						active && 'rounded-r-none text-orange-700 dark:text-orange-300'
 					)}
 				>
-					{label}
+					{#if !hideLabel}
+						{label}
+					{/if}
 					{#if selectedLabel}
 						<span class="font-semibold">{selectedLabel}</span>
 					{/if}
@@ -81,7 +85,7 @@
 		</Popover.Content>
 	</Popover.Root>
 
-	{#if showClear}
+	{#if active}
 		<InputGroup.Button
 			size="sm"
 			onclick={() => onchange(null)}
