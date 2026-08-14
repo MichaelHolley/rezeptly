@@ -1,8 +1,11 @@
-import { eq } from 'drizzle-orm';
+import { error } from '@sveltejs/kit';
+import { and, asc, count, eq, ne } from 'drizzle-orm';
 import { db } from '../db';
 import { recipesToTags, tags } from '../db/schema';
 import type { Tag, TagInput } from '../types';
 import { generateSlug } from './util/generate-slug';
+
+export type TagWithUsage = Tag & { recipeCount: number };
 
 export { TAG_CATEGORIES, TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 
@@ -69,4 +72,87 @@ export const getAllActiveTags = async (): Promise<Tag[]> => {
 		orderBy: (tags, { asc }) => [asc(tags.category), asc(tags.name)]
 	});
 	return result;
+};
+
+export const getAllTagsWithUsage = async (): Promise<TagWithUsage[]> => {
+	const rows = await db
+		.select({
+			id: tags.id,
+			name: tags.name,
+			slug: tags.slug,
+			category: tags.category,
+			recipeCount: count(recipesToTags.recipeId)
+		})
+		.from(tags)
+		.leftJoin(recipesToTags, eq(recipesToTags.tagId, tags.id))
+		.groupBy(tags.id)
+		.orderBy(asc(tags.category), asc(tags.name));
+
+	return rows;
+};
+
+const resolveSlug = async (input: TagInput, excludeTagId?: number): Promise<string> => {
+	const name = input.name.trim();
+	const slug = generateSlug(name);
+
+	if (!slug) {
+		error(400, {
+			message: 'Tag name must contain at least one letter or number',
+			code: 'VALIDATION_ERROR'
+		});
+	}
+
+	const conflict = await db.query.tags.findFirst({
+		where: excludeTagId
+			? and(eq(tags.slug, slug), eq(tags.category, input.category), ne(tags.id, excludeTagId))
+			: and(eq(tags.slug, slug), eq(tags.category, input.category))
+	});
+
+	if (conflict) {
+		error(409, {
+			message: `A "${input.category}" tag named "${conflict.name}" already exists`,
+			code: 'VALIDATION_ERROR'
+		});
+	}
+
+	return slug;
+};
+
+export const createTag = async (input: TagInput): Promise<Tag> => {
+	const slug = await resolveSlug(input);
+
+	const [newTag] = await db
+		.insert(tags)
+		.values({ name: input.name.trim(), slug, category: input.category })
+		.returning();
+
+	return newTag;
+};
+
+export const updateTag = async (id: number, input: TagInput): Promise<Tag> => {
+	const slug = await resolveSlug(input, id);
+
+	const [updatedTag] = await db
+		.update(tags)
+		.set({ name: input.name.trim(), slug, category: input.category })
+		.where(eq(tags.id, id))
+		.returning();
+
+	if (!updatedTag) {
+		error(404, { message: `Tag with ID ${id} not found`, code: 'NOT_FOUND' });
+	}
+
+	return updatedTag;
+};
+
+export const deleteTag = async (id: number): Promise<void> => {
+	await db.transaction(async (tx) => {
+		await tx.delete(recipesToTags).where(eq(recipesToTags.tagId, id));
+
+		const [deleted] = await tx.delete(tags).where(eq(tags.id, id)).returning();
+
+		if (!deleted) {
+			error(404, { message: `Tag with ID ${id} not found`, code: 'NOT_FOUND' });
+		}
+	});
 };
