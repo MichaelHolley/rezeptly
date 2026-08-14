@@ -27,7 +27,8 @@ export default ts.config(
 			// SvelteKit uses standard <a> tags for navigation without resolve()
 			// TODO: revisit later to see if we can enable this rule
 			// https://github.com/sveltejs/eslint-plugin-svelte/issues/1353
-			'svelte/no-navigation-without-resolve': 'off'
+			'svelte/no-navigation-without-resolve': 'off',
+			'no-nested-ternary': 'error'
 		}
 	},
 	{
