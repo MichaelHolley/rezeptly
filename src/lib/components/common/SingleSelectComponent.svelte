@@ -27,7 +27,7 @@
 	let triggerRef = $state<HTMLButtonElement>(null!);
 
 	const selectedLabel = $derived(options.find((o) => o.value === value)?.label);
-	const active = $derived(clearable && value != null);
+	const clearableHasValue = $derived(clearable && value != null);
 
 	function select(v: V) {
 		onchange(v === value ? null : v);
@@ -35,12 +35,7 @@
 	}
 </script>
 
-<InputGroup.Root
-	class={cn(
-		'w-auto rounded-full',
-		active ? 'border-orange-400 bg-orange-50 dark:bg-orange-950' : 'bg-background'
-	)}
->
+<InputGroup.Root class={cn('w-auto rounded-full')}>
 	<Popover.Root bind:open>
 		<Popover.Trigger>
 			{#snippet child({ props })}
@@ -52,10 +47,7 @@
 					role="combobox"
 					aria-expanded={open}
 					aria-label={hideLabel ? label : undefined}
-					class={cn(
-						'rounded-full shadow-none hover:bg-transparent',
-						active && 'rounded-r-none text-orange-700 dark:text-orange-300'
-					)}
+					class={cn('rounded-full shadow-none hover:bg-transparent')}
 				>
 					{#if !hideLabel}
 						{label}
@@ -85,14 +77,14 @@
 		</Popover.Content>
 	</Popover.Root>
 
-	{#if active}
+	{#if clearableHasValue}
 		<InputGroup.Button
 			size="sm"
 			onclick={() => onchange(null)}
-			class="hover:bg-transparent"
+			class="hover:bg-transparent -ml-3"
 			aria-label="Clear selection"
 		>
-			<XIcon class="size-3.5 text-orange-700 dark:text-orange-300" />
+			<XIcon class="size-3.5 " />
 		</InputGroup.Button>
 	{/if}
 </InputGroup.Root>
