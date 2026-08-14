@@ -7,7 +7,8 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 ## Coding Guidelines
 
 - **Components**: Use Svelte 5 runes (`$props`, `$state`, `$derived`).
-- **Styling**: Tailwind CSS (v4) with `clsx` and `tailwind-merge` for dynamic classes
+- **UI Library**: svelte-shadcn provides most of the shadcn components, stored in `src/lib/components/ui/`. Prefer these over building custom components.
+- **Styling**: Tailwind CSS (v4) with `clsx` and `tailwind-merge` for dynamic classes.
 - **Database**: Use Drizzle ORM with transactions for multi-step operations. Use `pnpm db:push` for rapid prototyping and `pnpm db:generate` for production migrations. Migration files must be generated. Hand-edits require approval.
 - **Services**: Keep business logic in `$lib/server/services/`, database queries in services not routes, and blob/file side effects in services too.
 - **Architecture**: Keep routes and remote functions thin; put validation at the boundary and refresh remote queries after mutations.
