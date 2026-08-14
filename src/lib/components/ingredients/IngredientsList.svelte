@@ -11,10 +11,10 @@
 </script>
 
 <div class={className}>
-	<ul class="max-w-sm space-y-2">
+	<ul class="max-w-sm space-y-3">
 		{#each ingredients as ingredient (ingredient.id)}
 			<li class="flex flex-row items-center justify-between gap-6">
-				<span class="grow text-sm text-wrap">{ingredient.name}</span>
+				<span class="grow text-sm leading-snug text-wrap text-zinc-700">{ingredient.name}</span>
 			</li>
 		{/each}
 	</ul>

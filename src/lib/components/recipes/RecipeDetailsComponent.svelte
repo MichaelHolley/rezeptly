@@ -12,6 +12,7 @@
 	import DraftBadgeComponent from './DraftBadgeComponent.svelte';
 	import PublishButtonComponent from './PublishButtonComponent.svelte';
 	import RecipeDetailsFormComponent from './RecipeDetailsFormComponent.svelte';
+	import RecipeStat from './RecipeStatComponent.svelte';
 	import TagsContainer from './TagsContainerComponent.svelte';
 
 	const { recipe }: { recipe: RecipeWithDetails } = $props();
@@ -55,7 +56,7 @@
 		</div>
 
 		{#if recipe.description}
-			<p class="mt-3 text-sm text-zinc-500 max-w-3xl">
+			<p class="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-500">
 				{recipe.description}
 			</p>
 		{/if}
@@ -63,34 +64,14 @@
 		{#if recipe.durationMinutes != null || recipe.portions != null}
 			<div class="mt-4 grid grid-cols-2 gap-3 sm:max-w-md">
 				{#if recipe.durationMinutes != null}
-					<div class="flex items-center gap-3 rounded-lg border p-3">
-						<div
-							class="flex h-9 w-9 items-center justify-center rounded-md bg-orange-100 text-orange-600"
-						>
-							<ClockIcon class="h-5 w-5" />
-						</div>
-						<div class="flex flex-col">
-							<span class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500"
-								>Total</span
-							>
-							<span class="text-sm font-semibold">{formatDuration(recipe.durationMinutes)}</span>
-						</div>
-					</div>
+					<RecipeStat
+						icon={ClockIcon}
+						label="Total"
+						value={formatDuration(recipe.durationMinutes)}
+					/>
 				{/if}
 				{#if recipe.portions != null}
-					<div class="flex items-center gap-3 rounded-lg border p-3">
-						<div
-							class="flex h-9 w-9 items-center justify-center rounded-md bg-orange-100 text-orange-600"
-						>
-							<UsersIcon class="h-5 w-5" />
-						</div>
-						<div class="flex flex-col">
-							<span class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500"
-								>Portions</span
-							>
-							<span class="text-sm font-semibold">{recipe.portions}</span>
-						</div>
-					</div>
+					<RecipeStat icon={UsersIcon} label="Portions" value={recipe.portions} />
 				{/if}
 			</div>
 		{/if}

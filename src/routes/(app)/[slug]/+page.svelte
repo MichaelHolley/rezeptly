@@ -85,7 +85,7 @@
 	<div class="flex flex-row items-start justify-between gap-12">
 		<div class="grow">
 			<div class="mb-8 block md:hidden">
-				<div class="flex flex-row items-center gap-2 pb-2">
+				<div class="flex flex-row items-center gap-2 pb-4">
 					<h3 class="font-fraunces text-3xl font-semibold tracking-tight">Ingredients</h3>
 					{#if recipe.portions != null}
 						<span class="flex items-center gap-1 text-sm text-zinc-500">
@@ -104,7 +104,7 @@
 				<IngredientsListComponent ingredients={recipe.ingredients} />
 			</div>
 			<div>
-				<div class="flex flex-row gap-1 pb-2">
+				<div class="flex flex-row items-center gap-1 pb-4">
 					<h3 class="font-fraunces text-3xl font-semibold tracking-tight">Instructions</h3>
 					{#if PermissionsStore.canEdit}
 						<Button

@@ -49,7 +49,7 @@
 			</button>
 		{/if}
 		<p
-			class="whitespace-pre-wrap text-sm transition-colors duration-150 {done
+			class="whitespace-pre-wrap text-sm leading-relaxed transition-colors duration-150 {done
 				? 'text-zinc-500'
 				: 'text-zinc-700'}"
 		>
