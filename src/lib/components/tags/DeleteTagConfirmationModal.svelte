@@ -40,7 +40,7 @@
 		>
 			<input {...deleteForm.fields.tagId.as('hidden', tagId)} />
 			<Dialog.Header>
-				<Dialog.Title>Delete “{tagName}”?</Dialog.Title>
+				<Dialog.Title>Delete "{tagName}"?</Dialog.Title>
 				<Dialog.Description>
 					{#if recipeCount > 0}
 						This tag is used by {recipeCount}
