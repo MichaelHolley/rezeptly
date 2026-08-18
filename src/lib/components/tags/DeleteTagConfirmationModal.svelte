@@ -53,11 +53,13 @@
 			</Dialog.Header>
 			<Dialog.Footer>
 				<div class="mt-4 flex flex-row justify-between gap-2 sm:justify-end">
-					<Dialog.Close>
-						<Button type="button" variant="secondary" disabled={!!deleteForm.pending}>
-							<XIcon />
-							Cancel
-						</Button>
+					<Dialog.Close
+						type="button"
+						class={buttonVariants({ variant: 'secondary' })}
+						disabled={!!deleteForm.pending}
+					>
+						<XIcon />
+						Cancel
 					</Dialog.Close>
 					<Button variant="destructive" type="submit" disabled={!!deleteForm.pending}>
 						<TrashIcon />
