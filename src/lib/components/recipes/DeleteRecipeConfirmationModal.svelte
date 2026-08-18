@@ -28,7 +28,7 @@
 			<Dialog.Footer>
 				<div class="mt-4 flex flex-row justify-between gap-2 sm:justify-end">
 					<Dialog.Close>
-						<Button variant="secondary" disabled={!!deleteRecipe.pending}>
+						<Button type="button" variant="secondary" disabled={!!deleteRecipe.pending}>
 							<XIcon />
 							Cancel
 						</Button>
