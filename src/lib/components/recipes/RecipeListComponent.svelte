@@ -3,7 +3,6 @@
 	import FilterComponent from '$lib/components/recipes/FilterComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
 	import { TAG_CATEGORIES } from '$lib/shared/tags';
-	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
@@ -25,6 +24,12 @@
 	);
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);
+
+	const filterableTags = $derived(
+		[...new Map((recipes ?? []).flatMap((r) => r.tags).map((t) => [t.id, t])).values()].sort(
+			(a, b) => a.name.localeCompare(b.name)
+		)
+	);
 
 	const filteredRecipes = $derived(
 		(recipes ?? []).filter((r) => {
@@ -53,7 +58,7 @@
 	bind:cuisine={searchParams.cuisine}
 	bind:nutrition={searchParams.nutrition}
 	bind:diet={searchParams.diet}
-	availableTags={AvailableTagsStore.tags}
+	availableTags={filterableTags}
 />
 
 <div class="card-container my-4 grid gap-4">

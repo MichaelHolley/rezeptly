@@ -27,7 +27,7 @@ export const getDraftRecipesMetadata = guardedQuery(async () => {
 });
 
 export const getAvailableTags = query(async () => {
-	return await tagService.getAllActiveTags();
+	return await tagService.getAllTags();
 });
 
 export const getRecipeBySlug = query(z.string(), async (slug) => {
