@@ -15,9 +15,10 @@
 </script>
 
 <form
-	{...createTag.enhance(async ({ submit }) => {
+	{...createTag.enhance(async (form) => {
 		try {
-			await submit();
+			await form.submit();
+			form.element.reset();
 		} catch (error) {
 			console.error(error);
 		}
