@@ -18,3 +18,6 @@ export const TAG_CATEGORY_SELECT_OPTIONS = TAG_CATEGORY_CONFIG.map(({ key, label
 	value: key,
 	label
 }));
+
+export const getTagCategoryLabel = (category: TagCategory): string =>
+	TAG_CATEGORY_CONFIG.find((c) => c.key === category)?.label ?? category;

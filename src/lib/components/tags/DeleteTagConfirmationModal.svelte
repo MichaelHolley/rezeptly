@@ -1,26 +1,57 @@
 <script lang="ts">
 	import { deleteTag } from '$lib/api/tags.remote';
+	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import type { TagWithUsage } from '$lib/server/services/tag.service';
+	import { getTagCategoryLabel } from '$lib/shared/tags';
+	import { isHttpError } from '@sveltejs/kit';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 
 	const {
 		tagId,
 		tagName,
-		recipeCount
+		recipeCount,
+		targetTags
 	}: {
 		tagId: number;
 		tagName: string;
 		recipeCount: number;
+		targetTags: TagWithUsage[];
 	} = $props();
 
 	const deleteForm = $derived(deleteTag.for(tagId));
 
 	let open = $state(false);
+	let targetTagId = $state<number | null>(null);
+	let errorMessage = $state<string | null>(null);
+
+	const canMigrate = $derived(recipeCount > 0 && targetTags.length > 0);
+	const targetOptions = $derived(
+		targetTags.map((t) => ({
+			value: t.id,
+			label: t.name,
+			group: getTagCategoryLabel(t.category)
+		}))
+	);
+	const selectedTarget = $derived(targetTags.find((t) => t.id === targetTagId) ?? null);
+	const recipeLabel = $derived(recipeCount === 1 ? 'recipe' : 'recipes');
+
+	const resetState = () => {
+		targetTagId = null;
+		errorMessage = null;
+	};
+
+	const toErrorMessage = (error: unknown) => {
+		if (isHttpError(error)) {
+			return error.body.message;
+		}
+		return error instanceof Error ? error.message : 'An unknown error occurred';
+	};
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root bind:open onOpenChange={resetState}>
 	<Dialog.Trigger
 		class={buttonVariants({ variant: 'ghost', size: 'icon' })}
 		title="Delete {tagName}"
@@ -30,27 +61,51 @@
 	<Dialog.Content>
 		<form
 			{...deleteForm.enhance(async ({ submit }) => {
+				errorMessage = null;
 				try {
 					await submit();
 					open = false;
 				} catch (error) {
-					console.error(error);
+					errorMessage = toErrorMessage(error);
 				}
 			})}
 		>
 			<input {...deleteForm.fields.tagId.as('hidden', tagId)} />
+			{#if selectedTarget}
+				<input {...deleteForm.fields.targetTagId.as('hidden', selectedTarget.id)} />
+			{/if}
 			<Dialog.Header>
 				<Dialog.Title>Delete "{tagName}"?</Dialog.Title>
 				<Dialog.Description>
-					{#if recipeCount > 0}
+					{#if selectedTarget}
+						The {recipeCount}
+						{recipeLabel} will be moved to "{selectedTarget.name}" ({getTagCategoryLabel(
+							selectedTarget.category
+						)}) before this tag is deleted. This action cannot be undone.
+					{:else if recipeCount > 0}
 						This tag is used by {recipeCount}
-						{recipeCount === 1 ? 'recipe' : 'recipes'}. Deleting it removes the tag from those
-						recipes. This action cannot be undone.
+						{recipeLabel}. Deleting it removes the tag from those recipes. This action cannot be
+						undone.
 					{:else}
 						This tag is not used by any recipe. This action cannot be undone.
 					{/if}
 				</Dialog.Description>
 			</Dialog.Header>
+			{#if canMigrate}
+				<div class="mt-4 flex flex-row items-center gap-2">
+					<span class="text-sm">Move recipes to</span>
+					<SingleSelectComponent
+						label="Move recipes to"
+						options={targetOptions}
+						value={targetTagId}
+						onchange={(v) => (targetTagId = v)}
+						hideLabel
+					/>
+				</div>
+			{/if}
+			{#if errorMessage}
+				<p class="text-destructive mt-4 text-sm">{errorMessage}</p>
+			{/if}
 			<Dialog.Footer>
 				<div class="mt-4 flex flex-row justify-between gap-2 sm:justify-end">
 					<Dialog.Close
@@ -63,7 +118,7 @@
 					</Dialog.Close>
 					<Button variant="destructive" type="submit" disabled={!!deleteForm.pending}>
 						<TrashIcon />
-						Delete
+						{selectedTarget ? 'Move & Delete' : 'Delete'}
 					</Button>
 				</div>
 			</Dialog.Footer>

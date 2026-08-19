@@ -12,9 +12,10 @@
 	import { untrack } from 'svelte';
 	import DeleteTagConfirmationModal from './DeleteTagConfirmationModal.svelte';
 
-	const { tag }: { tag: TagWithUsage } = $props();
+	const { tag, allTags }: { tag: TagWithUsage; allTags: TagWithUsage[] } = $props();
 
 	const editForm = $derived(updateTag.for(tag.id));
+	const targetTags = $derived(allTags.filter((t) => t.id !== tag.id));
 
 	let editing = $state(false);
 	let category = $state<TagCategory>(untrack(() => tag.category));
@@ -79,7 +80,12 @@
 			<Button variant="ghost" size="icon" title="Edit {tag.name}" onclick={() => (editing = true)}>
 				<PencilIcon />
 			</Button>
-			<DeleteTagConfirmationModal tagId={tag.id} tagName={tag.name} recipeCount={tag.recipeCount} />
+			<DeleteTagConfirmationModal
+				tagId={tag.id}
+				tagName={tag.name}
+				recipeCount={tag.recipeCount}
+				{targetTags}
+			/>
 		</div>
 	{/if}
 </li>

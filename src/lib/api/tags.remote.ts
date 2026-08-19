@@ -50,11 +50,14 @@ export const updateTag = form(
 	}
 );
 
-export const deleteTag = form(z.object({ tagId: tagIdSchema }), async ({ tagId }) => {
-	if (!userCanWrite()) {
-		throwNewPermissionError();
-	}
+export const deleteTag = form(
+	z.object({ tagId: tagIdSchema, targetTagId: tagIdSchema.optional() }),
+	async ({ tagId, targetTagId }) => {
+		if (!userCanWrite()) {
+			throwNewPermissionError();
+		}
 
-	await tagService.deleteTag(tagId);
-	await refreshTagConsumers();
-});
+		await tagService.deleteTag(tagId, targetTagId);
+		await refreshTagConsumers();
+	}
+);
