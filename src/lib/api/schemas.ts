@@ -1,16 +1,33 @@
 import { z } from 'zod';
 
-/** Matches the `integer` primary keys in the database schema. */
-export const idSchema = z.int32().positive();
-
-/** Ids arriving through `FormData` are strings; JSON payloads send them as numbers. */
-export const formIdSchema = z
+/**
+ * One schema per entity, deliberately not shared: the bodies are identical only because every
+ * table currently keys on `integer`. Ids arrive as strings through `FormData` and as numbers
+ * through JSON payloads, so both are accepted.
+ */
+export const recipeIdSchema = z
 	.pipe(
 		z.string(),
 		z.transform((id) => Number(id))
 	)
 	.or(z.number())
-	.pipe(idSchema);
+	.pipe(z.int32().positive());
+
+export const ingredientIdSchema = z
+	.pipe(
+		z.string(),
+		z.transform((id) => Number(id))
+	)
+	.or(z.number())
+	.pipe(z.int32().positive());
+
+export const tagIdSchema = z
+	.pipe(
+		z.string(),
+		z.transform((id) => Number(id))
+	)
+	.or(z.number())
+	.pipe(z.int32().positive());
 
 export const recipeDetailsSchema = z.object({
 	name: z.string().trim().min(1).nonoptional(),

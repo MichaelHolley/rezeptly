@@ -11,7 +11,7 @@ import type { TagCategory, TagInput } from '$lib/server/types';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
-import { formIdSchema, idSchema, recipeDetailsSchema } from './schemas';
+import { ingredientIdSchema, recipeDetailsSchema, recipeIdSchema } from './schemas';
 
 const ingredientNameSchema = z.string().trim().min(1, 'Name is required');
 
@@ -40,7 +40,7 @@ export const getRecipeBySlug = query(z.string(), async (slug) => {
 
 export const deleteRecipe = form(
 	z.object({
-		recipeId: formIdSchema
+		recipeId: recipeIdSchema
 	}),
 	async ({ recipeId }) => {
 		if (!userCanWrite()) {
@@ -55,7 +55,7 @@ export const deleteRecipe = form(
 
 export const addIngredient = form(
 	z.object({
-		recipeId: formIdSchema,
+		recipeId: recipeIdSchema,
 		name: ingredientNameSchema
 	}),
 	async ({ recipeId, name }) => {
@@ -72,8 +72,8 @@ export const addIngredient = form(
 
 export const removeIngredient = command(
 	z.object({
-		recipeId: idSchema,
-		ingrId: idSchema
+		recipeId: recipeIdSchema,
+		ingrId: ingredientIdSchema
 	}),
 	async ({ recipeId, ingrId }) => {
 		if (!userCanWrite()) {
@@ -88,8 +88,8 @@ export const removeIngredient = command(
 
 export const editIngredient = form(
 	z.object({
-		recipeId: formIdSchema,
-		ingrId: formIdSchema,
+		recipeId: recipeIdSchema,
+		ingrId: ingredientIdSchema,
 		name: ingredientNameSchema
 	}),
 	async ({ recipeId, ingrId, name }) => {
@@ -104,7 +104,7 @@ export const editIngredient = form(
 );
 
 export const updateRecipeDetails = form(
-	recipeDetailsSchema.extend({ recipeId: formIdSchema }),
+	recipeDetailsSchema.extend({ recipeId: recipeIdSchema }),
 	async ({
 		recipeId,
 		name,
@@ -223,7 +223,7 @@ export const importRecipeFromImage = command(z.instanceof(File), async (image) =
 
 export const updateInstructions = form(
 	z.object({
-		recipeId: formIdSchema,
+		recipeId: recipeIdSchema,
 		instructions: z.array(
 			z.object({
 				heading: z.string(),
@@ -253,7 +253,7 @@ export const updateInstructions = form(
 
 export const uploadRecipeImage = form(
 	z.object({
-		recipeId: formIdSchema,
+		recipeId: recipeIdSchema,
 		file: z.instanceof(File).refine((f) => f.size <= imageService.getMaxUploadBytes(), {
 			message: 'File is too large.'
 		})
@@ -274,7 +274,7 @@ export const uploadRecipeImage = form(
 
 export const updateRecipePortions = command(
 	z.object({
-		recipeId: idSchema,
+		recipeId: recipeIdSchema,
 		portions: z.int().min(1).max(99).nullable()
 	}),
 	async ({ recipeId, portions }) => {
@@ -290,7 +290,7 @@ export const updateRecipePortions = command(
 
 export const setRecipePublished = command(
 	z.object({
-		recipeId: idSchema,
+		recipeId: recipeIdSchema,
 		published: z.boolean()
 	}),
 	async ({ recipeId, published }) => {
@@ -306,7 +306,7 @@ export const setRecipePublished = command(
 	}
 );
 
-export const deleteRecipeImage = command(idSchema, async (recipeId) => {
+export const deleteRecipeImage = command(recipeIdSchema, async (recipeId) => {
 	if (!userCanWrite()) {
 		throwNewPermissionError();
 	}

@@ -5,7 +5,7 @@ import * as tagService from '$lib/server/services/tag.service';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
 import { getAvailableTags, getRecipesMetadata } from './recipes.remote';
-import { formIdSchema } from './schemas';
+import { tagIdSchema } from './schemas';
 
 const nameSchema = z.string().trim().min(1, 'Name is required');
 const categorySchema = z.enum(tagCategoryEnum.enumValues);
@@ -33,7 +33,7 @@ export const createTag = form(
 );
 
 export const updateTag = form(
-	z.object({ tagId: formIdSchema, name: nameSchema, category: categorySchema }),
+	z.object({ tagId: tagIdSchema, name: nameSchema, category: categorySchema }),
 	async ({ tagId, name, category }) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
@@ -45,7 +45,7 @@ export const updateTag = form(
 );
 
 export const deleteTag = form(
-	z.object({ tagId: formIdSchema, targetTagId: formIdSchema.optional() }),
+	z.object({ tagId: tagIdSchema, targetTagId: tagIdSchema.optional() }),
 	async ({ tagId, targetTagId }) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
