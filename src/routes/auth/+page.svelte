@@ -4,10 +4,10 @@
 	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { toAppError } from '$lib/shared/error';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
-	import type { HttpError } from '@sveltejs/kit';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
@@ -27,10 +27,11 @@
 		{...login.enhance(async (form) => {
 			try {
 				errorMessage = undefined;
-				await form.submit();
-				form.element.reset();
+				if (await form.submit()) {
+					form.element.reset();
+				}
 			} catch (error) {
-				errorMessage = (error as HttpError).body.message;
+				errorMessage = toAppError(error).message;
 			}
 		})}
 		class="mt-6 flex flex-col gap-4"

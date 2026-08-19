@@ -6,6 +6,7 @@
 	import { Button } from '$lib/components/ui/button/';
 	import { Separator } from '$lib/components/ui/separator/';
 	import * as Sheet from '$lib/components/ui/sheet/';
+	import { reportError } from '$lib/shared/toast';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte.js';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import type { Icon as IconType } from '@lucide/svelte';
@@ -40,8 +41,12 @@
 
 	const logoutUser = async () => {
 		menuOpen = false;
-		PermissionsStore.resetRoles();
-		await logout();
+		try {
+			await logout();
+			PermissionsStore.resetRoles();
+		} catch (error) {
+			reportError(error);
+		}
 	};
 </script>
 

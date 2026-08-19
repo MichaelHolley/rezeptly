@@ -17,8 +17,8 @@ export type IngredientId = z.output<typeof ingredientIdSchema>;
 export type TagId = z.output<typeof tagIdSchema>;
 
 export const recipeDetailsSchema = z.object({
-	name: z.string().trim().min(1).nonoptional(),
-	description: z.string().trim().min(1).nonoptional(),
+	name: z.string().trim().min(1, 'Name is required').nonoptional(),
+	description: z.string().trim().min(1, 'Description is required').nonoptional(),
 	tagType: z.array(z.string()).optional().default([]),
 	tagCuisine: z.array(z.string()).optional().default([]),
 	tagNutrition: z.array(z.string()).optional().default([]),

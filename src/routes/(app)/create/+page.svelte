@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createRecipe } from '$lib/api/recipes.remote';
+	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import CategoryTagInputComponent from '$lib/components/recipes/CategoryTagInputComponent.svelte';
@@ -8,11 +9,13 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
+	import { toAppError } from '$lib/shared/error';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
+	let errorMessage = $state<string | null>(null);
 	let typeTags = $state<string[]>([]);
 	let cuisineTags = $state<string[]>([]);
 	let nutritionTags = $state<string[]>([]);
@@ -45,10 +48,22 @@
 
 <BreadcrumbComponent breadcrumbs={[{ name: 'Create Recipe', href: '/create' }]} />
 
-<form {...createRecipe} enctype="multipart/form-data" class="flex flex-col gap-4">
+<form
+	{...createRecipe.enhance(async ({ submit }) => {
+		errorMessage = null;
+		try {
+			await submit();
+		} catch (error) {
+			errorMessage = toAppError(error).message;
+		}
+	})}
+	enctype="multipart/form-data"
+	class="flex flex-col gap-4"
+>
 	<div class="form-group">
 		<Label for="name">Name</Label>
 		<Input id="name" placeholder="Name" required {...createRecipe.fields.name.as('text')} />
+		<FieldIssues issues={createRecipe.fields.name.issues()} />
 	</div>
 	<div class="form-group">
 		<Label for="description">Description</Label>
@@ -58,6 +73,7 @@
 			required
 			{...createRecipe.fields.description.as('text')}
 		/>
+		<FieldIssues issues={createRecipe.fields.description.issues()} />
 	</div>
 	<div class="flex flex-row flex-wrap gap-2">
 		<SingleSelectComponent
@@ -115,6 +131,9 @@
 				<span class="text-xs text-zinc-400">Click or drag & drop</span>
 			</button>
 		</div>
+	{/if}
+	{#if errorMessage}
+		<p role="alert" class="text-destructive text-sm">{errorMessage}</p>
 	{/if}
 	<div class="flex flex-row justify-end">
 		<Button type="submit" disabled={!!createRecipe.pending}>+ Create</Button>

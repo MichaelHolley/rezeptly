@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { editIngredient, getRecipeBySlug, removeIngredient } from '$lib/api/recipes.remote';
+	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { reportError } from '$lib/shared/toast';
 	import type { Ingredient } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
@@ -33,6 +35,7 @@
 	}
 
 	function cancelEdit() {
+		editIngredient.element?.reset();
 		onEditEnd();
 	}
 </script>
@@ -51,31 +54,34 @@
 								)
 							}))
 						)
-						.then(() => {
-							onEditEnd();
+						.then((success) => {
+							if (success) onEditEnd();
 						});
 				} catch (error) {
-					console.error(error);
+					reportError(error);
 				}
 			})}
 			class="flex flex-1 flex-row items-center gap-2"
 		>
 			<input {...editIngredient.fields.recipeId.as('hidden', recipeId)} />
 			<input {...editIngredient.fields.ingrId.as('hidden', ingredient.id)} />
-			<Input
-				required
-				{...editIngredient.fields.name.as('text')}
-				bind:value={editValue}
-				bind:ref={inputRef}
-				disabled={!!editIngredient.pending}
-				class="text-sm"
-				onkeydown={(e) => {
-					e.stopPropagation();
-					if (e.key === 'Escape') {
-						cancelEdit();
-					}
-				}}
-			/>
+			<div class="form-group flex-1">
+				<Input
+					required
+					{...editIngredient.fields.name.as('text')}
+					bind:value={editValue}
+					bind:ref={inputRef}
+					disabled={!!editIngredient.pending}
+					class="text-sm"
+					onkeydown={(e) => {
+						e.stopPropagation();
+						if (e.key === 'Escape') {
+							cancelEdit();
+						}
+					}}
+				/>
+				<FieldIssues issues={editIngredient.fields.name.issues()} />
+			</div>
 			<Button
 				type="submit"
 				variant="ghost"
@@ -111,7 +117,7 @@
 						}))
 					);
 				} catch (e) {
-					console.error(e);
+					reportError(e);
 				}
 			}}
 		>

@@ -3,9 +3,9 @@
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import { toAppError } from '$lib/shared/error';
 	import { getTagCategoryLabel } from '$lib/shared/tags';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
-	import { isHttpError } from '@sveltejs/kit';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 
@@ -40,13 +40,6 @@
 		targetTagId = null;
 		errorMessage = null;
 	};
-
-	const toErrorMessage = (error: unknown) => {
-		if (isHttpError(error)) {
-			return error.body.message;
-		}
-		return error instanceof Error ? error.message : 'An unknown error occurred';
-	};
 </script>
 
 <Dialog.Root bind:open onOpenChange={resetState}>
@@ -61,10 +54,11 @@
 			{...deleteForm.enhance(async ({ submit }) => {
 				errorMessage = null;
 				try {
-					await submit();
-					open = false;
+					if (await submit()) {
+						open = false;
+					}
 				} catch (error) {
-					errorMessage = toErrorMessage(error);
+					errorMessage = toAppError(error).message;
 				}
 			})}
 		>

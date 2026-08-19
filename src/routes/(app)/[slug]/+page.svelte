@@ -11,6 +11,7 @@
 	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { reportError } from '$lib/shared/toast';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
@@ -44,6 +45,14 @@
 
 	const handleImageError = () => {
 		isImageBroken = true;
+	};
+
+	const handleDeleteImage = async (recipeId: number) => {
+		try {
+			await deleteRecipeImage(recipeId);
+		} catch (error) {
+			reportError(error);
+		}
 	};
 
 	const toggleEditInstructions = () => {
@@ -172,7 +181,7 @@
 							class="absolute top-2 right-2"
 							onclick={async (e) => {
 								e.preventDefault();
-								await deleteRecipeImage(recipe.id);
+								await handleDeleteImage(recipe.id);
 							}}
 							disabled={!!deleteRecipeImage.pending}
 						>
@@ -198,7 +207,7 @@
 							class="absolute top-2 right-2"
 							onclick={async (e) => {
 								e.preventDefault();
-								await deleteRecipeImage(recipe.id);
+								await handleDeleteImage(recipe.id);
 							}}
 							disabled={!!deleteRecipeImage.pending}
 						>
@@ -238,7 +247,17 @@
 					</div>
 				{/if}
 			</button>
-			<form {...uploadRecipeImage} enctype="multipart/form-data" class="hidden">
+			<form
+				{...uploadRecipeImage.enhance(async ({ submit }) => {
+					try {
+						await submit();
+					} catch (error) {
+						reportError(error);
+					}
+				})}
+				enctype="multipart/form-data"
+				class="hidden"
+			>
 				<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
 				<input
 					accept={getUploadAllowedTypes()}

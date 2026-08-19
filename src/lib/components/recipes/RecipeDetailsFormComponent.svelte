@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { updateRecipeDetails } from '$lib/api/recipes.remote';
+	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
+	import { reportError } from '$lib/shared/toast';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { untrack } from 'svelte';
@@ -36,27 +38,32 @@
 <form
 	{...updateRecipeDetails.enhance(async ({ submit }) => {
 		try {
-			await submit();
-			onSave?.();
+			if (await submit()) {
+				onSave?.();
+			}
 		} catch (error) {
-			console.error(error);
+			reportError(error);
 		}
 	})}
 	class="flex flex-col gap-2"
 >
 	<input {...updateRecipeDetails.fields.recipeId.as('hidden', recipe.id)} />
-	<Input
-		placeholder="Name"
-		{...updateRecipeDetails.fields.name.as('text')}
-		value={recipe.name}
-		required
-	/>
-	<Textarea
-		placeholder="Short Recipe Description"
-		{...updateRecipeDetails.fields.description.as('text')}
-		value={recipe.description}
-		required
-	/>
+	<div class="form-group">
+		<Input
+			placeholder="Name"
+			{...updateRecipeDetails.fields.name.as('text', recipe.name)}
+			required
+		/>
+		<FieldIssues issues={updateRecipeDetails.fields.name.issues()} />
+	</div>
+	<div class="form-group">
+		<Textarea
+			placeholder="Short Recipe Description"
+			{...updateRecipeDetails.fields.description.as('text', recipe.description ?? '')}
+			required
+		/>
+		<FieldIssues issues={updateRecipeDetails.fields.description.issues()} />
+	</div>
 	<div class="flex flex-row flex-wrap gap-2">
 		<SingleSelectComponent
 			label="Duration"
@@ -94,6 +101,7 @@
 		<Button
 			variant="secondary"
 			onclick={() => {
+				updateRecipeDetails.element?.reset();
 				onCancel?.();
 			}}
 			disabled={!!updateRecipeDetails.pending}

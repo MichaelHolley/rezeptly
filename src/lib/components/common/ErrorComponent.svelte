@@ -1,32 +1,21 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Empty from '$lib/components/ui/empty/';
+	import { toAppError } from '$lib/shared/error';
 	import RepeatIcon from '@lucide/svelte/icons/repeat-2';
 	import SoupIcon from '@lucide/svelte/icons/soup';
-	import { isHttpError } from '@sveltejs/kit';
 
 	const {
 		error,
+		status,
 		retry
 	}: {
 		error: unknown;
+		status?: number;
 		retry?: () => void;
 	} = $props();
 
-	const parsedError = $derived.by(() => {
-		if (isHttpError(error)) {
-			return {
-				status: error.status,
-				message: error.body.message,
-				code: error.body.code
-			};
-		}
-
-		return {
-			code: 'UNHANDLED_ERROR',
-			message: error instanceof Error ? error.message : 'An unknown error occurred'
-		};
-	});
+	const parsedError = $derived({ ...toAppError(error), ...(status !== undefined && { status }) });
 </script>
 
 <Empty.Root>

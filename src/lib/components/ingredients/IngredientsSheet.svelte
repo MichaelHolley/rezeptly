@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { addIngredient, getRecipeBySlug, updateRecipePortions } from '$lib/api/recipes.remote';
+	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
 	import NumberStepper from '$lib/components/common/NumberStepper.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
+	import { reportError } from '$lib/shared/toast';
 	import type { Ingredient } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -34,8 +36,9 @@
 
 	function handlePortionsChange(value: number | null) {
 		draftPortions = value;
-		savePortions(value).catch(() => {
+		savePortions(value).catch((error) => {
 			draftPortions = portions;
+			reportError(error);
 		});
 	}
 
@@ -45,7 +48,10 @@
 
 <Sheet.Root
 	onOpenChange={(open) => {
-		if (!open) editingId = null;
+		if (!open) {
+			editingId = null;
+			addIngredient.element?.reset();
+		}
 	}}
 >
 	<Sheet.Trigger class={buttonVariants({ variant: 'ghost' })} title="Edit Ingredients">
@@ -78,24 +84,29 @@
 									ingredients: [...recipe.ingredients, { name, id: 0, recipeId }]
 								}))
 							)
-							.then(() => {
-								form.element.reset();
-								setTimeout(() => inputRef?.focus(), 50);
+							.then((success) => {
+								if (success) {
+									form.element.reset();
+									setTimeout(() => inputRef?.focus(), 50);
+								}
 							});
 					} catch (error) {
-						console.error(error);
+						reportError(error);
 					}
 				})}
 				class="mt-6 flex flex-row gap-2"
 			>
 				<input {...addIngredient.fields.recipeId.as('hidden', recipeId)} />
-				<Input
-					required
-					{...addIngredient.fields.name.as('text')}
-					placeholder="Ingredient & Quantity"
-					disabled={!!addIngredient.pending}
-					bind:ref={inputRef}
-				/>
+				<div class="form-group flex-1">
+					<Input
+						required
+						{...addIngredient.fields.name.as('text')}
+						placeholder="Ingredient & Quantity"
+						disabled={!!addIngredient.pending}
+						bind:ref={inputRef}
+					/>
+					<FieldIssues issues={addIngredient.fields.name.issues()} />
+				</div>
 				<Button type="submit" disabled={!!addIngredient.pending}><PlusIcon /></Button>
 			</form>
 		</Sheet.Header>
