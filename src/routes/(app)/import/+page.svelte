@@ -3,6 +3,7 @@
 	import { importRecipeFromImage } from '$lib/api/recipes.remote';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import { toAppError } from '$lib/shared/error';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import type { PageData } from './$types';
 
@@ -23,9 +24,11 @@
 			const { slug } = await importRecipeFromImage(file);
 			await goto(`/${slug}`);
 		} catch (e) {
+			const { code, message } = toAppError(e);
 			errorMessage =
-				(e as { body?: { message?: string } })?.body?.message ??
-				'Import failed. Please try again with a different image.';
+				code === 'UNHANDLED_ERROR'
+					? 'Import failed. Please try again with a different image.'
+					: message;
 		} finally {
 			isImporting = false;
 			if (fileInput) fileInput.value = '';
