@@ -37,6 +37,7 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 - **Location**: Define in `$lib/api/*.remote.ts` files
 - **Validation**: All remote functions use Zod schemas for input validation
+- **Shared Schemas**: `$lib/api/schemas.ts` holds schemas used by more than one remote function — entity ids (`recipeIdSchema`, `ingredientIdSchema`, `tagIdSchema`) and repeated field groups (`recipeDetailsSchema`). Reuse these rather than redefining them, and add new shared definitions there.
 - **Usage in Components**: Import and call with `.enhance()` for forms or directly for commands/queries
 - **Refreshing Data**: Call `.refresh()` on queries after mutations to update UI
 
