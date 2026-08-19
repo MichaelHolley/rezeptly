@@ -36,7 +36,7 @@ const escapeLike = (term: string) => term.replace(/[\\%_]/g, '\\$&');
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 /** Appends `-2`, `-3`, … until the slug is free. `excludeId` keeps a recipe from colliding with itself. */
-const resolveUniqueSlug = async (tx: Tx, base: string, excludeId?: number): Promise<string> => {
+const resolveUniqueSlug = async (tx: Tx, base: string, excludeId?: RecipeId): Promise<string> => {
 	const taken = await tx
 		.select({ slug: recipes.slug })
 		.from(recipes)

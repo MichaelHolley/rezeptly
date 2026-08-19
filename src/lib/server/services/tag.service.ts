@@ -91,7 +91,7 @@ export const getAllTagsWithUsage = async (): Promise<TagWithUsage[]> => {
 	return rows;
 };
 
-const resolveSlug = async (input: TagInput, excludeTagId?: number): Promise<string> => {
+const resolveSlug = async (input: TagInput, excludeTagId?: TagId): Promise<string> => {
 	const name = input.name.trim();
 	const slug = generateSlug(name);
 

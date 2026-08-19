@@ -9,9 +9,7 @@ const idSchema = z
 	.pipe(z.int32().positive());
 
 export const recipeIdSchema = idSchema.brand<'RecipeId'>();
-
 export const ingredientIdSchema = idSchema.brand<'IngredientId'>();
-
 export const tagIdSchema = idSchema.brand<'TagId'>();
 
 export type RecipeId = z.output<typeof recipeIdSchema>;
