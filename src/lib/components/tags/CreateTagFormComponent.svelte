@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createTag } from '$lib/api/tags.remote';
+	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -37,6 +38,7 @@
 				required
 				{...createTag.fields.name.as('text')}
 			/>
+			<FieldIssues issues={createTag.fields.name.issues()} />
 		</div>
 		<SingleSelectComponent
 			label="Category"
