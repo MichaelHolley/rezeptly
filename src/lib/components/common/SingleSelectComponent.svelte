@@ -59,7 +59,9 @@
 				</Button>
 			{/snippet}
 		</Popover.Trigger>
-		<Popover.Content class="bg-popover border-border z-50 w-48 rounded-lg border p-2 shadow-md">
+		<Popover.Content
+			class="bg-popover border-border z-50 max-h-64 w-48 overflow-y-auto rounded-lg border p-2 shadow-md"
+		>
 			<div class="flex flex-col gap-1">
 				{#each options as option (option.value)}
 					<button

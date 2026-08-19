@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { and, asc, count, eq, ne } from 'drizzle-orm';
+import { and, asc, count, eq, ne, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { recipesToTags, tags } from '../db/schema';
 import type { Tag, TagInput } from '../types';
@@ -145,8 +145,33 @@ export const updateTag = async (id: number, input: TagInput): Promise<Tag> => {
 	return updatedTag;
 };
 
-export const deleteTag = async (id: number): Promise<void> => {
+export const deleteTag = async (id: number, targetTagId?: number): Promise<void> => {
+	if (targetTagId === id) {
+		error(400, { message: 'A tag cannot be migrated to itself', code: 'VALIDATION_ERROR' });
+	}
+
 	await db.transaction(async (tx) => {
+		if (targetTagId !== undefined) {
+			const target = await tx.query.tags.findFirst({ where: eq(tags.id, targetTagId) });
+
+			if (!target) {
+				error(404, { message: `Tag with ID ${targetTagId} not found`, code: 'NOT_FOUND' });
+			}
+
+			await tx
+				.insert(recipesToTags)
+				.select(
+					tx
+						.select({
+							recipeId: recipesToTags.recipeId,
+							tagId: sql<number>`${targetTagId}::integer`.as('tag_id')
+						})
+						.from(recipesToTags)
+						.where(eq(recipesToTags.tagId, id))
+				)
+				.onConflictDoNothing();
+		}
+
 		await tx.delete(recipesToTags).where(eq(recipesToTags.tagId, id));
 
 		const [deleted] = await tx.delete(tags).where(eq(tags.id, id)).returning();
