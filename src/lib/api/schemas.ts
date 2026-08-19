@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const recipeIdSchema = z
+const idSchema = z
 	.pipe(
 		z.string(),
 		z.transform((id) => Number(id))
@@ -8,21 +8,11 @@ export const recipeIdSchema = z
 	.or(z.number())
 	.pipe(z.int32().positive());
 
-export const ingredientIdSchema = z
-	.pipe(
-		z.string(),
-		z.transform((id) => Number(id))
-	)
-	.or(z.number())
-	.pipe(z.int32().positive());
+export const recipeIdSchema = idSchema;
 
-export const tagIdSchema = z
-	.pipe(
-		z.string(),
-		z.transform((id) => Number(id))
-	)
-	.or(z.number())
-	.pipe(z.int32().positive());
+export const ingredientIdSchema = idSchema;
+
+export const tagIdSchema = idSchema;
 
 export const recipeDetailsSchema = z.object({
 	name: z.string().trim().min(1).nonoptional(),
