@@ -11,8 +11,7 @@ const tagIdSchema = z
 		z.string(),
 		z.transform((id) => Number(id))
 	)
-	.or(z.number())
-	.pipe(z.int());
+	.or(z.number());
 
 const nameSchema = z.string().trim().min(1, 'Name is required');
 const categorySchema = z.enum(tagCategoryEnum.enumValues);
