@@ -1,60 +1,46 @@
 <script lang="ts">
 	import { createTag } from '$lib/api/tags.remote';
 	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
 	import type { TagCategory } from '$lib/server/types';
 	import { toAppError } from '$lib/shared/error';
-	import { TAG_CATEGORY_SELECT_OPTIONS } from '$lib/shared/tags';
 	import { cn } from '$lib/utils';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 
-	const { class: className }: { class?: string } = $props();
+	const { category, class: className }: { category: TagCategory; class?: string } = $props();
 
-	let category = $state<TagCategory>('type');
+	const form = $derived(createTag.for(category));
+
 	let errorMessage = $state<string | null>(null);
 </script>
 
 <form
-	{...createTag.enhance(async (form) => {
+	{...form.enhance(async ({ submit, element }) => {
 		errorMessage = null;
 		try {
-			await form.submit();
-			form.element.reset();
+			await submit();
+			element.reset();
 		} catch (error) {
 			errorMessage = toAppError(error).message;
 		}
 	})}
-	class={cn('flex flex-col gap-2 rounded-md border border-zinc-200 p-4', className)}
+	class={cn('flex flex-row items-start gap-2', className)}
 >
-	<div class="flex flex-col gap-2 sm:flex-row sm:items-end">
-		<div class="form-group flex-1">
-			<Label for="new-tag-name">Name</Label>
-			<Input
-				id="new-tag-name"
-				placeholder="e.g. Pasta"
-				required
-				{...createTag.fields.name.as('text')}
-			/>
-			<FieldIssues issues={createTag.fields.name.issues()} />
-		</div>
-		<SingleSelectComponent
-			label="Category"
-			options={TAG_CATEGORY_SELECT_OPTIONS}
-			value={category}
-			onchange={(v) => (category = v ?? category)}
-			clearable={false}
-			hideLabel
+	<div class="form-group flex-1">
+		<Input
+			placeholder="e.g. Pasta"
+			required
+			aria-label="Tag name"
+			{...form.fields.name.as('text')}
 		/>
-		<Button type="submit" disabled={!!createTag.pending}>
-			<PlusIcon />
-			Create
-		</Button>
+		<FieldIssues issues={form.fields.name.issues()} />
 	</div>
-	<input {...createTag.fields.category.as('hidden', category)} />
+	<input {...form.fields.category.as('hidden', category)} />
+	<Button type="submit" size="icon" title="Add tag" disabled={!!form.pending}>
+		<PlusIcon />
+	</Button>
 	{#if errorMessage}
-		<p role="alert" class="text-destructive text-sm">{errorMessage}</p>
+		<p role="alert" class="text-destructive w-full text-sm">{errorMessage}</p>
 	{/if}
 </form>

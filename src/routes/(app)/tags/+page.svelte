@@ -16,8 +16,6 @@
 <BreadcrumbComponent breadcrumbs={[{ name: 'Tags', href: '/tags' }]} />
 
 <div class="flex flex-col gap-6">
-	<CreateTagFormComponent class="max-w-2xl" />
-
 	<svelte:boundary>
 		{@const tags = await getManagedTags()}
 
@@ -30,7 +28,8 @@
 							{label}
 						</Card.Title>
 					</Card.Header>
-					<Card.Content class="px-4">
+					<Card.Content class="flex flex-col gap-3 px-4">
+						<CreateTagFormComponent category={key} />
 						{#if categoryTags.length === 0}
 							<p class="text-sm text-zinc-500">No tags in this category yet.</p>
 						{:else}
