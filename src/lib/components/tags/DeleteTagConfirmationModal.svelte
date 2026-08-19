@@ -30,8 +30,7 @@
 	const targetOptions = $derived(
 		targetTags.map((t) => ({
 			value: t.id,
-			label: t.name,
-			group: getTagCategoryLabel(t.category)
+			label: `${t.name} (${getTagCategoryLabel(t.category)})`
 		}))
 	);
 	const selectedTarget = $derived(targetTags.find((t) => t.id === targetTagId) ?? null);

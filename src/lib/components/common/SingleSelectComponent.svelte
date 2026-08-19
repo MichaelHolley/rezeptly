@@ -16,7 +16,7 @@
 		hideLabel = false
 	}: {
 		label: string;
-		options: { value: V; label: string; group?: string }[];
+		options: { value: V; label: string }[];
 		value: V | null;
 		onchange: (value: V | null) => void;
 		clearable?: boolean;
@@ -28,20 +28,6 @@
 
 	const selectedLabel = $derived(options.find((o) => o.value === value)?.label);
 	const clearableHasValue = $derived(clearable && value != null);
-
-	const optionGroups = $derived.by(() => {
-		const groups: { group: string; groupOptions: typeof options }[] = [];
-		for (const option of options) {
-			const group = option.group ?? '';
-			const existing = groups.find((g) => g.group === group);
-			if (existing) {
-				existing.groupOptions.push(option);
-			} else {
-				groups.push({ group, groupOptions: [option] });
-			}
-		}
-		return groups;
-	});
 
 	function select(v: V) {
 		onchange(v === value ? null : v);
@@ -77,29 +63,17 @@
 			class="bg-popover border-border z-50 max-h-64 w-48 overflow-y-auto rounded-lg border p-2 shadow-md"
 		>
 			<div class="flex flex-col gap-1">
-				{#each optionGroups as { group, groupOptions }, i (group)}
-					{#if group}
-						<span
-							class={cn(
-								'px-2 pt-1 pb-0.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-zinc-400',
-								i > 0 && 'mt-1.5 border-t border-zinc-100 pt-2.5'
-							)}
-						>
-							{group}
-						</span>
-					{/if}
-					{#each groupOptions as option (option.value)}
-						<button
-							type="button"
-							onclick={() => select(option.value)}
-							class="hover:bg-accent flex cursor-pointer items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-sm"
-						>
-							{option.label}
-							{#if option.value === value}
-								<CheckIcon class="size-4 text-orange-500" />
-							{/if}
-						</button>
-					{/each}
+				{#each options as option (option.value)}
+					<button
+						type="button"
+						onclick={() => select(option.value)}
+						class="hover:bg-accent flex cursor-pointer items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-sm"
+					>
+						{option.label}
+						{#if option.value === value}
+							<CheckIcon class="size-4 text-orange-500" />
+						{/if}
+					</button>
 				{/each}
 			</div>
 		</Popover.Content>

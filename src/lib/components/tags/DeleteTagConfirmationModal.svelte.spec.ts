@@ -80,15 +80,17 @@ describe('DeleteTagConfirmationModal.svelte', () => {
 			.not.toBeInTheDocument();
 	});
 
-	it('should offer targets from every category, grouped by category', async () => {
+	it('should offer targets from every category, labelled with their category', async () => {
 		await openDialog();
 
 		await page.getByRole('combobox', { name: 'Move recipes to' }).click();
 
-		await expect.element(page.getByText('Cuisine')).toBeInTheDocument();
-		await expect.element(page.getByText('Diet')).toBeInTheDocument();
-		await expect.element(page.getByRole('button', { name: 'Italian' })).toBeInTheDocument();
-		await expect.element(page.getByRole('button', { name: 'Vegan' })).toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: 'Italian (Cuisine)', exact: true }))
+			.toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: 'Vegan (Diet)', exact: true }))
+			.toBeInTheDocument();
 	});
 
 	it('should not offer the tag being deleted as a target', async () => {
@@ -96,16 +98,18 @@ describe('DeleteTagConfirmationModal.svelte', () => {
 
 		await page.getByRole('combobox', { name: 'Move recipes to' }).click();
 
-		await expect.element(page.getByRole('button', { name: 'Italian' })).toBeInTheDocument();
 		await expect
-			.element(page.getByRole('button', { name: 'Dessert', exact: true }))
+			.element(page.getByRole('button', { name: 'Italian (Cuisine)', exact: true }))
+			.toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: 'Dessert (Type)', exact: true }))
 			.not.toBeInTheDocument();
 	});
 
 	it('should name the target and its category once a target is selected', async () => {
 		await openDialog();
 
-		await selectTarget('Italian');
+		await selectTarget('Italian (Cuisine)');
 
 		await expect
 			.element(
@@ -120,7 +124,7 @@ describe('DeleteTagConfirmationModal.svelte', () => {
 
 		expect(document.querySelector('input[type="hidden"][value="3"]')).toBeNull();
 
-		await selectTarget('Vegan');
+		await selectTarget('Vegan (Diet)');
 
 		expect(document.querySelector('input[type="hidden"][value="3"]')).not.toBeNull();
 	});
