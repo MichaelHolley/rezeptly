@@ -19,8 +19,9 @@
 	{...form.enhance(async ({ submit, element }) => {
 		errorMessage = null;
 		try {
-			await submit();
-			element.reset();
+			if (await submit()) {
+				element.reset();
+			}
 		} catch (error) {
 			errorMessage = toAppError(error).message;
 		}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { updateTag } from '$lib/api/tags.remote';
+	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -22,6 +23,7 @@
 	let errorMessage = $state<string | null>(null);
 
 	const stopEditing = () => {
+		editForm.element?.reset();
 		editing = false;
 		category = tag.category;
 		errorMessage = null;
@@ -34,8 +36,9 @@
 			{...editForm.enhance(async ({ submit }) => {
 				errorMessage = null;
 				try {
-					await submit();
-					editing = false;
+					if (await submit()) {
+						editing = false;
+					}
 				} catch (error) {
 					errorMessage = toAppError(error).message;
 				}
@@ -44,13 +47,10 @@
 		>
 			<input {...editForm.fields.tagId.as('hidden', tag.id)} />
 			<input {...editForm.fields.category.as('hidden', category)} />
-			<Input
-				{...editForm.fields.name.as('text')}
-				value={tag.name}
-				required
-				aria-label="Tag name"
-				class="w-auto flex-1"
-			/>
+			<div class="form-group w-auto flex-1">
+				<Input {...editForm.fields.name.as('text', tag.name)} required aria-label="Tag name" />
+				<FieldIssues issues={editForm.fields.name.issues()} />
+			</div>
 			<SingleSelectComponent
 				label="Category"
 				options={TAG_CATEGORY_SELECT_OPTIONS}
