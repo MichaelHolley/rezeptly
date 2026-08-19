@@ -30,14 +30,12 @@ export function registerListRecipes(server: McpServer): void {
 						'Tag slugs a recipe must all have to match. Discover valid slugs from the "tags" field of previous results.'
 					),
 				limit: z
-					.number()
 					.int()
 					.min(1)
 					.max(MAX_LIMIT)
 					.default(DEFAULT_LIMIT)
 					.describe(`Maximum recipes to return (1–${MAX_LIMIT}).`),
 				offset: z
-					.number()
 					.int()
 					.min(0)
 					.default(0)

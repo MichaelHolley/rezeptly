@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../db';
 import { instructions } from '../db/schema';
-import type { NewInstruction } from '../types';
+import type { NewInstruction, RecipeId } from '../types';
 
 export const upsertInstructionsForRecipe = async (
-	recipeId: number,
+	recipeId: RecipeId,
 	newInstructions: NewInstruction[]
 ): Promise<void> => {
 	await db.transaction(async (tx) => {

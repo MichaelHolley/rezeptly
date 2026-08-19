@@ -1,5 +1,7 @@
 import type { ingredients, instructions, recipes, tags } from './db/schema';
 
+export type { IngredientId, RecipeId, TagId } from '$lib/api/schemas';
+
 export type TagCategory = 'type' | 'cuisine' | 'nutrition' | 'diet';
 
 export type Recipe = typeof recipes.$inferSelect;

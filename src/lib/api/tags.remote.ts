@@ -5,13 +5,7 @@ import * as tagService from '$lib/server/services/tag.service';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
 import { getAvailableTags, getRecipesMetadata } from './recipes.remote';
-
-const tagIdSchema = z
-	.pipe(
-		z.string(),
-		z.transform((id) => Number(id))
-	)
-	.or(z.number());
+import { tagIdSchema } from './schemas';
 
 const nameSchema = z.string().trim().min(1, 'Name is required');
 const categorySchema = z.enum(tagCategoryEnum.enumValues);
