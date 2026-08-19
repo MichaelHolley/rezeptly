@@ -64,6 +64,5 @@ expectTypeOf(recipeIdSchema.parse(1)).not.toEqualTypeOf(ingredientIdSchema.parse
 expectTypeOf(ingredientIdSchema.parse(1)).not.toEqualTypeOf(tagIdSchema.parse(1));
 expectTypeOf(tagIdSchema.parse(1)).not.toEqualTypeOf(recipeIdSchema.parse(1));
 
-
 expectTypeOf(1).toExtend<z.input<typeof recipeIdSchema>>();
 expectTypeOf('1').toExtend<z.input<typeof recipeIdSchema>>();
