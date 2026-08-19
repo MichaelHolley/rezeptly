@@ -103,7 +103,7 @@
 				</div>
 			{/if}
 			{#if errorMessage}
-				<p class="text-destructive mt-4 text-sm">{errorMessage}</p>
+				<p role="alert" class="text-destructive mt-4 text-sm">{errorMessage}</p>
 			{/if}
 			<Dialog.Footer>
 				<div class="mt-4 flex flex-row justify-between gap-2 sm:justify-end">

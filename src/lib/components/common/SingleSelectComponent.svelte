@@ -77,9 +77,16 @@
 			class="bg-popover border-border z-50 max-h-64 w-48 overflow-y-auto rounded-lg border p-2 shadow-md"
 		>
 			<div class="flex flex-col gap-1">
-				{#each optionGroups as { group, groupOptions } (group)}
+				{#each optionGroups as { group, groupOptions }, i (group)}
 					{#if group}
-						<span class="px-2 pt-1 text-xs font-semibold text-zinc-500">{group}</span>
+						<span
+							class={cn(
+								'px-2 pt-1 pb-0.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-zinc-400',
+								i > 0 && 'mt-1.5 border-t border-zinc-100 pt-2.5'
+							)}
+						>
+							{group}
+						</span>
 					{/if}
 					{#each groupOptions as option (option.value)}
 						<button
