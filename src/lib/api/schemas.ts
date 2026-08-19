@@ -1,10 +1,5 @@
 import { z } from 'zod';
 
-/**
- * One schema per entity, deliberately not shared: the bodies are identical only because every
- * table currently keys on `integer`. Ids arrive as strings through `FormData` and as numbers
- * through JSON payloads, so both are accepted.
- */
 export const recipeIdSchema = z
 	.pipe(
 		z.string(),
