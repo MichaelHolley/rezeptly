@@ -6,7 +6,12 @@ import {
 	sessionCookieName
 } from '$lib/server/auth/auth';
 import type { ROLE } from '$lib/server/auth/permissions';
-import { redirect, type Handle } from '@sveltejs/kit';
+import {
+	redirect,
+	type Handle,
+	type HandleServerError,
+	type HandleValidationError
+} from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import jwt from 'jsonwebtoken';
 
@@ -38,3 +43,12 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 };
 
 export const handle: Handle = sequence(handleAuth);
+
+export const handleError: HandleServerError = ({ error }) => {
+	console.error(error);
+	return { message: 'Something went wrong', code: 'UNHANDLED_ERROR' };
+};
+
+export const handleValidationError: HandleValidationError = () => {
+	return { message: 'Invalid request', code: 'VALIDATION_ERROR' };
+};

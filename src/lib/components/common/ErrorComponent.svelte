@@ -7,13 +7,15 @@
 
 	const {
 		error,
+		status,
 		retry
 	}: {
 		error: unknown;
+		status?: number;
 		retry?: () => void;
 	} = $props();
 
-	const parsedError = $derived(toAppError(error));
+	const parsedError = $derived({ ...toAppError(error), ...(status !== undefined && { status }) });
 </script>
 
 <Empty.Root>
