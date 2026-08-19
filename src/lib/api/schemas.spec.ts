@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
+import { z } from 'zod';
 import { ingredientIdSchema, recipeIdSchema, tagIdSchema } from './schemas';
 
 const idSchemas = [
@@ -54,3 +55,17 @@ describe.each(idSchemas)('%s', (_name, schema) => {
 		});
 	});
 });
+
+/**
+ * Brand checks are compile-time only, so they live outside `it()`: `pnpm check` enforces
+ * them, while vitest would see a test that registers no assertion.
+ */
+expectTypeOf(recipeIdSchema.parse(1)).not.toEqualTypeOf(ingredientIdSchema.parse(1));
+expectTypeOf(ingredientIdSchema.parse(1)).not.toEqualTypeOf(tagIdSchema.parse(1));
+expectTypeOf(tagIdSchema.parse(1)).not.toEqualTypeOf(recipeIdSchema.parse(1));
+
+// @ts-expect-error a plain number has not been through the schema
+expectTypeOf<number>().toEqualTypeOf(recipeIdSchema.parse(1));
+
+expectTypeOf(1).toExtend<z.input<typeof recipeIdSchema>>();
+expectTypeOf('1').toExtend<z.input<typeof recipeIdSchema>>();

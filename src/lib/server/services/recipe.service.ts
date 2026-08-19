@@ -7,6 +7,7 @@ import type {
 	NewInstruction,
 	NewRecipe,
 	Recipe,
+	RecipeId,
 	RecipeMetadata,
 	RecipeWithDetails,
 	Tag,
@@ -111,7 +112,7 @@ export const countRecipes = async (
 };
 
 export const getRecipeById = async (
-	id: number,
+	id: RecipeId,
 	options?: ReadOptions
 ): Promise<RecipeWithDetails> => {
 	const result = await db.query.recipes.findFirst({
@@ -219,7 +220,7 @@ export const createRecipe = async (
 };
 
 export const updateRecipe = async (
-	id: number,
+	id: RecipeId,
 	data: Partial<NewRecipe> & { tags?: TagInput[] }
 ): Promise<Recipe> => {
 	const updatedRecipe = await db.transaction(async (tx) => {
@@ -281,7 +282,7 @@ export const updateRecipe = async (
 	return updatedRecipe;
 };
 
-export const setRecipePublished = async (id: number, published: boolean): Promise<Recipe> => {
+export const setRecipePublished = async (id: RecipeId, published: boolean): Promise<Recipe> => {
 	const [updatedRecipe] = await db
 		.update(recipes)
 		.set({ publishedAt: published ? new Date() : null })
@@ -295,7 +296,7 @@ export const setRecipePublished = async (id: number, published: boolean): Promis
 	return updatedRecipe;
 };
 
-export const deleteRecipe = async (id: number): Promise<void> => {
+export const deleteRecipe = async (id: RecipeId): Promise<void> => {
 	// Get recipe to find image URL before deletion (getRecipeById throws if not found)
 	const recipe = await getRecipeById(id, { includeDrafts: true });
 

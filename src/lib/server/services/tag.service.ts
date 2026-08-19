@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { and, asc, count, eq, ne, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { recipesToTags, tags } from '../db/schema';
-import type { Tag, TagInput } from '../types';
+import type { Tag, TagId, TagInput } from '../types';
 import { generateSlug } from './util/generate-slug';
 
 export type TagWithUsage = Tag & { recipeCount: number };
@@ -129,7 +129,7 @@ export const createTag = async (input: TagInput): Promise<Tag> => {
 	return newTag;
 };
 
-export const updateTag = async (id: number, input: TagInput): Promise<Tag> => {
+export const updateTag = async (id: TagId, input: TagInput): Promise<Tag> => {
 	const slug = await resolveSlug(input, id);
 
 	const [updatedTag] = await db
@@ -145,7 +145,7 @@ export const updateTag = async (id: number, input: TagInput): Promise<Tag> => {
 	return updatedTag;
 };
 
-export const deleteTag = async (id: number, targetTagId?: number): Promise<void> => {
+export const deleteTag = async (id: TagId, targetTagId?: TagId): Promise<void> => {
 	if (targetTagId === id) {
 		error(400, { message: 'A tag cannot be migrated to itself', code: 'VALIDATION_ERROR' });
 	}
