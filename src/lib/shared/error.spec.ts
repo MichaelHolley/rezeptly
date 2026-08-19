@@ -28,4 +28,18 @@ describe('toAppError', () => {
 			message: 'An unknown error occurred'
 		});
 	});
+
+	it('passes through an object that already carries a known error code', () => {
+		expect(toAppError({ message: 'Nope', code: 'PERMISSION_DENIED' })).toEqual({
+			message: 'Nope',
+			code: 'PERMISSION_DENIED'
+		});
+	});
+
+	it('treats an unknown code as UNHANDLED_ERROR', () => {
+		expect(toAppError({ message: 'Nope', code: 'SOMETHING_ELSE' })).toEqual({
+			code: 'UNHANDLED_ERROR',
+			message: 'An unknown error occurred'
+		});
+	});
 });

@@ -3,7 +3,7 @@
 	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { reportError } from '$lib/shared/error';
+	import { reportError } from '$lib/shared/toast';
 	import type { Ingredient } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';

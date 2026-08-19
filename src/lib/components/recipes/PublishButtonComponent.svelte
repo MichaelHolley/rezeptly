@@ -2,7 +2,7 @@
 	import { setRecipePublished } from '$lib/api/recipes.remote';
 	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { reportError } from '$lib/shared/error';
+	import { reportError } from '$lib/shared/toast';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import EyeOffIcon from '@lucide/svelte/icons/eye-off';
 	import SendIcon from '@lucide/svelte/icons/send';

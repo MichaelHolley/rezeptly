@@ -7,7 +7,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
-	import { reportError } from '$lib/shared/error';
+	import { reportError } from '$lib/shared/toast';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { untrack } from 'svelte';

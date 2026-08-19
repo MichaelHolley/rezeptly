@@ -54,8 +54,9 @@
 			{...deleteForm.enhance(async ({ submit }) => {
 				errorMessage = null;
 				try {
-					await submit();
-					open = false;
+					if (await submit()) {
+						open = false;
+					}
 				} catch (error) {
 					errorMessage = toAppError(error).message;
 				}

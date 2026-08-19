@@ -27,8 +27,9 @@
 		{...login.enhance(async (form) => {
 			try {
 				errorMessage = undefined;
-				await form.submit();
-				form.element.reset();
+				if (await form.submit()) {
+					form.element.reset();
+				}
 			} catch (error) {
 				errorMessage = toAppError(error).message;
 			}

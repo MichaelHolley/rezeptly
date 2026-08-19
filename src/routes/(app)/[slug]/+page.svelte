@@ -11,7 +11,7 @@
 	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { reportError } from '$lib/shared/error';
+	import { reportError } from '$lib/shared/toast';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';

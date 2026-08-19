@@ -6,7 +6,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
-	import { reportError } from '$lib/shared/error';
+	import { reportError } from '$lib/shared/toast';
 	import type { Ingredient } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
