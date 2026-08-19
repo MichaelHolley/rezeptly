@@ -36,7 +36,7 @@
 						{:else}
 							<ul>
 								{#each categoryTags as tag (tag.id)}
-									<TagRowComponent {tag} allTags={tags} />
+									<TagRowComponent {tag} />
 								{/each}
 							</ul>
 						{/if}

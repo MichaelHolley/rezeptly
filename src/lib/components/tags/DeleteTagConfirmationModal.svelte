@@ -3,8 +3,8 @@
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import type { TagWithUsage } from '$lib/server/services/tag.service';
 	import { getTagCategoryLabel } from '$lib/shared/tags';
+	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 	import { isHttpError } from '@sveltejs/kit';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -12,13 +12,11 @@
 	const {
 		tagId,
 		tagName,
-		recipeCount,
-		targetTags
+		recipeCount
 	}: {
 		tagId: number;
 		tagName: string;
 		recipeCount: number;
-		targetTags: TagWithUsage[];
 	} = $props();
 
 	const deleteForm = $derived(deleteTag.for(tagId));
@@ -27,6 +25,7 @@
 	let targetTagId = $state<number | null>(null);
 	let errorMessage = $state<string | null>(null);
 
+	const targetTags = $derived(AvailableTagsStore.tags.filter((t) => t.id !== tagId));
 	const canMigrate = $derived(recipeCount > 0 && targetTags.length > 0);
 	const targetOptions = $derived(
 		targetTags.map((t) => ({

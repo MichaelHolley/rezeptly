@@ -1,4 +1,5 @@
-import type { TagWithUsage } from '$lib/server/services/tag.service';
+import type { Tag } from '$lib/server/types';
+import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
@@ -7,26 +8,26 @@ import DeleteTagConfirmationModal from './DeleteTagConfirmationModal.svelte';
 describe('DeleteTagConfirmationModal.svelte', () => {
 	const submitSpy = vi.fn();
 
-	const targetTags: TagWithUsage[] = [
-		{ id: 2, name: 'Italian', slug: 'italian', category: 'cuisine', recipeCount: 3 },
-		{ id: 3, name: 'Vegan', slug: 'vegan', category: 'diet', recipeCount: 1 }
-	];
+	const dessert: Tag = { id: 1, name: 'Dessert', slug: 'dessert', category: 'type' };
+	const italian: Tag = { id: 2, name: 'Italian', slug: 'italian', category: 'cuisine' };
+	const vegan: Tag = { id: 3, name: 'Vegan', slug: 'vegan', category: 'diet' };
 
 	beforeEach(() => {
 		document.addEventListener('submit', submitSpy);
+		AvailableTagsStore.tags = [dessert, italian, vegan];
 	});
 
 	afterEach(() => {
 		document.removeEventListener('submit', submitSpy);
 		submitSpy.mockClear();
+		AvailableTagsStore.tags = [];
 	});
 
-	const openDialog = async (props: Partial<Record<string, unknown>> = {}) => {
+	const openDialog = async (props: Record<string, unknown> = {}) => {
 		render(DeleteTagConfirmationModal, {
 			tagId: 1,
 			tagName: 'Dessert',
 			recipeCount: 2,
-			targetTags,
 			...props
 		});
 		await page.getByRole('button', { name: 'Delete Dessert' }).click();
@@ -70,7 +71,9 @@ describe('DeleteTagConfirmationModal.svelte', () => {
 	});
 
 	it('should hide the migration select when no other tag exists', async () => {
-		await openDialog({ targetTags: [] });
+		AvailableTagsStore.tags = [dessert];
+
+		await openDialog();
 
 		await expect
 			.element(page.getByRole('combobox', { name: 'Move recipes to' }))
@@ -86,6 +89,17 @@ describe('DeleteTagConfirmationModal.svelte', () => {
 		await expect.element(page.getByText('Diet')).toBeInTheDocument();
 		await expect.element(page.getByRole('button', { name: 'Italian' })).toBeInTheDocument();
 		await expect.element(page.getByRole('button', { name: 'Vegan' })).toBeInTheDocument();
+	});
+
+	it('should not offer the tag being deleted as a target', async () => {
+		await openDialog();
+
+		await page.getByRole('combobox', { name: 'Move recipes to' }).click();
+
+		await expect.element(page.getByRole('button', { name: 'Italian' })).toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: 'Dessert', exact: true }))
+			.not.toBeInTheDocument();
 	});
 
 	it('should name the target and its category once a target is selected', async () => {
