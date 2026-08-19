@@ -6,6 +6,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
+	import { reportError } from '$lib/shared/error';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { untrack } from 'svelte';
@@ -39,7 +40,7 @@
 			await submit();
 			onSave?.();
 		} catch (error) {
-			console.error(error);
+			reportError(error);
 		}
 	})}
 	class="flex flex-col gap-2"

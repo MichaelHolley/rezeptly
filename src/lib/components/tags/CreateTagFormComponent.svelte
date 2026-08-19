@@ -5,6 +5,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import type { TagCategory } from '$lib/server/types';
+	import { toAppError } from '$lib/shared/error';
 	import { TAG_CATEGORY_SELECT_OPTIONS } from '$lib/shared/tags';
 	import { cn } from '$lib/utils';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -12,15 +13,17 @@
 	const { class: className }: { class?: string } = $props();
 
 	let category = $state<TagCategory>('type');
+	let errorMessage = $state<string | null>(null);
 </script>
 
 <form
 	{...createTag.enhance(async (form) => {
+		errorMessage = null;
 		try {
 			await form.submit();
 			form.element.reset();
 		} catch (error) {
-			console.error(error);
+			errorMessage = toAppError(error).message;
 		}
 	})}
 	class={cn('flex flex-col gap-2 rounded-md border border-zinc-200 p-4', className)}
@@ -49,4 +52,7 @@
 		</Button>
 	</div>
 	<input {...createTag.fields.category.as('hidden', category)} />
+	{#if errorMessage}
+		<p role="alert" class="text-destructive text-sm">{errorMessage}</p>
+	{/if}
 </form>

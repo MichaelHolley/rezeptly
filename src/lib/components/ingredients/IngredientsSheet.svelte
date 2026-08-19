@@ -5,6 +5,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Sheet from '$lib/components/ui/sheet/';
+	import { reportError } from '$lib/shared/error';
 	import type { Ingredient } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -34,8 +35,9 @@
 
 	function handlePortionsChange(value: number | null) {
 		draftPortions = value;
-		savePortions(value).catch(() => {
+		savePortions(value).catch((error) => {
 			draftPortions = portions;
+			reportError(error);
 		});
 	}
 
@@ -83,7 +85,7 @@
 								setTimeout(() => inputRef?.focus(), 50);
 							});
 					} catch (error) {
-						console.error(error);
+						reportError(error);
 					}
 				})}
 				class="mt-6 flex flex-row gap-2"

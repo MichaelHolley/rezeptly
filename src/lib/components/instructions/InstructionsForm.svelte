@@ -4,6 +4,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails } from '$lib/server/types';
+	import { reportError } from '$lib/shared/error';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
@@ -64,7 +65,7 @@
 			await submit();
 			onSave?.();
 		} catch (error) {
-			console.error(error);
+			reportError(error);
 		}
 	})}
 >

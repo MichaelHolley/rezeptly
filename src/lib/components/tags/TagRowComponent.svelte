@@ -5,6 +5,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import type { TagWithUsage } from '$lib/server/services/tag.service';
 	import type { TagCategory } from '$lib/server/types';
+	import { toAppError } from '$lib/shared/error';
 	import { TAG_CATEGORY_SELECT_OPTIONS } from '$lib/shared/tags';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
@@ -18,10 +19,12 @@
 
 	let editing = $state(false);
 	let category = $state<TagCategory>(untrack(() => tag.category));
+	let errorMessage = $state<string | null>(null);
 
 	const stopEditing = () => {
 		editing = false;
 		category = tag.category;
+		errorMessage = null;
 	};
 </script>
 
@@ -29,11 +32,12 @@
 	{#if editing}
 		<form
 			{...editForm.enhance(async ({ submit }) => {
+				errorMessage = null;
 				try {
 					await submit();
 					editing = false;
 				} catch (error) {
-					console.error(error);
+					errorMessage = toAppError(error).message;
 				}
 			})}
 			class="flex flex-row flex-wrap items-center gap-2"
@@ -68,6 +72,9 @@
 			>
 				<XIcon />
 			</Button>
+			{#if errorMessage}
+				<p role="alert" class="text-destructive w-full text-sm">{errorMessage}</p>
+			{/if}
 		</form>
 	{:else}
 		<div class="flex flex-row items-center gap-2">

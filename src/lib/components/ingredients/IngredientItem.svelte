@@ -2,6 +2,7 @@
 	import { editIngredient, getRecipeBySlug, removeIngredient } from '$lib/api/recipes.remote';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { reportError } from '$lib/shared/error';
 	import type { Ingredient } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
@@ -55,7 +56,7 @@
 							onEditEnd();
 						});
 				} catch (error) {
-					console.error(error);
+					reportError(error);
 				}
 			})}
 			class="flex flex-1 flex-row items-center gap-2"
@@ -111,7 +112,7 @@
 						}))
 					);
 				} catch (e) {
-					console.error(e);
+					reportError(e);
 				}
 			}}
 		>
