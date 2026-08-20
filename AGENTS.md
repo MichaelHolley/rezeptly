@@ -42,6 +42,15 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 - **Usage in Components**: Import and call with `.enhance()` for forms or directly for commands/queries
 - **Refreshing Data**: Call `.refresh()` on queries after mutations to update UI
 
+## Testing
+
+- **Scope**: Cover core components and core logic. Minor details stay untested.
+- **E2E**: Every new feature ships with e2e coverage in `e2e/`.
+- **Unit**: Required for core features.
+- **Component**: Write one whenever the setup is easy.
+- **AI features**: Leave untested — real calls cost money and turn flaky.
+- **Removals**: Removing a feature removes or updates its tests. Deleted behavior needs no regression test.
+
 ## Feedback Loop
 
 Making changes to the codebase requires validation via `pnpm check`. All issues must be resolved before continuing.
