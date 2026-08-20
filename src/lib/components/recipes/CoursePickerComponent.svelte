@@ -12,9 +12,9 @@
 	};
 </script>
 
-<div class="flex flex-col items-center gap-2">
+<div class="flex flex-col gap-2">
 	<span id={labelId} class="text-sm font-medium">Course</span>
-	<div role="group" aria-labelledby={labelId} class="flex flex-row flex-wrap justify-center gap-2">
+	<div role="group" aria-labelledby={labelId} class="flex flex-row flex-wrap gap-2">
 		{#each COURSES as course (course)}
 			{@const Icon = COURSE_ICONS[course]}
 			<button
