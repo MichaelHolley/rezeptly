@@ -4,7 +4,7 @@ import { stdin as input, stdout as output } from 'node:process';
 import * as readline from 'node:readline/promises';
 import postgres from 'postgres';
 import slugify from 'slugify';
-import type { TagCategory } from '../types';
+import type { RecipeCourse, TagCategory } from '../types';
 import { ingredients, instructions, recipes, recipesToTags, tags } from './schema';
 
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -20,6 +20,7 @@ const db = drizzle(client, { schema: { recipes, ingredients, instructions, tags,
 const sampleData = [
 	{
 		name: 'Classic Scrambled Eggs',
+		course: 'main' as RecipeCourse,
 		durationMinutes: 15,
 		portions: 2,
 		description: 'Fluffy, creamy scrambled eggs perfect for breakfast',
@@ -60,6 +61,7 @@ const sampleData = [
 	},
 	{
 		name: 'Homemade Margherita Pizza',
+		course: 'main' as RecipeCourse,
 		durationMinutes: 45,
 		portions: 4,
 		description: 'Traditional Italian pizza with fresh mozzarella, basil, and tomato sauce',
@@ -109,6 +111,7 @@ const sampleData = [
 	},
 	{
 		name: 'Chicken Stir-Fry',
+		course: 'main' as RecipeCourse,
 		durationMinutes: 30,
 		portions: 4,
 		description: 'Quick and healthy Asian-inspired chicken with colorful vegetables',
@@ -165,6 +168,7 @@ const sampleData = [
 	},
 	{
 		name: 'Classic Chocolate Chip Cookies',
+		course: 'dessert' as RecipeCourse,
 		durationMinutes: 30,
 		portions: 24,
 		description: 'Soft and chewy cookies loaded with chocolate chips',
@@ -219,6 +223,7 @@ const sampleData = [
 	},
 	{
 		name: 'Greek Salad',
+		course: 'appetizer' as RecipeCourse,
 		durationMinutes: 15,
 		portions: 2,
 		description: 'Fresh Mediterranean salad with feta cheese and olives',
@@ -266,6 +271,7 @@ const sampleData = [
 	},
 	{
 		name: 'Beef Tacos',
+		course: 'main' as RecipeCourse,
 		durationMinutes: 30,
 		portions: 4,
 		description: 'Flavorful Mexican-style tacos with seasoned ground beef',
@@ -317,6 +323,7 @@ const sampleData = [
 	},
 	{
 		name: 'Blueberry Pancakes',
+		course: 'main' as RecipeCourse,
 		durationMinutes: 15,
 		portions: 4,
 		description: 'Fluffy buttermilk pancakes studded with fresh blueberries',
@@ -374,6 +381,7 @@ const sampleData = [
 	},
 	{
 		name: 'Caprese Salad',
+		course: 'appetizer' as RecipeCourse,
 		durationMinutes: 15,
 		portions: 2,
 		description: 'Simple Italian salad with tomatoes, mozzarella, and basil',
@@ -500,6 +508,7 @@ async function seed() {
 						name: recipeData.name,
 						slug: slugify(recipeData.name, { lower: true, strict: true }),
 						description: recipeData.description,
+						course: recipeData.course,
 						durationMinutes: recipeData.durationMinutes,
 						portions: recipeData.portions
 					})

@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { COURSES } from '$lib/shared/course';
 import { TAG_CATEGORIES } from '$lib/shared/tags';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, Output } from 'ai';
@@ -16,6 +17,10 @@ const extractionSchema = z.object({
 		.describe('Whether the image actually shows a recipe. False for anything else.'),
 	name: z.string().describe('The name of the recipe'),
 	description: z.string().describe('A short summary of the dish, at most two sentences'),
+	course: z
+		.enum(COURSES)
+		.nullable()
+		.describe('The position of the dish in a meal, or null if not obvious'),
 	durationMinutes: z
 		.number()
 		.nullable()
@@ -58,6 +63,7 @@ const EMPTY_EXTRACTION: ExtractedRecipeData = {
 	isRecipe: false,
 	name: '',
 	description: '',
+	course: null,
 	durationMinutes: null,
 	portions: null,
 	tags: [],
@@ -71,6 +77,7 @@ const SYSTEM_PROMPT = [
 	"Name and description are required: if the page does not show them, write them yourself based on the dish, in the recipe's original language. The description is a short summary of the dish, never a copy of the instructions.",
 	'Every other value is optional: return null or an empty array when it is not visible or unclear. Never guess a duration, a portion count or a tag.',
 	'durationMinutes is the total time in minutes. portions is a plain count of servings.',
+	'course is the position of the dish in a meal; return null when it is not obvious.',
 	'Ingredient-values must include both amount and title. Fix typos.',
 	'For instruction section headings: never use step numbers (e.g. "Step 1", "1.", "Schritt 1") as the heading — instead derive a short descriptive title that summarises the action (e.g. "Teig kneten", "Prepare the dough", "Faire revenir les oignons"). Keep the heading in the original language of the recipe.',
 	'If the ingredients list is grouped, it is recommended to write the list of ingredients again to the according step without their amount.'

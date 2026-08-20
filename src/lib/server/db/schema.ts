@@ -1,3 +1,4 @@
+import { COURSES } from '$lib/shared/course';
 import { relations } from 'drizzle-orm';
 import {
 	index,
@@ -13,12 +14,15 @@ import {
 
 export const tagCategoryEnum = pgEnum('tag_category', ['type', 'cuisine', 'nutrition', 'diet']);
 
+export const recipeCourseEnum = pgEnum('recipe_course', COURSES);
+
 export const recipes = pgTable('recipes', {
 	id: serial('id').primaryKey(),
 	name: text('name').notNull(),
 	slug: text('slug').notNull().unique(),
 	description: text('description'),
 	imageUrl: text('image_url'),
+	course: recipeCourseEnum('course'),
 	durationMinutes: integer('duration_minutes'),
 	portions: integer('portions'),
 	createdAt: timestamp('created_at').defaultNow(),
