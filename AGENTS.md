@@ -44,11 +44,13 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 ## Testing
 
+- **Naming**: Test files are `*.spec.ts`, colocated with their source. Component and rune-module tests are `*.svelte.spec.ts`.
 - **Scope**: Cover core components and core logic. Minor details stay untested.
 - **E2E**: Every new feature ships with e2e coverage in `e2e/`.
 - **Unit**: Required for core features.
 - **Component**: Write one whenever the setup is easy.
 - **AI features**: Leave untested — real calls cost money and turn flaky.
+- **Services**: `*.service.ts` files stay untested — e2e covers them. Pure helpers in `services/util/` are unit-tested.
 - **Removals**: Removing a feature removes or updates its tests. Deleted behavior needs no regression test.
 
 ## Feedback Loop
