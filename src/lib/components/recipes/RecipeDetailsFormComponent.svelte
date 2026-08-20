@@ -6,12 +6,14 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
+	import type { RecipeCourse } from '$lib/shared/course';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
 	import { reportError } from '$lib/shared/toast';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { untrack } from 'svelte';
 	import CategoryTagInputComponent from './CategoryTagInputComponent.svelte';
+	import CoursePickerComponent from './CoursePickerComponent.svelte';
 
 	const {
 		onSave,
@@ -28,6 +30,7 @@
 	let nutritionTags = $state(getTagsByCategory('nutrition'));
 	let dietTags = $state(getTagsByCategory('diet'));
 	let durationMinutes = $state<number | null>(untrack(() => recipe.durationMinutes));
+	let course = $state<RecipeCourse | null>(untrack(() => recipe.course));
 
 	const durationOptions = DURATION_BUCKETS.map((min) => ({
 		value: min,
@@ -77,6 +80,10 @@
 			{...updateRecipeDetails.fields.durationMinutes.as('number', durationMinutes)}
 			class="hidden"
 		/>
+	{/if}
+	<CoursePickerComponent bind:value={course} />
+	{#if course != null}
+		<input {...updateRecipeDetails.fields.course.as('hidden', course)} />
 	{/if}
 	<CategoryTagInputComponent
 		bind:typeTags

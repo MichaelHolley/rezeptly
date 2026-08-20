@@ -2,6 +2,7 @@
 	import MultiSelectComponent from '$lib/components/common/MultiSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button/';
 	import type { Tag, TagCategory } from '$lib/server/types';
+	import { COURSE_LABELS, COURSES, type RecipeCourse } from '$lib/shared/course';
 	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
 	import { cn } from '$lib/utils';
 	import StarIcon from '@lucide/svelte/icons/star';
@@ -14,6 +15,7 @@
 		cuisine = $bindable(),
 		nutrition = $bindable(),
 		diet = $bindable(),
+		course = $bindable(),
 		availableTags
 	}: {
 		searchTerm: string;
@@ -22,8 +24,11 @@
 		cuisine: string[];
 		nutrition: string[];
 		diet: string[];
+		course: RecipeCourse[];
 		availableTags: Tag[];
 	} = $props();
+
+	const courseOptions = COURSES.map((c) => ({ value: c, label: COURSE_LABELS[c] }));
 
 	const tagsByCategory = $derived(
 		TAG_CATEGORY_CONFIG.map(({ key, label }) => ({
@@ -69,6 +74,13 @@
 			/>
 			Favorites
 		</Button>
+		<MultiSelectComponent
+			label="Course"
+			options={courseOptions}
+			selected={course}
+			onchange={(v) => (course = v)}
+			clearable
+		/>
 		{#each tagsByCategory as { key, label, tags } (key)}
 			<MultiSelectComponent
 				{label}

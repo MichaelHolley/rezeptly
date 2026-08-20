@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="V extends string">
 	import { Button } from '$lib/components/ui/button/';
 	import { Checkbox } from '$lib/components/ui/checkbox/';
 	import * as InputGroup from '$lib/components/ui/input-group/';
@@ -15,9 +15,9 @@
 		clearable = false
 	}: {
 		label: string;
-		options: { value: string; label: string }[];
-		selected: string[];
-		onchange: (value: string[]) => void;
+		options: { value: V; label: string }[];
+		selected: V[];
+		onchange: (value: V[]) => void;
 		clearable?: boolean;
 	} = $props();
 
@@ -26,7 +26,7 @@
 
 	const showClear = $derived(clearable && selected.length > 0);
 
-	function toggle(value: string) {
+	function toggle(value: V) {
 		const updated = selected.includes(value)
 			? selected.filter((s) => s !== value)
 			: [...selected, value];
