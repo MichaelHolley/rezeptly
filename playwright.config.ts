@@ -13,7 +13,9 @@ export default defineConfig({
 	reporter: process.env.CI ? [['html', { open: 'never' }], ['github']] : 'list',
 	use: {
 		baseURL: 'http://localhost:4173',
-		trace: 'on-first-retry'
+		trace: 'on-first-retry',
+		actionTimeout: 10_000,
+		navigationTimeout: 15_000
 	},
 	webServer: {
 		command: 'pnpm build && pnpm preview',
