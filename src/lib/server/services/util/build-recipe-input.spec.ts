@@ -7,6 +7,7 @@ const emptyExtraction = (): ExtractedRecipeData => ({
 	isRecipe: true,
 	name: '',
 	description: '',
+	course: null,
 	durationMinutes: null,
 	portions: null,
 	tags: [],
@@ -46,6 +47,18 @@ describe('buildRecipeInput', () => {
 		it('should map a blank description to null', () => {
 			const result = buildRecipeInput({ ...emptyExtraction(), description: '   ' }, []);
 			expect(result.description).toBeNull();
+		});
+	});
+
+	describe('course', () => {
+		it('should pass an extracted course through unchanged', () => {
+			expect(buildRecipeInput({ ...emptyExtraction(), course: 'dessert' }, []).course).toBe(
+				'dessert'
+			);
+		});
+
+		it('should return null for null', () => {
+			expect(buildRecipeInput({ ...emptyExtraction(), course: null }, []).course).toBeNull();
 		});
 	});
 

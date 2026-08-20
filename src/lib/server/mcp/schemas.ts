@@ -1,3 +1,4 @@
+import { COURSES } from '$lib/shared/course';
 import { TAG_CATEGORIES } from '$lib/shared/tags';
 import { z } from 'zod';
 import type { TagCategory } from '../types';
@@ -13,6 +14,7 @@ export const recipeSummarySchema = z.object({
 	name: z.string(),
 	description: z.string().nullable(),
 	imageUrl: z.string().nullable(),
+	course: z.enum(COURSES).nullable(),
 	durationMinutes: z.number().nullable(),
 	portions: z.number().nullable(),
 	createdAt: z.string().nullable(),

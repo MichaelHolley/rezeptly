@@ -3,11 +3,13 @@
 	import type { RecipeWithDetails, Tag } from '$lib/server/types';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import { COURSE_LABELS } from '$lib/shared/course';
 	import { formatDuration } from '$lib/shared/duration';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import UsersIcon from '@lucide/svelte/icons/users';
+	import { COURSE_ICONS } from './course-icons';
 	import DeleteRecipeConfirmationModal from './DeleteRecipeConfirmationModal.svelte';
 	import DraftBadgeComponent from './DraftBadgeComponent.svelte';
 	import PublishButtonComponent from './PublishButtonComponent.svelte';
@@ -61,8 +63,8 @@
 			</p>
 		{/if}
 
-		{#if recipe.durationMinutes != null || recipe.portions != null}
-			<div class="mt-4 grid grid-cols-2 gap-3 sm:max-w-md">
+		{#if recipe.durationMinutes != null || recipe.portions != null || recipe.course != null}
+			<div class="mt-4 grid grid-cols-2 gap-3 sm:max-w-xl sm:grid-cols-3">
 				{#if recipe.durationMinutes != null}
 					<RecipeStat
 						icon={ClockIcon}
@@ -72,6 +74,13 @@
 				{/if}
 				{#if recipe.portions != null}
 					<RecipeStat icon={UsersIcon} label="Portions" value={recipe.portions} />
+				{/if}
+				{#if recipe.course != null}
+					<RecipeStat
+						icon={COURSE_ICONS[recipe.course]}
+						label="Course"
+						value={COURSE_LABELS[recipe.course]}
+					/>
 				{/if}
 			</div>
 		{/if}

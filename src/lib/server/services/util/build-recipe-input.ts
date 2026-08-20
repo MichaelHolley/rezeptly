@@ -1,3 +1,4 @@
+import type { RecipeCourse } from '$lib/shared/course';
 import { DURATION_BUCKETS } from '$lib/shared/duration';
 import type { ExtractedRecipeData } from '../ai.service';
 import type { NewIngredient, NewInstruction, Tag, TagInput } from '../../types';
@@ -6,6 +7,7 @@ import { generateSlug } from './generate-slug';
 export type RecipeInput = {
 	name: string;
 	description: string | null;
+	course: RecipeCourse | null;
 	durationMinutes: number | null;
 	portions: number | null;
 	ingredients: Omit<NewIngredient, 'recipeId'>[];
@@ -55,6 +57,7 @@ export function buildRecipeInput(extracted: ExtractedRecipeData, existingTags: T
 	return {
 		name: extracted.name?.trim() ?? '',
 		description: emptyToNull(extracted.description),
+		course: extracted.course,
 		durationMinutes: snapToDurationBucket(extracted.durationMinutes),
 		portions: clampPortions(extracted.portions),
 		ingredients: extracted.ingredients

@@ -2,6 +2,7 @@
 	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
 	import FilterComponent from '$lib/components/recipes/FilterComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
+	import { COURSES } from '$lib/shared/course';
 	import { TAG_CATEGORIES } from '$lib/shared/tags';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { Debounced } from 'runed';
@@ -19,7 +20,8 @@
 			type: z.array(z.string()).default([]),
 			cuisine: z.array(z.string()).default([]),
 			nutrition: z.array(z.string()).default([]),
-			diet: z.array(z.string()).default([])
+			diet: z.array(z.string()).default([]),
+			course: z.array(z.enum(COURSES)).default([])
 		})
 	);
 
@@ -43,10 +45,14 @@
 				return r.tags.some((t) => t.category === category && selected.includes(t.slug));
 			});
 
+			const matchesCourseFilter =
+				searchParams.course.length === 0 ||
+				(r.course != null && searchParams.course.includes(r.course));
+
 			const matchesFavoritesFilter =
 				!searchParams.filterFavorites || favorites.current.includes(r.id);
 
-			return matchesSearchTerm && matchesTagFilter && matchesFavoritesFilter;
+			return matchesSearchTerm && matchesTagFilter && matchesCourseFilter && matchesFavoritesFilter;
 		})
 	);
 </script>
@@ -58,6 +64,7 @@
 	bind:cuisine={searchParams.cuisine}
 	bind:nutrition={searchParams.nutrition}
 	bind:diet={searchParams.diet}
+	bind:course={searchParams.course}
 	availableTags={filterableTags}
 />
 

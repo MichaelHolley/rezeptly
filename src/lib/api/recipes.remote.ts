@@ -114,6 +114,7 @@ export const updateRecipeDetails = form(
 		tagNutrition,
 		tagDiet,
 		imageUrl,
+		course,
 		durationMinutes
 	}) => {
 		if (!userCanWrite()) {
@@ -134,6 +135,7 @@ export const updateRecipeDetails = form(
 			name,
 			description,
 			imageUrl,
+			course: course ?? null,
 			durationMinutes: durationMinutes ?? null,
 			tags
 		});
@@ -156,6 +158,7 @@ export const createRecipe = form(
 		tagDiet,
 		imageUrl,
 		importImage,
+		course,
 		durationMinutes
 	}) => {
 		if (!userCanWrite()) {
@@ -178,6 +181,7 @@ export const createRecipe = form(
 			name: name.trim(),
 			description: description.trim(),
 			imageUrl,
+			course: course ?? null,
 			durationMinutes: durationMinutes ?? null,
 			ingredients: extracted.ingredients,
 			instructions: extracted.instructions.map((item, i) => ({ ...item, stepOrder: i + 1 })),

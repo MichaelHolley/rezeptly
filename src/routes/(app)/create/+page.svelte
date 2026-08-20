@@ -4,10 +4,12 @@
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import CategoryTagInputComponent from '$lib/components/recipes/CategoryTagInputComponent.svelte';
+	import CoursePickerComponent from '$lib/components/recipes/CoursePickerComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import type { RecipeCourse } from '$lib/shared/course';
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
 	import { toAppError } from '$lib/shared/error';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
@@ -21,6 +23,7 @@
 	let nutritionTags = $state<string[]>([]);
 	let dietTags = $state<string[]>([]);
 	let durationMinutes = $state<number | null>(null);
+	let course = $state<RecipeCourse | null>(null);
 	let importImageName = $state<string | null>(null);
 	let importImageInput = $state<HTMLInputElement | null>(null);
 	let isImportDragOver = $state(false);
@@ -85,6 +88,10 @@
 	</div>
 	{#if durationMinutes != null}
 		<input {...createRecipe.fields.durationMinutes.as('number', durationMinutes)} class="hidden" />
+	{/if}
+	<CoursePickerComponent bind:value={course} />
+	{#if course != null}
+		<input {...createRecipe.fields.course.as('hidden', course)} />
 	{/if}
 	<CategoryTagInputComponent bind:typeTags bind:cuisineTags bind:nutritionTags bind:dietTags />
 	{#each typeTags as tag, i (tag)}
