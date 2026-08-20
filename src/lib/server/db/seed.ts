@@ -500,7 +500,10 @@ async function seed() {
 			}
 
 			console.log('\n🍳 Creating recipes...');
-			for (const recipeData of sampleData) {
+			for (const [index, recipeData] of sampleData.entries()) {
+				// The last sample stays a draft so the drafts view has something to show
+				const isDraft = index === sampleData.length - 1;
+
 				// Create recipe
 				const [recipe] = await tx
 					.insert(recipes)
@@ -510,11 +513,12 @@ async function seed() {
 						description: recipeData.description,
 						course: recipeData.course,
 						durationMinutes: recipeData.durationMinutes,
-						portions: recipeData.portions
+						portions: recipeData.portions,
+						publishedAt: isDraft ? null : new Date()
 					})
 					.returning();
 
-				console.log(`   ✓ Created recipe: ${recipe.name}`);
+				console.log(`   ✓ Created recipe: ${recipe.name}${isDraft ? ' (draft)' : ''}`);
 
 				// Create ingredients
 				if (recipeData.ingredients.length > 0) {
