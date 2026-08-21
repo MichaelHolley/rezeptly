@@ -121,12 +121,9 @@
 	<div class="flex flex-row flex-wrap gap-2">
 		<p class="text-neutral-500"><small>Suggestions:</small></p>
 		{#each aiSuggestedTags as tag (tag)}
-			<TagComponent
-				onSelect={() => addTag(tag)}
-				class="bg-draft text-draft-foreground border-transparent"
-			>
+			<TagComponent onSelect={() => addTag(tag)}>
 				{tag}
-				<PlusIcon />
+				<PlusIcon class="text-draft" />
 			</TagComponent>
 		{/each}
 		{#each recommendedTags as tag (tag)}
