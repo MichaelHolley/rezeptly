@@ -1,15 +1,22 @@
 import { env } from '$env/dynamic/private';
-import { COURSES } from '$lib/shared/course';
+import { COURSES, type RecipeCourse } from '$lib/shared/course';
 import { TAG_CATEGORIES } from '$lib/shared/tags';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import type { Tag, TagCategory } from '../types';
 
-export const imageImportEnabled = (): boolean =>
+export const aiEnabled = (): boolean =>
 	Boolean(env.OPENROUTER_API_KEY) && Boolean(env.OPENROUTER_MODEL_NAME);
 
 const tagCategorySchema = z.enum(TAG_CATEGORIES as [TagCategory, ...TagCategory[]]);
+
+const tagProposalSchema = z.object({
+	category: tagCategorySchema.describe('The category the tag belongs to'),
+	name: z.string().describe('The exact name of an existing tag')
+});
+
+export type TagProposal = z.infer<typeof tagProposalSchema>;
 
 const extractionSchema = z.object({
 	isRecipe: z
@@ -26,14 +33,7 @@ const extractionSchema = z.object({
 		.nullable()
 		.describe('Total time needed in minutes, or null if not stated'),
 	portions: z.number().nullable().describe('Number of portions, or null if not stated'),
-	tags: z
-		.array(
-			z.object({
-				category: tagCategorySchema.describe('The category the tag belongs to'),
-				name: z.string().describe('The exact name of an existing tag')
-			})
-		)
-		.describe('Tags chosen from the provided vocabulary'),
+	tags: z.array(tagProposalSchema).describe('Tags chosen from the provided vocabulary'),
 	ingredients: z.array(
 		z
 			.object({
@@ -131,4 +131,58 @@ export async function extractRecipeFromImage(
 	});
 
 	return output;
+}
+
+export type RecipeTagContext = {
+	name: string;
+	description: string | null;
+	course: RecipeCourse | null;
+	ingredientNames: string[];
+	instructionHeadings: string[];
+};
+
+const TAG_SUGGESTION_SYSTEM_PROMPT = [
+	'You suggest tags for a recipe, picking only from an existing tag vocabulary.',
+	'Propose at most a handful of tags per category. Prefer proposing nothing over guessing.',
+	'Leave a category out entirely when nothing listed fits.'
+].join(' ');
+
+function buildRecipeContextPrompt(recipe: RecipeTagContext): string {
+	return [
+		`Name: ${recipe.name}`,
+		`Description: ${recipe.description ?? '(none)'}`,
+		`Course: ${recipe.course ?? '(none)'}`,
+		`Ingredients: ${recipe.ingredientNames.join(', ') || '(none)'}`,
+		`Instruction section headings: ${recipe.instructionHeadings.join(', ') || '(none)'}`
+	].join('\n');
+}
+
+export async function suggestRecipeTags(
+	recipe: RecipeTagContext,
+	existingTags: Tag[] = []
+): Promise<TagProposal[]> {
+	const apiKey = env.OPENROUTER_API_KEY;
+	const modelName = env.OPENROUTER_MODEL_NAME;
+
+	if (!apiKey || !modelName) {
+		return [];
+	}
+
+	const openrouter = createOpenRouter({ apiKey });
+
+	const { output } = await generateText({
+		model: openrouter.chat(modelName),
+		output: Output.object({
+			schema: z.object({ tags: z.array(tagProposalSchema) })
+		}),
+		system: `${TAG_SUGGESTION_SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
+		messages: [
+			{
+				role: 'user',
+				content: buildRecipeContextPrompt(recipe)
+			}
+		]
+	});
+
+	return output.tags;
 }

@@ -13,13 +13,15 @@
 		label = 'Tags',
 		placeholder = 'Enter a tag-name and confirm with Enter-Key',
 		category,
-		inputId = 'tagsinput'
+		inputId = 'tagsinput',
+		suggestedTags = []
 	}: {
 		tags: string[];
 		label?: string;
 		placeholder?: string;
 		category?: TagCategory;
 		inputId?: string;
+		suggestedTags?: string[];
 	} = $props();
 
 	let tagInputValue = $state('');
@@ -27,9 +29,22 @@
 
 	const normalizeTag = (value: string) => value.trim().toLowerCase();
 
+	const aiSuggestedTags = $derived.by(() => {
+		const selectedTags = new Set(tags.map((tag) => normalizeTag(tag)));
+
+		const seen = new SvelteSet<string>();
+		return suggestedTags.filter((tag) => {
+			const normalized = normalizeTag(tag);
+			if (selectedTags.has(normalized) || seen.has(normalized)) return false;
+			seen.add(normalized);
+			return true;
+		});
+	});
+
 	const recommendedTags = $derived.by(() => {
 		const input = normalizeTag(tagInputValue);
 		const selectedTags = new Set(tags.map((tag) => normalizeTag(tag)));
+		const suggested = new Set(aiSuggestedTags.map((tag) => normalizeTag(tag)));
 
 		const seen = new SvelteSet<string>();
 		return availableTags
@@ -38,6 +53,7 @@
 				if (
 					(!category || tag.category === category) &&
 					!selectedTags.has(normalized) &&
+					!suggested.has(normalized) &&
 					(!input || normalized.includes(input)) &&
 					!seen.has(normalized)
 				) {
@@ -102,8 +118,17 @@
 			</InputGroup.Addon>
 		{/if}
 	</InputGroup.Root>
-	<div class="flex flex-row gap-2">
+	<div class="flex flex-row flex-wrap gap-2">
 		<p class="text-neutral-500"><small>Suggestions:</small></p>
+		{#each aiSuggestedTags as tag (tag)}
+			<TagComponent
+				onSelect={() => addTag(tag)}
+				class="bg-draft text-draft-foreground border-transparent"
+			>
+				{tag}
+				<PlusIcon />
+			</TagComponent>
+		{/each}
 		{#each recommendedTags as tag (tag)}
 			<TagComponent onSelect={() => addTag(tag)}>
 				{tag}
