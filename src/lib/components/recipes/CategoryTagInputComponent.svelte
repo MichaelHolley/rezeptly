@@ -7,12 +7,14 @@
 		cuisineTags = $bindable([]),
 		nutritionTags = $bindable([]),
 		dietTags = $bindable([]),
+		suggestedTags,
 		class: className
 	}: {
 		typeTags?: string[];
 		cuisineTags?: string[];
 		nutritionTags?: string[];
 		dietTags?: string[];
+		suggestedTags?: Record<TagCategory, string[]> | null;
 		class?: string;
 	} = $props();
 
@@ -31,6 +33,7 @@
 		category="type"
 		inputId="tag-input-type"
 		bind:tags={typeTags}
+		suggestedTags={suggestedTags?.type}
 	/>
 	<TagInputComponent
 		label="Cuisine"
@@ -38,6 +41,7 @@
 		category="cuisine"
 		inputId="tag-input-cuisine"
 		bind:tags={cuisineTags}
+		suggestedTags={suggestedTags?.cuisine}
 	/>
 	<TagInputComponent
 		label="Nutrition"
@@ -45,6 +49,7 @@
 		category="nutrition"
 		inputId="tag-input-nutrition"
 		bind:tags={nutritionTags}
+		suggestedTags={suggestedTags?.nutrition}
 	/>
 	<TagInputComponent
 		label="Diet"
@@ -52,5 +57,6 @@
 		category="diet"
 		inputId="tag-input-diet"
 		bind:tags={dietTags}
+		suggestedTags={suggestedTags?.diet}
 	/>
 </div>

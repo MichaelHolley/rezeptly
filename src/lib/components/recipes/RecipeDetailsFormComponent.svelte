@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { updateRecipeDetails } from '$lib/api/recipes.remote';
+	import { page } from '$app/state';
+	import { suggestRecipeTags, updateRecipeDetails } from '$lib/api/recipes.remote';
 	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
+	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -10,7 +12,9 @@
 	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
 	import { reportError } from '$lib/shared/toast';
 	import CheckIcon from '@lucide/svelte/icons/check';
+	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import XIcon from '@lucide/svelte/icons/x';
+	import { toast } from 'svelte-sonner';
 	import { untrack } from 'svelte';
 	import CategoryTagInputComponent from './CategoryTagInputComponent.svelte';
 	import CoursePickerComponent from './CoursePickerComponent.svelte';
@@ -31,11 +35,28 @@
 	let dietTags = $state(getTagsByCategory('diet'));
 	let durationMinutes = $state<number | null>(untrack(() => recipe.durationMinutes));
 	let course = $state<RecipeCourse | null>(untrack(() => recipe.course));
+	let suggestedTags = $state<Record<TagCategory, string[]> | null>(null);
 
 	const durationOptions = DURATION_BUCKETS.map((min) => ({
 		value: min,
 		label: formatDuration(min)!
 	}));
+
+	const hasIngredients = $derived(recipe.ingredients.length > 0);
+
+	async function handleSuggestTags() {
+		try {
+			const result = await suggestRecipeTags(recipe.id);
+			suggestedTags = result;
+
+			const hasSuggestions = Object.values(result).some((names) => names.length > 0);
+			if (!hasSuggestions) {
+				toast.info('No new tag suggestions found.');
+			}
+		} catch (error) {
+			reportError(error);
+		}
+	}
 </script>
 
 <form
@@ -85,11 +106,34 @@
 	{#if course != null}
 		<input {...updateRecipeDetails.fields.course.as('hidden', course)} />
 	{/if}
+	{#if page.data.features.tagSuggestions}
+		<div class="mt-4 flex flex-row items-center gap-2">
+			<Button
+				type="button"
+				variant="outline"
+				class="border-draft text-draft hover:bg-draft/10 hover:text-draft"
+				onclick={handleSuggestTags}
+				disabled={!hasIngredients || !!suggestRecipeTags.pending}
+				title={!hasIngredients ? 'Add ingredients first to get tag suggestions' : undefined}
+			>
+				{#if suggestRecipeTags.pending}
+					<LoadingComponent class="size-4" />
+				{:else}
+					<SparklesIcon />
+				{/if}
+				Suggest with AI
+			</Button>
+			{#if !hasIngredients}
+				<p class="text-xs text-zinc-500">Add ingredients to enable AI tag suggestions.</p>
+			{/if}
+		</div>
+	{/if}
 	<CategoryTagInputComponent
 		bind:typeTags
 		bind:cuisineTags
 		bind:nutritionTags
 		bind:dietTags
+		{suggestedTags}
 		class="mt-4"
 	/>
 	{#each typeTags as tag, i (tag)}
