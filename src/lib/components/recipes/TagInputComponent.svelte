@@ -24,6 +24,8 @@
 		suggestedTags?: string[];
 	} = $props();
 
+	const SUGGESTION_CAP = 3;
+
 	let tagInputValue = $state('');
 	const availableTags = $derived(AvailableTagsStore.tags);
 
@@ -62,7 +64,7 @@
 				}
 				return false;
 			})
-			.slice(0, 3)
+			.slice(0, Math.max(0, SUGGESTION_CAP - aiSuggestedTags.length))
 			.map((tag) => tag.name);
 	});
 
