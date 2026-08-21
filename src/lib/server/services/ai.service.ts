@@ -1,14 +1,22 @@
 import { env } from '$env/dynamic/private';
+import { COURSES, type RecipeCourse } from '$lib/shared/course';
 import { TAG_CATEGORIES } from '$lib/shared/tags';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import type { Tag, TagCategory } from '../types';
 
-export const imageImportEnabled = (): boolean =>
+export const aiEnabled = (): boolean =>
 	Boolean(env.OPENROUTER_API_KEY) && Boolean(env.OPENROUTER_MODEL_NAME);
 
 const tagCategorySchema = z.enum(TAG_CATEGORIES as [TagCategory, ...TagCategory[]]);
+
+const tagProposalSchema = z.object({
+	category: tagCategorySchema.describe('The category the tag belongs to'),
+	name: z.string().describe('The exact name of an existing tag')
+});
+
+export type TagProposal = z.infer<typeof tagProposalSchema>;
 
 const extractionSchema = z.object({
 	isRecipe: z
@@ -16,19 +24,16 @@ const extractionSchema = z.object({
 		.describe('Whether the image actually shows a recipe. False for anything else.'),
 	name: z.string().describe('The name of the recipe'),
 	description: z.string().describe('A short summary of the dish, at most two sentences'),
+	course: z
+		.enum(COURSES)
+		.nullable()
+		.describe('The position of the dish in a meal, or null if not obvious'),
 	durationMinutes: z
 		.number()
 		.nullable()
 		.describe('Total time needed in minutes, or null if not stated'),
 	portions: z.number().nullable().describe('Number of portions, or null if not stated'),
-	tags: z
-		.array(
-			z.object({
-				category: tagCategorySchema.describe('The category the tag belongs to'),
-				name: z.string().describe('The exact name of an existing tag')
-			})
-		)
-		.describe('Tags chosen from the provided vocabulary'),
+	tags: z.array(tagProposalSchema).describe('Tags chosen from the provided vocabulary'),
 	ingredients: z.array(
 		z
 			.object({
@@ -58,6 +63,7 @@ const EMPTY_EXTRACTION: ExtractedRecipeData = {
 	isRecipe: false,
 	name: '',
 	description: '',
+	course: null,
 	durationMinutes: null,
 	portions: null,
 	tags: [],
@@ -71,6 +77,7 @@ const SYSTEM_PROMPT = [
 	"Name and description are required: if the page does not show them, write them yourself based on the dish, in the recipe's original language. The description is a short summary of the dish, never a copy of the instructions.",
 	'Every other value is optional: return null or an empty array when it is not visible or unclear. Never guess a duration, a portion count or a tag.',
 	'durationMinutes is the total time in minutes. portions is a plain count of servings.',
+	'course is the position of the dish in a meal; return null when it is not obvious.',
 	'Ingredient-values must include both amount and title. Fix typos.',
 	'For instruction section headings: never use step numbers (e.g. "Step 1", "1.", "Schritt 1") as the heading — instead derive a short descriptive title that summarises the action (e.g. "Teig kneten", "Prepare the dough", "Faire revenir les oignons"). Keep the heading in the original language of the recipe.',
 	'If the ingredients list is grouped, it is recommended to write the list of ingredients again to the according step without their amount.'
@@ -124,4 +131,58 @@ export async function extractRecipeFromImage(
 	});
 
 	return output;
+}
+
+export type RecipeTagContext = {
+	name: string;
+	description: string | null;
+	course: RecipeCourse | null;
+	ingredientNames: string[];
+	instructionHeadings: string[];
+};
+
+const TAG_SUGGESTION_SYSTEM_PROMPT = [
+	'You suggest tags for a recipe, picking only from an existing tag vocabulary.',
+	'Propose at most a handful of tags per category. Prefer proposing nothing over guessing.',
+	'Leave a category out entirely when nothing listed fits.'
+].join(' ');
+
+function buildRecipeContextPrompt(recipe: RecipeTagContext): string {
+	return [
+		`Name: ${recipe.name}`,
+		`Description: ${recipe.description ?? '(none)'}`,
+		`Course: ${recipe.course ?? '(none)'}`,
+		`Ingredients: ${recipe.ingredientNames.join(', ') || '(none)'}`,
+		`Instruction section headings: ${recipe.instructionHeadings.join(', ') || '(none)'}`
+	].join('\n');
+}
+
+export async function suggestRecipeTags(
+	recipe: RecipeTagContext,
+	existingTags: Tag[] = []
+): Promise<TagProposal[]> {
+	const apiKey = env.OPENROUTER_API_KEY;
+	const modelName = env.OPENROUTER_MODEL_NAME;
+
+	if (!apiKey || !modelName) {
+		return [];
+	}
+
+	const openrouter = createOpenRouter({ apiKey });
+
+	const { output } = await generateText({
+		model: openrouter.chat(modelName),
+		output: Output.object({
+			schema: z.object({ tags: z.array(tagProposalSchema) })
+		}),
+		system: `${TAG_SUGGESTION_SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
+		messages: [
+			{
+				role: 'user',
+				content: buildRecipeContextPrompt(recipe)
+			}
+		]
+	});
+
+	return output.tags;
 }

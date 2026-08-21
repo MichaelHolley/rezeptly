@@ -177,6 +177,7 @@ export const createRecipe = async (
 				slug,
 				description: data.description,
 				imageUrl: data.imageUrl,
+				course: data.course,
 				durationMinutes: data.durationMinutes,
 				portions: data.portions
 			})
@@ -247,6 +248,7 @@ export const updateRecipe = async (
 				slug,
 				description: data.description,
 				imageUrl: data.imageUrl,
+				course: data.course,
 				durationMinutes: data.durationMinutes,
 				portions: data.portions
 			})

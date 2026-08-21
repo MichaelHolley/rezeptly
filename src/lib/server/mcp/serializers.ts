@@ -8,6 +8,7 @@ export const serializeSummary = (recipe: RecipeMetadata): z.infer<typeof recipeS
 	name: recipe.name,
 	description: recipe.description,
 	imageUrl: recipe.imageUrl,
+	course: recipe.course,
 	durationMinutes: recipe.durationMinutes,
 	portions: recipe.portions,
 	createdAt: recipe.createdAt?.toISOString() ?? null,

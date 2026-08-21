@@ -7,6 +7,7 @@ import * as instructionService from '$lib/server/services/instruction.service';
 import * as recipeService from '$lib/server/services/recipe.service';
 import * as tagService from '$lib/server/services/tag.service';
 import { buildRecipeInput } from '$lib/server/services/util/build-recipe-input';
+import { resolveTags } from '$lib/server/services/util/resolve-tags';
 import type { TagCategory, TagInput } from '$lib/server/types';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -114,6 +115,7 @@ export const updateRecipeDetails = form(
 		tagNutrition,
 		tagDiet,
 		imageUrl,
+		course,
 		durationMinutes
 	}) => {
 		if (!userCanWrite()) {
@@ -134,6 +136,7 @@ export const updateRecipeDetails = form(
 			name,
 			description,
 			imageUrl,
+			course: course ?? null,
 			durationMinutes: durationMinutes ?? null,
 			tags
 		});
@@ -156,6 +159,7 @@ export const createRecipe = form(
 		tagDiet,
 		imageUrl,
 		importImage,
+		course,
 		durationMinutes
 	}) => {
 		if (!userCanWrite()) {
@@ -178,6 +182,7 @@ export const createRecipe = form(
 			name: name.trim(),
 			description: description.trim(),
 			imageUrl,
+			course: course ?? null,
 			durationMinutes: durationMinutes ?? null,
 			ingredients: extracted.ingredients,
 			instructions: extracted.instructions.map((item, i) => ({ ...item, stepOrder: i + 1 })),
@@ -219,6 +224,56 @@ export const importRecipeFromImage = command(z.instanceof(File), async (image) =
 	await getDraftRecipesMetadata().refresh();
 
 	return { slug: recipe.slug };
+});
+
+const EMPTY_TAG_SUGGESTIONS: Record<TagCategory, string[]> = {
+	type: [],
+	cuisine: [],
+	nutrition: [],
+	diet: []
+};
+
+export const suggestRecipeTags = command(recipeIdSchema, async (recipeId) => {
+	if (!userCanWrite()) {
+		throwNewPermissionError();
+	}
+
+	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
+
+	if (recipe.ingredients.length === 0) {
+		return EMPTY_TAG_SUGGESTIONS;
+	}
+
+	const existingTags = await tagService.getAllTags();
+	const proposed = await aiService.suggestRecipeTags(
+		{
+			name: recipe.name,
+			description: recipe.description,
+			course: recipe.course,
+			ingredientNames: recipe.ingredients.map((i) => i.name),
+			instructionHeadings: recipe.instructions
+				.map((i) => i.heading)
+				.filter((heading): heading is string => Boolean(heading))
+		},
+		existingTags
+	);
+
+	const currentTagKeys = new Set(recipe.tags.map((tag) => `${tag.category}::${tag.name}`));
+	const resolved = resolveTags(proposed, existingTags).filter(
+		(tag) => !currentTagKeys.has(`${tag.category}::${tag.name}`)
+	);
+
+	const grouped: Record<TagCategory, string[]> = {
+		type: [],
+		cuisine: [],
+		nutrition: [],
+		diet: []
+	};
+	for (const tag of resolved) {
+		grouped[tag.category].push(tag.name);
+	}
+
+	return grouped;
 });
 
 export const updateInstructions = form(
