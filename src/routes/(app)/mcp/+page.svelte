@@ -19,7 +19,7 @@
 	const tools = [
 		{
 			name: 'list_recipes',
-			description: 'Browse recipes, optionally filtered by search text or tags.'
+			description: 'Browse recipes, optionally filtered by search text, tags, or course.'
 		},
 		{ name: 'list_tags', description: 'List all tags in use, with the slugs used for filtering.' },
 		{
