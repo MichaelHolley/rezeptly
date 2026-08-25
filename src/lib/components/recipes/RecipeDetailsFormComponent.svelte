@@ -111,7 +111,7 @@
 			<Button
 				type="button"
 				variant="outline"
-				class="border-draft text-draft hover:bg-draft/10 hover:text-draft"
+				class="border-ai text-ai hover:bg-ai/10 hover:text-ai"
 				onclick={handleSuggestTags}
 				disabled={!hasIngredients || !!suggestRecipeTags.pending}
 				title={!hasIngredients ? 'Add ingredients first to get tag suggestions' : undefined}
