@@ -48,10 +48,14 @@
 	};
 
 	const handleDeleteImage = async (recipeId: number) => {
+		const query = getRecipeBySlug(params.slug);
+		const release = query.withOverride((recipe) => ({ ...recipe, imageUrl: null }));
 		try {
 			await deleteRecipeImage(recipeId);
 		} catch (error) {
 			reportError(error);
+		} finally {
+			release();
 		}
 	};
 
