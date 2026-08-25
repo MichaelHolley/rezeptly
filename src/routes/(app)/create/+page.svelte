@@ -14,6 +14,7 @@
 	import { toAppError } from '$lib/shared/error';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import type { PageData } from './$types';
+	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 
 	let { data }: { data: PageData } = $props();
 
@@ -129,12 +130,13 @@
 				}}
 				ondrop={handleImportDrop}
 				class="flex w-full flex-col items-center justify-center gap-1 rounded-sm border-2 border-dashed py-6 transition-colors hover:cursor-pointer {isImportDragOver
-					? 'border-zinc-400 bg-zinc-100'
-					: 'border-zinc-300 bg-transparent hover:bg-zinc-50'}"
+					? 'border-ai/50 bg-ai/5'
+					: 'border-ai/30 bg-transparent hover:bg-ai/5'}"
 			>
-				<span class="text-sm text-zinc-500"
-					>{importImageName ?? 'Import from image (optional)'}</span
-				>
+				<span class="text-ai flex items-center gap-1.5 text-sm">
+					<SparklesIcon class="size-4" />
+					{importImageName ?? 'Import from image (optional)'}
+				</span>
 				<span class="text-xs text-zinc-400">Click or drag & drop</span>
 			</button>
 		</div>
