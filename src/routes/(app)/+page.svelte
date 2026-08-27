@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getRecipesMetadata } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import RecipeListComponent from '$lib/components/recipes/RecipeListComponent.svelte';
 </script>
 
@@ -16,7 +16,7 @@
 
 	{#snippet pending()}
 		<div class="flex h-64 items-center justify-center">
-			<LoadingComponent class="h-8 w-8" />
+			<Spinner class="h-8 w-8" />
 		</div>
 	{/snippet}
 

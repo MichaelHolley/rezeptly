@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { importRecipeFromImage } from '$lib/api/recipes.remote';
-	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import { toAppError } from '$lib/shared/error';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
@@ -81,7 +81,7 @@
 				: 'border-ai/30 bg-transparent hover:cursor-pointer hover:bg-ai/5'}"
 		>
 			{#if isImporting}
-				<LoadingComponent class="text-ai h-8 w-8" />
+				<Spinner class="text-ai h-8 w-8" />
 				<span class="text-sm text-zinc-500">Reading the recipe…</span>
 			{:else}
 				<span class="text-ai flex items-center gap-1.5 text-sm">

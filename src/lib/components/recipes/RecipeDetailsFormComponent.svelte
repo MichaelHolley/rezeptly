@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { suggestRecipeTags, updateRecipeDetails } from '$lib/api/recipes.remote';
 	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -117,7 +117,7 @@
 				title={!hasIngredients ? 'Add ingredients first to get tag suggestions' : undefined}
 			>
 				{#if suggestRecipeTags.pending}
-					<LoadingComponent class="size-4" />
+					<Spinner class="size-4" />
 				{:else}
 					<SparklesIcon />
 				{/if}
