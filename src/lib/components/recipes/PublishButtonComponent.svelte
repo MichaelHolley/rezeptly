@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { setRecipePublished } from '$lib/api/recipes.remote';
-	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import { Button } from '$lib/components/ui/button';
 	import { reportError } from '$lib/shared/toast';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
@@ -31,7 +31,7 @@
 		onclick={togglePublished}
 	>
 		{#if !!setRecipePublished.pending}
-			<LoadingComponent class="size-4" />
+			<Spinner class="size-4" />
 		{:else if isDraft}
 			<SendIcon />
 		{:else}
