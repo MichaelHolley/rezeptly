@@ -13,6 +13,7 @@ import type {
 	Tag,
 	TagInput
 } from '../types';
+import type { RecipeCourse } from '$lib/shared/course';
 import { deleteImage } from './image.service';
 import { upsertTags } from './tag.service';
 import { generateSlug } from './util/generate-slug';
@@ -28,6 +29,7 @@ const flattenTags = <T extends { tags: { tag: Tag }[] }>(row: T) => ({
 export type RecipeFilter = {
 	search?: string;
 	tags?: string[];
+	course?: RecipeCourse;
 };
 
 /** Escapes ILIKE wildcards so a user-supplied term matches literally. */
@@ -80,6 +82,10 @@ const buildRecipeWhere = (filter?: RecipeFilter, options?: ReadOptions): SQL | u
 			.having(sql`count(distinct ${tags.slug}) = ${filter.tags.length}`);
 
 		conditions.push(inArray(recipes.id, matchingIds));
+	}
+
+	if (filter?.course) {
+		conditions.push(eq(recipes.course, filter.course));
 	}
 
 	return conditions.length ? and(...conditions) : undefined;

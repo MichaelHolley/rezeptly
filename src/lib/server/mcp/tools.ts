@@ -5,6 +5,7 @@ import * as tagService from '../services/tag.service';
 import { toToolError, toolResult } from './result';
 import { recipeDetailSchema, recipeSummarySchema, tagSchema } from './schemas';
 import { serializeDetail, serializeSummary } from './serializers';
+import { COURSES } from '$lib/shared/course';
 
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 25;
@@ -14,7 +15,7 @@ export function registerListRecipes(server: McpServer): void {
 		'list_recipes',
 		{
 			title: 'List recipes',
-			description: `List recipes newest first, without ingredients or instructions. Optionally narrow with "search" (matches name and description) and "tags" (recipe must have every tag slug given; discover slugs from the "tags" field in results). Returns at most ${MAX_LIMIT} per call; page through them with "offset". Use "get_recipe" for a recipe's full detail.`,
+			description: `List recipes newest first, without ingredients or instructions. Optionally narrow with "search" (matches name and description), "tags" (recipe must have every tag slug given; discover slugs from the "tags" field in results), and "course". Returns at most ${MAX_LIMIT} per call; page through them with "offset". Use "get_recipe" for a recipe's full detail.`,
 			inputSchema: z.object({
 				search: z
 					.string()
@@ -29,6 +30,7 @@ export function registerListRecipes(server: McpServer): void {
 					.describe(
 						'Tag slugs a recipe must all have to match. Discover valid slugs from the "tags" field of previous results.'
 					),
+				course: z.enum(COURSES).optional().describe('Restrict results to a single recipe course.'),
 				limit: z
 					.int()
 					.min(1)
@@ -50,9 +52,9 @@ export function registerListRecipes(server: McpServer): void {
 			}),
 			annotations: { readOnlyHint: true, openWorldHint: false }
 		},
-		async ({ search, tags, limit, offset }) => {
+		async ({ search, tags, course, limit, offset }) => {
 			try {
-				const filter = { search, tags };
+				const filter = { search, tags, course };
 				const [items, total] = await Promise.all([
 					recipeService.getRecipesMetadata(filter, { limit, offset }),
 					recipeService.countRecipes(filter)

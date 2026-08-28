@@ -3,7 +3,7 @@
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
-	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
@@ -48,10 +48,14 @@
 	};
 
 	const handleDeleteImage = async (recipeId: number) => {
+		const query = getRecipeBySlug(params.slug);
+		const release = query.withOverride((recipe) => ({ ...recipe, imageUrl: null }));
 		try {
 			await deleteRecipeImage(recipeId);
 		} catch (error) {
 			reportError(error);
+		} finally {
+			release();
 		}
 	};
 
@@ -187,7 +191,7 @@
 						>
 							<div class="rounded bg-zinc-200/70 p-1">
 								{#if !!deleteRecipeImage.pending}
-									<LoadingComponent class="size-4" />
+									<Spinner class="size-4" />
 								{:else}
 									<TrashIcon class="stroke-zinc-700 size-4" />
 								{/if}
@@ -213,7 +217,7 @@
 						>
 							<div class="rounded bg-zinc-200/70 p-1">
 								{#if !!deleteRecipeImage.pending}
-									<LoadingComponent class="size-4" />
+									<Spinner class="size-4" />
 								{:else}
 									<TrashIcon class="stroke-zinc-700 size-4" />
 								{/if}
@@ -239,7 +243,7 @@
 				disabled={!!uploadRecipeImage.pending}
 			>
 				{#if !!uploadRecipeImage.pending}
-					<LoadingComponent />
+					<Spinner />
 				{:else}
 					<div class="flex flex-col items-center gap-1">
 						<PlusIcon class="size-8 text-zinc-500" />
@@ -273,7 +277,7 @@
 
 	{#snippet pending()}
 		<div class="flex h-64 items-center justify-center">
-			<LoadingComponent class="h-8 w-8" />
+			<Spinner class="h-8 w-8" />
 		</div>
 	{/snippet}
 

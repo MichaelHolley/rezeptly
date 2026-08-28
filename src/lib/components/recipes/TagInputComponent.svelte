@@ -125,7 +125,7 @@
 		{#each aiSuggestedTags as tag (tag)}
 			<TagComponent onSelect={() => addTag(tag)}>
 				{tag}
-				<PlusIcon class="text-draft" />
+				<PlusIcon class="text-ai" />
 			</TagComponent>
 		{/each}
 		{#each recommendedTags as tag (tag)}

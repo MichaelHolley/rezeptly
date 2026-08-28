@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { importRecipeFromImage } from '$lib/api/recipes.remote';
-	import LoadingComponent from '$lib/components/common/LoadingComponent.svelte';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import { toAppError } from '$lib/shared/error';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
+	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -76,14 +77,17 @@
 			ondragleave={() => (isDragOver = false)}
 			ondrop={handleDrop}
 			class="flex w-full flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed py-16 transition-colors disabled:cursor-default {isDragOver
-				? 'border-zinc-400 bg-zinc-100'
-				: 'border-zinc-300 bg-transparent hover:cursor-pointer hover:bg-zinc-50'}"
+				? 'border-ai/50 bg-ai/5'
+				: 'border-ai/30 bg-transparent hover:cursor-pointer hover:bg-ai/5'}"
 		>
 			{#if isImporting}
-				<LoadingComponent class="h-8 w-8" />
+				<Spinner class="text-ai h-8 w-8" />
 				<span class="text-sm text-zinc-500">Reading the recipe…</span>
 			{:else}
-				<span class="text-sm text-zinc-500">Import from image</span>
+				<span class="text-ai flex items-center gap-1.5 text-sm">
+					<SparklesIcon class="size-4" />
+					Import from image
+				</span>
 				<span class="text-xs text-zinc-400">Click or drag & drop</span>
 			{/if}
 		</button>
