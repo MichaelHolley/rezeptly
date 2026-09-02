@@ -193,9 +193,6 @@ jobs:
       - name: Run database migrations
         run: pnpm db:migrate
 
-      - name: Seed database
-        run: pnpm db:seed --seed
-
       - name: Run e2e tests
         run: pnpm test:e2e
 
