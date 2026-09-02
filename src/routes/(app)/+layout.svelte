@@ -25,7 +25,7 @@
 	let menuOpen = $state(false);
 
 	$effect(() => {
-		PermissionsStore.roles = userRoles.current || [];
+		PermissionsStore.roles = userRoles.current ?? data.roles;
 		AvailableTagsStore.tags = availableTags.current || [];
 	});
 

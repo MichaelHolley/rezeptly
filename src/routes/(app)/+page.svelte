@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { getRecipesMetadata } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import { Spinner } from '$lib/components/ui/spinner';
 	import RecipeListComponent from '$lib/components/recipes/RecipeListComponent.svelte';
+	import { Spinner } from '$lib/components/ui/spinner';
 </script>
 
 <svelte:head>
