@@ -31,4 +31,5 @@ test('logs in and returns to the requested route', async ({ page }) => {
 
 	await expect(page).toHaveURL('/create');
 	await expect(page.getByPlaceholder('Password')).toHaveCount(0);
+	await expect(page.getByRole('button', { name: 'Logout' })).toBeVisible();
 });

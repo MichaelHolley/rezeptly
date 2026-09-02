@@ -19,7 +19,7 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 - **`(app)` scope**: All authenticated routes live in `src/routes/(app)/`. Put new authenticated routes there.
 - **Protected routes**: Add the pathname to `protectedRoutes` in `src/hooks.server.ts`. The `handleAuth` hook redirects unauthenticated visitors to `/auth?returnTo=…` before any load runs — do not re-check auth in a `+page.server.ts`.
-- **Shared route data**: `src/routes/(app)/+layout.server.ts` supplies `roles` and `features` to every route in the scope. Pages inherit it through `data`, so a `+page.server.ts` that only re-exposes the same value is redundant.
+- **Shared route data**: `src/routes/(app)/+layout.server.ts` supplies `features` to every route in the scope. Pages inherit it through `data`, so a `+page.server.ts` that only re-exposes the same value is redundant.
 - **Write permission**: Enforce per mutation with `userCanWrite()` in the remote function. The hook checks authentication, not role.
 
 ## Documentation

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createRecipe, deleteRecipe, uniqueName } from './helpers';
+import { createRecipe, uniqueName } from './helpers';
 
 test('edits the recipe name and description', async ({ page }) => {
 	const name = uniqueName('E2E Edit Recipe');
@@ -15,14 +15,12 @@ test('edits the recipe name and description', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: renamed })).toBeVisible();
 	await expect(page.getByText('Updated by the e2e suite')).toBeVisible();
 	await expect(page).not.toHaveURL(`/${slug}`);
-
-	await deleteRecipe(page, new URL(page.url()).pathname.slice(1));
 });
 
 test('adds and removes an ingredient', async ({ page }) => {
 	const name = uniqueName('E2E Ingredient Recipe');
 
-	const slug = await createRecipe(page, name);
+	await createRecipe(page, name);
 
 	await page.locator('button[title="Edit Ingredients"]:visible').click();
 	await page.getByPlaceholder('Ingredient & Quantity').fill('2 cups of flour');
@@ -32,14 +30,12 @@ test('adds and removes an ingredient', async ({ page }) => {
 
 	await page.getByTitle('Delete ingredient').click();
 	await expect(page.getByTitle('Edit ingredient', { exact: true })).toHaveCount(0);
-
-	await deleteRecipe(page, slug);
 });
 
 test('adds instruction steps', async ({ page }) => {
 	const name = uniqueName('E2E Instructions Recipe');
 
-	const slug = await createRecipe(page, name);
+	await createRecipe(page, name);
 
 	await page.getByTitle('Edit instructions').click();
 	await page.getByRole('button', { name: 'Add Step' }).click();
@@ -54,16 +50,16 @@ test('adds instruction steps', async ({ page }) => {
 
 	await page.reload();
 	await expect(page.getByText('Mix everything')).toBeVisible();
-
-	await deleteRecipe(page, slug);
 });
 
 test('deletes a recipe', async ({ page }) => {
 	const name = uniqueName('E2E Delete Recipe');
 
-	const slug = await createRecipe(page, name);
+	await createRecipe(page, name);
 
-	await deleteRecipe(page, slug);
+	await page.getByTitle('Delete Recipe').click();
+	await page.getByRole('button', { name: 'Delete', exact: true }).click();
+	await page.waitForURL('/');
 
 	await page.goto('/drafts');
 	await expect(page.getByText(name)).toHaveCount(0);

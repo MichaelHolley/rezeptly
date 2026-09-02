@@ -3,9 +3,8 @@ import { aiEnabled } from '$lib/server/services/ai.service';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = () => {
-	const roles = getRoles();
 	return {
-		roles: roles ?? [],
+		roles: getRoles() ?? [],
 		features: {
 			imageImport: aiEnabled(),
 			tagSuggestions: aiEnabled()
