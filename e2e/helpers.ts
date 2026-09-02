@@ -18,10 +18,3 @@ export async function createRecipe(
 
 	return new URL(page.url()).pathname.slice(1);
 }
-
-export async function deleteRecipe(page: Page, slug: string) {
-	await page.goto(`/${slug}`);
-	await page.getByTitle('Delete Recipe').click();
-	await page.getByRole('button', { name: 'Delete', exact: true }).click();
-	await page.waitForURL('/');
-}

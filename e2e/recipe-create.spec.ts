@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { createRecipe, deleteRecipe, uniqueName } from './helpers';
+import { createRecipe, uniqueName } from './helpers';
 
 test('creates a recipe as a draft', async ({ page }) => {
 	const name = uniqueName('E2E Draft Recipe');
 
-	const slug = await createRecipe(page, name);
+	await createRecipe(page, name);
 
 	await expect(page.getByText('Draft', { exact: true })).toBeVisible();
 
@@ -13,8 +13,6 @@ test('creates a recipe as a draft', async ({ page }) => {
 
 	await page.goto('/');
 	await expect(page.getByText(name)).toHaveCount(0);
-
-	await deleteRecipe(page, slug);
 });
 
 test('publishes a draft and unpublishes it again', async ({ page }) => {
@@ -35,8 +33,6 @@ test('publishes a draft and unpublishes it again', async ({ page }) => {
 
 	await page.goto('/');
 	await expect(page.getByText(name)).toHaveCount(0);
-
-	await deleteRecipe(page, slug);
 });
 
 test('creates a recipe with course, duration and a tag', async ({ page }) => {
@@ -60,8 +56,6 @@ test('creates a recipe with course, duration and a tag', async ({ page }) => {
 	await expect(page.getByText('30 min')).toBeVisible();
 	await expect(page.getByText('Dessert')).toBeVisible();
 	await expect(page.getByText('Italian')).toBeVisible();
-
-	await deleteRecipe(page, new URL(page.url()).pathname.slice(1));
 });
 
 test('rejects a blank name on the server', async ({ page }) => {
