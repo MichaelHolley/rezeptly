@@ -1,4 +1,4 @@
-import { command, form, getRequestEvent, query } from '$app/server';
+import { command, form, getRequestEvent } from '$app/server';
 import { AUTH_PASSWORD } from '$env/static/private';
 import {
 	deleteSessionTokenCookie,
@@ -6,20 +6,15 @@ import {
 	setSessionTokenCookie,
 	verifyPassword
 } from '$lib/server/auth/auth';
-import { ADMIN_ROLE, getRoles } from '$lib/server/auth/permissions';
+import { ADMIN_ROLE } from '$lib/server/auth/permissions';
 import { checkRateLimit, recordFailedAttempt, resetAttempts } from '$lib/server/auth/rateLimiter';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-
-export const getUserRoles = query(async () => {
-	return getRoles() || [];
-});
 
 export const logout = command(async () => {
 	const event = getRequestEvent();
 	deleteSessionTokenCookie(event);
 	event.locals.roles = [];
-	await getUserRoles().refresh();
 
 	return { success: true };
 });
@@ -52,7 +47,6 @@ export const login = form(
 		const { token, expires } = generateSessionToken();
 		setSessionTokenCookie(event, token, expires);
 		event.locals.roles = [ADMIN_ROLE];
-		await getUserRoles().refresh();
 
 		redirect(303, returnTo || '/');
 	}

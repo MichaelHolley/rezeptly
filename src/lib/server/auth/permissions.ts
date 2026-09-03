@@ -2,7 +2,7 @@ import { getRequestEvent, query } from '$app/server';
 import { redirect } from '@sveltejs/kit';
 
 export const ADMIN_ROLE = 'admin';
-export type ROLE = typeof ADMIN_ROLE; // | typeof ANOTHER_ROLE
+export type ROLE = typeof ADMIN_ROLE;
 
 export function getRoles() {
 	const { locals } = getRequestEvent();
