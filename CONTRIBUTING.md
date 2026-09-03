@@ -32,3 +32,13 @@ pnpm db:seed -- --seed    # seed, keep existing data
 ```bash
 pnpm dev
 ```
+
+## Test
+
+```bash
+pnpm test       # unit and component tests
+pnpm test:e2e   # isolated database, app server, and Playwright tests
+```
+
+The E2E command requires Docker. It creates a disposable PostgreSQL container and removes it
+after the test run, leaving the development database untouched.
