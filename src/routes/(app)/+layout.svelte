@@ -26,6 +26,9 @@
 
 	$effect(() => {
 		PermissionsStore.roles = userRoles.current ?? data.roles;
+	});
+
+	$effect(() => {
 		AvailableTagsStore.tags = availableTags.current || [];
 	});
 
