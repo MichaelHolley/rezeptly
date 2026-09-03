@@ -86,7 +86,7 @@
 		<InputGroup.Button
 			size="sm"
 			onclick={() => onchange([])}
-			class="hover:bg-transparent"
+			class="hover:bg-transparent -ml-3"
 			aria-label="Clear selection"
 		>
 			<XIcon class="size-3.5 text-orange-700 dark:text-orange-300" />
