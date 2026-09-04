@@ -1,10 +1,33 @@
 import { env } from '$env/dynamic/private';
+import { recipeIdSchema } from '$lib/api/schemas';
+import {
+	assistantDetailsProposalSchema,
+	assistantIngredientProposalSchema,
+	assistantInstructionProposalSchema,
+	detailsProposalIsStale,
+	listProposalIsStale,
+	type AssistantDetailsState,
+	type AssistantInstruction,
+	type RecipeAssistantMessage
+} from '$lib/shared/recipe-assistant';
 import { COURSES, type RecipeCourse } from '$lib/shared/course';
 import { TAG_CATEGORIES } from '$lib/shared/tags';
+import { userCanWrite } from '$lib/server/auth/permissions';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { generateText, Output } from 'ai';
+import {
+	convertToModelMessages,
+	generateText,
+	Output,
+	isStepCount,
+	streamText,
+	tool,
+	validateUIMessages
+} from 'ai';
 import { z } from 'zod';
-import type { Tag, TagCategory } from '../types';
+import type { RecipeId, RecipeWithDetails, Tag, TagCategory } from '../types';
+import * as ingredientService from './ingredient.service';
+import * as instructionService from './instruction.service';
+import * as recipeService from './recipe.service';
 
 export const aiEnabled = (): boolean =>
 	Boolean(env.OPENROUTER_API_KEY) && Boolean(env.OPENROUTER_MODEL_NAME);
@@ -116,14 +139,15 @@ export async function extractRecipeFromImage(
 		output: Output.object({
 			schema: extractionSchema
 		}),
-		system: `${SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
+		instructions: `${SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
 		messages: [
 			{
 				role: 'user',
 				content: [
 					{
-						type: 'image',
-						image: base64
+						type: 'file',
+						data: base64,
+						mediaType: 'image'
 					}
 				]
 			}
@@ -175,7 +199,7 @@ export async function suggestRecipeTags(
 		output: Output.object({
 			schema: z.object({ tags: z.array(tagProposalSchema) })
 		}),
-		system: `${TAG_SUGGESTION_SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
+		instructions: `${TAG_SUGGESTION_SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
 		messages: [
 			{
 				role: 'user',
@@ -185,4 +209,177 @@ export async function suggestRecipeTags(
 	});
 
 	return output.tags;
+}
+
+const ASSISTANT_SYSTEM_PROMPT = [
+	'You are a focused assistant for the draft recipe supplied below.',
+	'Answer questions about this recipe and closely related cooking topics, and politely decline unrelated requests.',
+	'Reply in the language used by the writer. Keep recipe content in its current language unless the writer explicitly asks for a translation.',
+	'Only call a mutation tool when the writer explicitly asks to change the recipe. Advice, review, questions, and discussion are not mutation intent.',
+	'Ask a clarifying question when ambiguity could materially change the recipe. Use reasonable defaults for harmless wording and formatting choices.',
+	'Each tool call proposes a change and requires the writer to approve it. Never claim a proposal has already been applied.',
+	'Call each tool at most once per writer message. After a proposal is rejected, do not propose it again without a new explicit writer request.',
+	'For details, include only changed fields and copy each current value exactly into from.',
+	'For ingredients and instructions, expected must be an exact copy of the complete current list and replacement must be the complete desired list.'
+].join(' ');
+
+function detailsState(recipe: RecipeWithDetails): AssistantDetailsState {
+	return {
+		name: recipe.name,
+		description: recipe.description,
+		course: recipe.course,
+		durationMinutes: recipe.durationMinutes,
+		portions: recipe.portions
+	};
+}
+
+function instructionState(recipe: RecipeWithDetails): AssistantInstruction[] {
+	return recipe.instructions.map(({ heading, instructions }) => ({
+		heading: heading?.trim() || null,
+		instructions
+	}));
+}
+
+function recipeContext(recipe: RecipeWithDetails): string {
+	return JSON.stringify({
+		details: detailsState(recipe),
+		tags: recipe.tags.map(({ name, category }) => ({ name, category })),
+		ingredients: recipe.ingredients.map(({ name }) => name),
+		instructions: instructionState(recipe)
+	});
+}
+
+async function currentDraft(recipeId: RecipeId): Promise<RecipeWithDetails | null> {
+	if (!userCanWrite()) return null;
+	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
+	return recipe.publishedAt == null ? recipe : null;
+}
+
+function toolResult(recipe: RecipeWithDetails) {
+	return { status: 'applied' as const, recipe: { id: recipe.id, slug: recipe.slug } };
+}
+
+async function safeToolExecution<T>(operation: () => Promise<T>) {
+	try {
+		return await operation();
+	} catch (error) {
+		console.error('Recipe assistant tool failed', error);
+		return {
+			status: 'failed' as const,
+			message: 'The proposed change could not be applied. Please request a fresh proposal.'
+		};
+	}
+}
+
+export function createRecipeAssistantTools(recipeId: RecipeId) {
+	return {
+		updateDetails: tool({
+			description:
+				'Propose changes to one or more recipe detail fields. Use only after an explicit request to change them.',
+			inputSchema: assistantDetailsProposalSchema,
+			needsApproval: true,
+			execute: (proposal) =>
+				safeToolExecution(async () => {
+					const recipe = await currentDraft(recipeId);
+					if (!recipe)
+						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+					if (detailsProposalIsStale(detailsState(recipe), proposal)) {
+						return {
+							status: 'stale' as const,
+							message: 'The affected recipe details changed after this proposal was created.'
+						};
+					}
+
+					const changes = Object.fromEntries(
+						Object.entries(proposal).map(([field, change]) => [field, change.to])
+					);
+					await recipeService.updateRecipe(recipeId, changes);
+					return toolResult(await recipeService.getRecipeById(recipeId, { includeDrafts: true }));
+				})
+		}),
+		replaceIngredients: tool({
+			description:
+				'Propose replacing the complete ingredient list. Use only after an explicit request to change ingredients.',
+			inputSchema: assistantIngredientProposalSchema,
+			needsApproval: true,
+			execute: ({ expected, replacement }) =>
+				safeToolExecution(async () => {
+					const recipe = await currentDraft(recipeId);
+					if (!recipe)
+						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+					if (
+						listProposalIsStale(
+							recipe.ingredients.map(({ name }) => name),
+							expected
+						)
+					) {
+						return {
+							status: 'stale' as const,
+							message: 'The ingredient list changed after this proposal was created.'
+						};
+					}
+
+					await ingredientService.replaceIngredientsForRecipe(recipeId, replacement);
+					return toolResult(await recipeService.getRecipeById(recipeId, { includeDrafts: true }));
+				})
+		}),
+		replaceInstructions: tool({
+			description:
+				'Propose replacing the complete ordered instruction list. Use only after an explicit request to change instructions.',
+			inputSchema: assistantInstructionProposalSchema,
+			needsApproval: true,
+			execute: ({ expected, replacement }) =>
+				safeToolExecution(async () => {
+					const recipe = await currentDraft(recipeId);
+					if (!recipe)
+						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+					if (listProposalIsStale(instructionState(recipe), expected)) {
+						return {
+							status: 'stale' as const,
+							message: 'The instruction list changed after this proposal was created.'
+						};
+					}
+
+					await instructionService.upsertInstructionsForRecipe(
+						recipeId,
+						replacement.map((instruction, index) => ({
+							...instruction,
+							stepOrder: index + 1,
+							recipeId
+						}))
+					);
+					return toolResult(await recipeService.getRecipeById(recipeId, { includeDrafts: true }));
+				})
+		})
+	};
+}
+
+export async function streamRecipeAssistant(
+	recipe: RecipeWithDetails,
+	messages: unknown
+): Promise<Response> {
+	const apiKey = env.OPENROUTER_API_KEY;
+	const modelName = env.OPENROUTER_MODEL_NAME;
+	const approvalSecret = env.JWT_SECRET;
+	if (!apiKey || !modelName || !approvalSecret)
+		throw new Error('Recipe assistant is not configured');
+
+	const tools = createRecipeAssistantTools(recipeIdSchema.parse(recipe.id));
+	const validatedMessages = await validateUIMessages<RecipeAssistantMessage>({ messages, tools });
+	if (validatedMessages.some((message) => message.role === 'system')) {
+		throw new Error('System messages are not accepted');
+	}
+	const result = streamText({
+		model: createOpenRouter({ apiKey }).chat(modelName),
+		instructions: `${ASSISTANT_SYSTEM_PROMPT}\n\nCurrent recipe data:\n${recipeContext(recipe)}`,
+		messages: await convertToModelMessages(validatedMessages, { tools }),
+		tools,
+		stopWhen: isStepCount(5),
+		maxOutputTokens: 1200,
+		experimental_toolApprovalSecret: approvalSecret
+	});
+
+	return result.toUIMessageStreamResponse({
+		onError: () => 'The assistant could not complete that response. Please try again.'
+	});
 }

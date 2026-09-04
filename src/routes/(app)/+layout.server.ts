@@ -7,7 +7,8 @@ export const load: LayoutServerLoad = () => {
 		roles: getRoles() ?? [],
 		features: {
 			imageImport: aiEnabled(),
-			tagSuggestions: aiEnabled()
+			tagSuggestions: aiEnabled(),
+			recipeAssistant: aiEnabled()
 		}
 	};
 };

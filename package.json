@@ -4,7 +4,7 @@
   "version": "1.8.0",
   "type": "module",
   "engines": {
-    "node": "^20.19.0 || ^22.13.0 || >=24"
+    "node": "^22.13.0 || >=24"
   },
   "scripts": {
     "dev": "vite dev --open",
@@ -72,9 +72,10 @@
     "zod": "^4.5.4"
   },
   "dependencies": {
-    "@openrouter/ai-sdk-provider": "^2.10.0",
+    "@ai-sdk/svelte": "^5.0.89",
+    "@openrouter/ai-sdk-provider": "^3.0.0",
     "@vercel/blob": "^2.8.0",
-    "ai": "^6.0.273",
+    "ai": "^7.0.89",
     "drizzle-orm": "^0.45.2",
     "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.9",
