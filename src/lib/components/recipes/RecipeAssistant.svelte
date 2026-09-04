@@ -2,10 +2,11 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Spinner } from '$lib/components/ui/spinner';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import type {
-		AssistantDetailsProposal,
-		AssistantToolResult,
-		RecipeAssistantMessage
+	import {
+		diffLists,
+		type AssistantDetailsProposal,
+		type AssistantToolResult,
+		type RecipeAssistantMessage
 	} from '$lib/shared/recipe-assistant';
 	import { Chat } from '@ai-sdk/svelte';
 	import BotIcon from '@lucide/svelte/icons/bot';
@@ -71,11 +72,13 @@
 	};
 
 	function detailRows(proposal: AssistantDetailsProposal) {
-		return Object.entries(proposal).map(([field, change]) => ({
-			label: detailLabels[field as keyof AssistantDetailsProposal],
-			from: change.from,
-			to: change.to
-		}));
+		return Object.entries(proposal)
+			.filter(([, change]) => change.from !== change.to)
+			.map(([field, change]) => ({
+				label: detailLabels[field as keyof AssistantDetailsProposal],
+				from: change.from,
+				to: change.to
+			}));
 	}
 
 	function displayValue(value: unknown) {
@@ -235,13 +238,19 @@
 								</div>
 							{:else if part.type === 'tool-replaceIngredients' && part.state !== 'input-streaming' && part.input}
 								<div>
-									<p class="font-semibold">Complete replacement ingredient list</p>
-									{#if part.input.replacement.length === 0}
+									<p class="font-semibold">Proposed ingredient changes</p>
+									{#if part.input.expected.length === 0 && part.input.replacement.length === 0}
 										<p class="mt-2 italic text-zinc-500">Empty list</p>
 									{:else}
 										<ul class="mt-2 list-disc space-y-1 pl-5">
-											{#each part.input.replacement as ingredient, i (`${ingredient}-${i}`)}<li>
-													{ingredient}
+											{#each diffLists(part.input.expected, part.input.replacement) as entry, i (`${entry.kind}-${entry.value}-${i}`)}<li
+													class={entry.kind === 'removed'
+														? 'text-zinc-500 line-through'
+														: entry.kind === 'added'
+															? 'font-medium'
+															: undefined}
+												>
+													{entry.value}
 												</li>{/each}
 										</ul>
 									{/if}
@@ -252,16 +261,22 @@
 								</div>
 							{:else if part.type === 'tool-replaceInstructions' && part.state !== 'input-streaming' && part.input}
 								<div>
-									<p class="font-semibold">Complete replacement instructions</p>
-									{#if part.input.replacement.length === 0}
+									<p class="font-semibold">Proposed instruction changes</p>
+									{#if part.input.expected.length === 0 && part.input.replacement.length === 0}
 										<p class="mt-2 italic text-zinc-500">Empty list</p>
 									{:else}
 										<ol class="mt-2 list-decimal space-y-2 pl-5">
-											{#each part.input.replacement as instruction, i (`${instruction.heading}-${i}`)}
-												<li>
-													{#if instruction.heading}<strong
-															>{instruction.heading}:
-														</strong>{/if}{instruction.instructions}
+											{#each diffLists(part.input.expected, part.input.replacement) as entry, i (`${entry.kind}-${entry.value.heading}-${i}`)}
+												<li
+													class={entry.kind === 'removed'
+														? 'text-zinc-500 line-through'
+														: entry.kind === 'added'
+															? 'font-medium'
+															: undefined}
+												>
+													{#if entry.value.heading}<strong
+															>{entry.value.heading}:
+														</strong>{/if}{entry.value.instructions}
 												</li>
 											{/each}
 										</ol>

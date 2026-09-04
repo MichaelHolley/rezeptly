@@ -18,7 +18,7 @@ import {
 	convertToModelMessages,
 	generateText,
 	Output,
-	stepCountIs,
+	isStepCount,
 	streamText,
 	tool,
 	validateUIMessages
@@ -139,14 +139,15 @@ export async function extractRecipeFromImage(
 		output: Output.object({
 			schema: extractionSchema
 		}),
-		system: `${SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
+		instructions: `${SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
 		messages: [
 			{
 				role: 'user',
 				content: [
 					{
-						type: 'image',
-						image: base64
+						type: 'file',
+						data: base64,
+						mediaType: 'image'
 					}
 				]
 			}
@@ -198,7 +199,7 @@ export async function suggestRecipeTags(
 		output: Output.object({
 			schema: z.object({ tags: z.array(tagProposalSchema) })
 		}),
-		system: `${TAG_SUGGESTION_SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
+		instructions: `${TAG_SUGGESTION_SYSTEM_PROMPT}\n\n${buildTagVocabularyPrompt(existingTags)}`,
 		messages: [
 			{
 				role: 'user',
@@ -370,10 +371,10 @@ export async function streamRecipeAssistant(
 	}
 	const result = streamText({
 		model: createOpenRouter({ apiKey }).chat(modelName),
-		system: `${ASSISTANT_SYSTEM_PROMPT}\n\nCurrent recipe data:\n${recipeContext(recipe)}`,
+		instructions: `${ASSISTANT_SYSTEM_PROMPT}\n\nCurrent recipe data:\n${recipeContext(recipe)}`,
 		messages: await convertToModelMessages(validatedMessages, { tools }),
 		tools,
-		stopWhen: stepCountIs(5),
+		stopWhen: isStepCount(5),
 		maxOutputTokens: 1200,
 		experimental_toolApprovalSecret: approvalSecret
 	});

@@ -77,6 +77,41 @@ export type RecipeAssistantMessage = UIMessage<
 	RecipeAssistantTools
 >;
 
+export function diffLists<T>(expected: T[], replacement: T[]) {
+	const expectedKeys = expected.map((value) => JSON.stringify(value));
+	const replacementKeys = replacement.map((value) => JSON.stringify(value));
+	const lengths = Array.from({ length: expected.length + 1 }, () =>
+		Array<number>(replacement.length + 1).fill(0)
+	);
+
+	for (let i = expected.length - 1; i >= 0; i--) {
+		for (let j = replacement.length - 1; j >= 0; j--) {
+			lengths[i][j] =
+				expectedKeys[i] === replacementKeys[j]
+					? lengths[i + 1][j + 1] + 1
+					: Math.max(lengths[i + 1][j], lengths[i][j + 1]);
+		}
+	}
+
+	const diff: { value: T; kind: 'unchanged' | 'removed' | 'added' }[] = [];
+	let i = 0;
+	let j = 0;
+	while (i < expected.length && j < replacement.length) {
+		if (expectedKeys[i] === replacementKeys[j]) {
+			diff.push({ value: expected[i++], kind: 'unchanged' });
+			j++;
+		} else if (lengths[i + 1][j] >= lengths[i][j + 1]) {
+			diff.push({ value: expected[i++], kind: 'removed' });
+		} else {
+			diff.push({ value: replacement[j++], kind: 'added' });
+		}
+	}
+	while (i < expected.length) diff.push({ value: expected[i++], kind: 'removed' });
+	while (j < replacement.length) diff.push({ value: replacement[j++], kind: 'added' });
+
+	return diff;
+}
+
 export function detailsProposalIsStale(
 	current: AssistantDetailsState,
 	proposal: AssistantDetailsProposal

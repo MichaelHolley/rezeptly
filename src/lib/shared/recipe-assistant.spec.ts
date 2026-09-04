@@ -4,6 +4,7 @@ import {
 	assistantIngredientProposalSchema,
 	assistantInstructionProposalSchema,
 	detailsProposalIsStale,
+	diffLists,
 	listProposalIsStale,
 	type AssistantDetailsState
 } from './recipe-assistant';
@@ -39,6 +40,18 @@ describe('recipe assistant proposals', () => {
 	it('compares complete lists exactly', () => {
 		expect(listProposalIsStale(['salt', 'water'], ['salt', 'water'])).toBe(false);
 		expect(listProposalIsStale(['water', 'salt'], ['salt', 'water'])).toBe(true);
+	});
+
+	it('distinguishes unchanged, removed, and added list entries', () => {
+		expect(diffLists(['salt', 'water'], ['salt', 'pepper', 'water'])).toEqual([
+			{ value: 'salt', kind: 'unchanged' },
+			{ value: 'pepper', kind: 'added' },
+			{ value: 'water', kind: 'unchanged' }
+		]);
+		expect(diffLists(['salt'], ['pepper'])).toEqual([
+			{ value: 'salt', kind: 'removed' },
+			{ value: 'pepper', kind: 'added' }
+		]);
 	});
 
 	it('allows empty replacements but validates every supplied item', () => {
