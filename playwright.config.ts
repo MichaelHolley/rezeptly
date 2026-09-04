@@ -1,9 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-try {
-	process.loadEnvFile();
-} catch {
-	// no .env file (e.g. CI) — env vars come from the environment
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl || new URL(databaseUrl).pathname !== '/rezeptly_test') {
+	throw new Error('Playwright requires the isolated rezeptly_test database');
 }
 
 export default defineConfig({
@@ -12,15 +12,15 @@ export default defineConfig({
 	retries: process.env.CI ? 1 : 0,
 	reporter: process.env.CI ? [['html', { open: 'never' }], ['github']] : 'list',
 	use: {
-		baseURL: 'http://localhost:4173',
+		baseURL: 'http://localhost:4174',
 		trace: 'on-first-retry',
 		actionTimeout: 10_000,
 		navigationTimeout: 15_000
 	},
 	webServer: {
-		command: 'pnpm build && pnpm preview',
-		port: 4173,
-		reuseExistingServer: !process.env.CI,
+		command: 'pnpm build && pnpm preview --port 4174',
+		port: 4174,
+		reuseExistingServer: false,
 		timeout: 180_000
 	},
 	projects: [
