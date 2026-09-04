@@ -79,7 +79,7 @@
     "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.9",
     "runed": "^0.37.1",
-    "sharp": "^0.35.3",
+    "sharp": "^0.35.4",
     "slugify": "^1.6.9",
     "svelte-sonner": "^1.2.1"
   },
