@@ -10,16 +10,11 @@ function textLength(value: unknown): number {
 	if (typeof value === 'string') return value.length;
 	if (Array.isArray(value)) return value.reduce((total, item) => total + textLength(item), 0);
 	if (value && typeof value === 'object') {
-		return Object.entries(value).reduce(
-			(total, [key, item]) =>
-				total +
-				(key === 'text' && typeof item === 'string'
-					? item.length
-					: typeof item === 'object'
-						? textLength(item)
-						: 0),
-			0
-		);
+		return Object.entries(value).reduce((total, [key, item]) => {
+			if (key === 'text' && typeof item === 'string') return total + item.length;
+			if (typeof item === 'object') return total + textLength(item);
+			return total;
+		}, 0);
 	}
 	return 0;
 }
