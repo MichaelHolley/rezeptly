@@ -72,6 +72,7 @@
     "zod": "^4.5.4"
   },
   "dependencies": {
+    "@ai-sdk/svelte": "^4.0.273",
     "@openrouter/ai-sdk-provider": "^2.10.0",
     "@vercel/blob": "^2.8.0",
     "ai": "^6.0.273",

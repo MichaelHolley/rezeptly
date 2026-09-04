@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { beforeNavigate } from '$app/navigation';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
@@ -10,6 +10,7 @@
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
 	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
 	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
+	import RecipeAssistant from '$lib/components/recipes/RecipeAssistant.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { reportError } from '$lib/shared/toast';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
@@ -21,7 +22,7 @@
 	import XIcon from '@lucide/svelte/icons/x';
 	import { SvelteSet } from 'svelte/reactivity';
 
-	const { params } = $props();
+	const { params, data } = $props();
 
 	let fileUploadInput = $state<HTMLInputElement | null>(null);
 	let fileUploadFormSubmitButton = $state<HTMLButtonElement | null>(null);
@@ -81,6 +82,13 @@
 			next.add(id);
 		}
 		doneSteps = next;
+	};
+
+	const handleAssistantApplied = async (result: { recipe: { slug: string } }) => {
+		await getRecipeBySlug(result.recipe.slug).refresh();
+		if (result.recipe.slug !== params.slug) {
+			await goto(`/${result.recipe.slug}`, { replaceState: true, keepFocus: true, noScroll: true });
+		}
 	};
 </script>
 
@@ -274,6 +282,12 @@
 			</form>
 		{/if}
 	</div>
+
+	{#if data.features.recipeAssistant && PermissionsStore.canEdit && recipe.publishedAt == null}
+		{#key recipe.id}
+			<RecipeAssistant recipeId={recipe.id} onApplied={handleAssistantApplied} />
+		{/key}
+	{/if}
 
 	{#snippet pending()}
 		<div class="flex h-64 items-center justify-center">
