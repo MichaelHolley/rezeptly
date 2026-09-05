@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { beforeNavigate, goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
@@ -85,9 +86,14 @@
 	};
 
 	const handleAssistantApplied = async (result: { recipe: { slug: string } }) => {
-		await getRecipeBySlug(result.recipe.slug).refresh();
 		if (result.recipe.slug !== params.slug) {
-			await goto(`/${result.recipe.slug}`, { replaceState: true, keepFocus: true, noScroll: true });
+			await goto(resolve('/(app)/[slug]', { slug: result.recipe.slug }), {
+				replaceState: true,
+				keepFocus: true,
+				noScroll: true
+			});
+		} else {
+			await getRecipeBySlug(params.slug).refresh();
 		}
 	};
 </script>

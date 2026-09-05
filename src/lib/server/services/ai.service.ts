@@ -4,10 +4,10 @@ import {
 	assistantDetailsProposalSchema,
 	assistantIngredientProposalSchema,
 	assistantInstructionProposalSchema,
-	detailsProposalIsStale,
 	listProposalIsStale,
 	type AssistantDetailsState,
 	type AssistantInstruction,
+	type AssistantToolResult,
 	type RecipeAssistantMessage
 } from '$lib/shared/recipe-assistant';
 import { COURSES, type RecipeCourse } from '$lib/shared/course';
@@ -219,7 +219,7 @@ const ASSISTANT_SYSTEM_PROMPT = [
 	'Ask a clarifying question when ambiguity could materially change the recipe. Use reasonable defaults for harmless wording and formatting choices.',
 	'Each tool call proposes a change and requires the writer to approve it. Never claim a proposal has already been applied.',
 	'Call each tool at most once per writer message. After a proposal is rejected, do not propose it again without a new explicit writer request.',
-	'For details, include only changed fields and copy each current value exactly into from.',
+	'For details, put only changed fields in changes as field/value entries.',
 	'For ingredients and instructions, expected must be an exact copy of the complete current list and replacement must be the complete desired list.'
 ].join(' ');
 
@@ -259,7 +259,9 @@ function toolResult(recipe: RecipeWithDetails) {
 	return { status: 'applied' as const, recipe: { id: recipe.id, slug: recipe.slug } };
 }
 
-async function safeToolExecution<T>(operation: () => Promise<T>) {
+async function safeToolExecution(
+	operation: () => Promise<AssistantToolResult>
+): Promise<AssistantToolResult> {
 	try {
 		return await operation();
 	} catch (error) {
@@ -275,7 +277,7 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 	return {
 		updateDetails: tool({
 			description:
-				'Propose changes to one or more recipe detail fields. Use only after an explicit request to change them.',
+				'Propose an explicit list of recipe detail field/value changes. Include only fields the writer asked to change.',
 			inputSchema: assistantDetailsProposalSchema,
 			needsApproval: true,
 			execute: (proposal) =>
@@ -283,17 +285,12 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 					const recipe = await currentDraft(recipeId);
 					if (!recipe)
 						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
-					if (detailsProposalIsStale(detailsState(recipe), proposal)) {
-						return {
-							status: 'stale' as const,
-							message: 'The affected recipe details changed after this proposal was created.'
-						};
-					}
-
-					const changes = Object.fromEntries(
-						Object.entries(proposal).map(([field, change]) => [field, change.to])
+					await recipeService.updateRecipe(
+						recipeId,
+						Object.fromEntries(
+							proposal.changes.map(({ field, value }) => [field, value])
+						) as Partial<AssistantDetailsState>
 					);
-					await recipeService.updateRecipe(recipeId, changes);
 					return toolResult(await recipeService.getRecipeById(recipeId, { includeDrafts: true }));
 				})
 		}),

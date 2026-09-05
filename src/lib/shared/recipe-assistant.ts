@@ -12,33 +12,30 @@ export const assistantDetailsStateSchema = z.object({
 	portions: z.int().min(1).max(99).nullable()
 });
 
-const detailChangesShape = {
-	name: z.object({
-		from: assistantDetailsStateSchema.shape.name,
-		to: assistantDetailsStateSchema.shape.name
+const assistantDetailChangeSchema = z.discriminatedUnion('field', [
+	z.object({ field: z.literal('name'), value: assistantDetailsStateSchema.shape.name }),
+	z.object({
+		field: z.literal('description'),
+		value: assistantDetailsStateSchema.shape.description
 	}),
-	description: z.object({
-		from: assistantDetailsStateSchema.shape.description,
-		to: assistantDetailsStateSchema.shape.description
+	z.object({ field: z.literal('course'), value: assistantDetailsStateSchema.shape.course }),
+	z.object({
+		field: z.literal('durationMinutes'),
+		value: assistantDetailsStateSchema.shape.durationMinutes
 	}),
-	course: z.object({
-		from: assistantDetailsStateSchema.shape.course,
-		to: assistantDetailsStateSchema.shape.course
-	}),
-	durationMinutes: z.object({
-		from: assistantDetailsStateSchema.shape.durationMinutes,
-		to: assistantDetailsStateSchema.shape.durationMinutes
-	}),
-	portions: z.object({
-		from: assistantDetailsStateSchema.shape.portions,
-		to: assistantDetailsStateSchema.shape.portions
-	})
-};
+	z.object({ field: z.literal('portions'), value: assistantDetailsStateSchema.shape.portions })
+]);
 
-export const assistantDetailsProposalSchema = z
-	.object(detailChangesShape)
-	.partial()
-	.refine((changes) => Object.keys(changes).length > 0, 'At least one detail must change');
+export const assistantDetailsProposalSchema = z.object({
+	changes: z
+		.array(assistantDetailChangeSchema)
+		.min(1)
+		.max(5)
+		.refine(
+			(changes) => new Set(changes.map(({ field }) => field)).size === changes.length,
+			'Each detail may only be changed once'
+		)
+});
 
 export const assistantIngredientProposalSchema = z.object({
 	expected: z.array(z.string().trim().min(1)),
@@ -56,6 +53,7 @@ export const assistantInstructionProposalSchema = z.object({
 });
 
 export type AssistantDetailsState = z.infer<typeof assistantDetailsStateSchema>;
+export type AssistantDetailChange = z.infer<typeof assistantDetailChangeSchema>;
 export type AssistantDetailsProposal = z.infer<typeof assistantDetailsProposalSchema>;
 export type AssistantIngredientProposal = z.infer<typeof assistantIngredientProposalSchema>;
 export type AssistantInstruction = z.infer<typeof assistantInstructionSchema>;
@@ -110,15 +108,6 @@ export function diffLists<T>(expected: T[], replacement: T[]) {
 	while (j < replacement.length) diff.push({ value: replacement[j++], kind: 'added' });
 
 	return diff;
-}
-
-export function detailsProposalIsStale(
-	current: AssistantDetailsState,
-	proposal: AssistantDetailsProposal
-): boolean {
-	return Object.entries(proposal).some(
-		([field, change]) => current[field as keyof AssistantDetailsState] !== change.from
-	);
 }
 
 export function listProposalIsStale<T>(current: T[], expected: T[]): boolean {

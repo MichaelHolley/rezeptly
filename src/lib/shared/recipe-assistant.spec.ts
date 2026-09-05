@@ -3,37 +3,38 @@ import {
 	assistantDetailsProposalSchema,
 	assistantIngredientProposalSchema,
 	assistantInstructionProposalSchema,
-	detailsProposalIsStale,
 	diffLists,
-	listProposalIsStale,
-	type AssistantDetailsState
+	listProposalIsStale
 } from './recipe-assistant';
 
-const details: AssistantDetailsState = {
-	name: 'Soup',
-	description: null,
-	course: 'main',
-	durationMinutes: 30,
-	portions: 4
-};
-
 describe('recipe assistant proposals', () => {
-	it('only treats affected detail fields as stale', () => {
+	it('accepts one or more detail values as a delta', () => {
 		expect(
-			detailsProposalIsStale({ ...details, portions: 6 }, { name: { from: 'Soup', to: 'Stew' } })
+			assistantDetailsProposalSchema.safeParse({
+				changes: [{ field: 'description', value: null }]
+			}).success
+		).toBe(true);
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [
+					{ field: 'name', value: 'Stew' },
+					{ field: 'portions', value: 6 }
+				]
+			}).success
+		).toBe(true);
+		expect(assistantDetailsProposalSchema.safeParse({ changes: [] }).success).toBe(false);
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [{ field: 'name', value: '' }]
+			}).success
 		).toBe(false);
 		expect(
-			detailsProposalIsStale({ ...details, name: 'Salad' }, { name: { from: 'Soup', to: 'Stew' } })
-		).toBe(true);
-	});
-
-	it('supports nullable optional details and rejects malformed changes', () => {
-		expect(
-			assistantDetailsProposalSchema.safeParse({ description: { from: null, to: 'Warm' } }).success
-		).toBe(true);
-		expect(assistantDetailsProposalSchema.safeParse({}).success).toBe(false);
-		expect(
-			assistantDetailsProposalSchema.safeParse({ name: { from: 'Soup', to: '' } }).success
+			assistantDetailsProposalSchema.safeParse({
+				changes: [
+					{ field: 'name', value: 'Soup' },
+					{ field: 'name', value: 'Stew' }
+				]
+			}).success
 		).toBe(false);
 	});
 

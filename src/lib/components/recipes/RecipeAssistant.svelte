@@ -4,6 +4,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import {
 		diffLists,
+		type AssistantDetailChange,
 		type AssistantDetailsProposal,
 		type AssistantToolResult,
 		type RecipeAssistantMessage
@@ -63,7 +64,7 @@
 		'What could I serve with this recipe?'
 	];
 
-	const detailLabels: Record<keyof AssistantDetailsProposal, string> = {
+	const detailLabels: Record<AssistantDetailChange['field'], string> = {
 		name: 'Name',
 		description: 'Description',
 		course: 'Course',
@@ -72,13 +73,10 @@
 	};
 
 	function detailRows(proposal: AssistantDetailsProposal) {
-		return Object.entries(proposal)
-			.filter(([, change]) => change.from !== change.to)
-			.map(([field, change]) => ({
-				label: detailLabels[field as keyof AssistantDetailsProposal],
-				from: change.from,
-				to: change.to
-			}));
+		return proposal.changes.map(({ field, value }) => ({
+			label: detailLabels[field],
+			value
+		}));
 	}
 
 	function displayValue(value: unknown) {
@@ -223,11 +221,7 @@
 										{#each detailRows(part.input) as row (row.label)}
 											<div>
 												<dt class="text-xs font-medium text-zinc-500">{row.label}</dt>
-												<dd>
-													<s class="text-zinc-500">{displayValue(row.from)}</s> → {displayValue(
-														row.to
-													)}
-												</dd>
+												<dd>{displayValue(row.value)}</dd>
 											</div>
 										{/each}
 									</dl>
