@@ -3,8 +3,6 @@
 	import { Spinner } from '$lib/components/ui/spinner';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import {
-		diffLists,
-		type AssistantDetailChange,
 		type AssistantDetailsProposal,
 		type AssistantToolResult,
 		type RecipeAssistantMessage
@@ -64,7 +62,7 @@
 		'What could I serve with this recipe?'
 	];
 
-	const detailLabels: Record<AssistantDetailChange['field'], string> = {
+	const detailLabels: Record<keyof AssistantDetailsProposal, string> = {
 		name: 'Name',
 		description: 'Description',
 		course: 'Course',
@@ -73,8 +71,8 @@
 	};
 
 	function detailRows(proposal: AssistantDetailsProposal) {
-		return proposal.changes.map(({ field, value }) => ({
-			label: detailLabels[field],
+		return Object.entries(proposal).map(([field, value]) => ({
+			label: detailLabels[field as keyof AssistantDetailsProposal],
 			value
 		}));
 	}
@@ -233,21 +231,20 @@
 							{:else if part.type === 'tool-replaceIngredients' && part.state !== 'input-streaming' && part.input}
 								<div>
 									<p class="font-semibold">Proposed ingredient changes</p>
-									{#if part.input.expected.length === 0 && part.input.replacement.length === 0}
-										<p class="mt-2 italic text-zinc-500">Empty list</p>
-									{:else}
-										<ul class="mt-2 list-disc space-y-1 pl-5">
-											{#each diffLists(part.input.expected, part.input.replacement) as entry, i (`${entry.kind}-${entry.value}-${i}`)}<li
-													class={entry.kind === 'removed'
-														? 'text-zinc-500 line-through'
-														: entry.kind === 'added'
-															? 'font-medium'
-															: undefined}
-												>
-													{entry.value}
-												</li>{/each}
+									{#each [{ label: 'Current', items: part.input.expected, strike: true }, { label: 'Proposed', items: part.input.replacement, strike: false }] as list (list.label)}
+										<p class="mt-2 text-xs font-medium text-zinc-500">{list.label}</p>
+										<ul
+											class="list-disc space-y-1 pl-5"
+											class:text-zinc-500={list.strike}
+											class:line-through={list.strike}
+										>
+											{#each list.items as name, i (i)}
+												<li>{name}</li>
+											{:else}
+												<li class="list-none italic text-zinc-500">Empty list</li>
+											{/each}
 										</ul>
-									{/if}
+									{/each}
 									{#if part.state === 'approval-requested'}{@render approvalActions(
 											part.approval.id
 										)}{/if}
@@ -256,25 +253,24 @@
 							{:else if part.type === 'tool-replaceInstructions' && part.state !== 'input-streaming' && part.input}
 								<div>
 									<p class="font-semibold">Proposed instruction changes</p>
-									{#if part.input.expected.length === 0 && part.input.replacement.length === 0}
-										<p class="mt-2 italic text-zinc-500">Empty list</p>
-									{:else}
-										<ol class="mt-2 list-decimal space-y-2 pl-5">
-											{#each diffLists(part.input.expected, part.input.replacement) as entry, i (`${entry.kind}-${entry.value.heading}-${i}`)}
-												<li
-													class={entry.kind === 'removed'
-														? 'text-zinc-500 line-through'
-														: entry.kind === 'added'
-															? 'font-medium'
-															: undefined}
-												>
-													{#if entry.value.heading}<strong
-															>{entry.value.heading}:
-														</strong>{/if}{entry.value.instructions}
+									{#each [{ label: 'Current', items: part.input.expected, strike: true }, { label: 'Proposed', items: part.input.replacement, strike: false }] as list (list.label)}
+										<p class="mt-2 text-xs font-medium text-zinc-500">{list.label}</p>
+										<ol
+											class="list-decimal space-y-2 pl-5"
+											class:text-zinc-500={list.strike}
+											class:line-through={list.strike}
+										>
+											{#each list.items as step, i (i)}
+												<li>
+													{#if step.heading}<strong
+															>{step.heading}:
+														</strong>{/if}{step.instructions}
 												</li>
+											{:else}
+												<li class="list-none italic text-zinc-500">Empty list</li>
 											{/each}
 										</ol>
-									{/if}
+									{/each}
 									{#if part.state === 'approval-requested'}{@render approvalActions(
 											part.approval.id
 										)}{/if}

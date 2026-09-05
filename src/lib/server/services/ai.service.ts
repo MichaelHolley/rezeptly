@@ -219,7 +219,7 @@ const ASSISTANT_SYSTEM_PROMPT = [
 	'Ask a clarifying question when ambiguity could materially change the recipe. Use reasonable defaults for harmless wording and formatting choices.',
 	'Each tool call proposes a change and requires the writer to approve it. Never claim a proposal has already been applied.',
 	'Call each tool at most once per writer message. After a proposal is rejected, do not propose it again without a new explicit writer request.',
-	'For details, put only changed fields in changes as field/value entries.',
+	'For details, send only the fields that change and omit every field that stays the same.',
 	'For ingredients and instructions, expected must be an exact copy of the complete current list and replacement must be the complete desired list.'
 ].join(' ');
 
@@ -277,20 +277,15 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 	return {
 		updateDetails: tool({
 			description:
-				'Propose an explicit list of recipe detail field/value changes. Include only fields the writer asked to change.',
+				'Propose recipe detail changes. Include only the fields the writer asked to change.',
 			inputSchema: assistantDetailsProposalSchema,
 			needsApproval: true,
-			execute: (proposal) =>
+			execute: (changes) =>
 				safeToolExecution(async () => {
 					const recipe = await currentDraft(recipeId);
 					if (!recipe)
 						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
-					await recipeService.updateRecipe(
-						recipeId,
-						Object.fromEntries(
-							proposal.changes.map(({ field, value }) => [field, value])
-						) as Partial<AssistantDetailsState>
-					);
+					await recipeService.updateRecipe(recipeId, changes);
 					return toolResult(await recipeService.getRecipeById(recipeId, { includeDrafts: true }));
 				})
 		}),

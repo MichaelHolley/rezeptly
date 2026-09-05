@@ -12,30 +12,9 @@ export const assistantDetailsStateSchema = z.object({
 	portions: z.int().min(1).max(99).nullable()
 });
 
-const assistantDetailChangeSchema = z.discriminatedUnion('field', [
-	z.object({ field: z.literal('name'), value: assistantDetailsStateSchema.shape.name }),
-	z.object({
-		field: z.literal('description'),
-		value: assistantDetailsStateSchema.shape.description
-	}),
-	z.object({ field: z.literal('course'), value: assistantDetailsStateSchema.shape.course }),
-	z.object({
-		field: z.literal('durationMinutes'),
-		value: assistantDetailsStateSchema.shape.durationMinutes
-	}),
-	z.object({ field: z.literal('portions'), value: assistantDetailsStateSchema.shape.portions })
-]);
-
-export const assistantDetailsProposalSchema = z.object({
-	changes: z
-		.array(assistantDetailChangeSchema)
-		.min(1)
-		.max(5)
-		.refine(
-			(changes) => new Set(changes.map(({ field }) => field)).size === changes.length,
-			'Each detail may only be changed once'
-		)
-});
+export const assistantDetailsProposalSchema = assistantDetailsStateSchema
+	.partial()
+	.refine((changes) => Object.keys(changes).length > 0, 'At least one detail must change');
 
 export const assistantIngredientProposalSchema = z.object({
 	expected: z.array(z.string().trim().min(1)),
@@ -53,7 +32,6 @@ export const assistantInstructionProposalSchema = z.object({
 });
 
 export type AssistantDetailsState = z.infer<typeof assistantDetailsStateSchema>;
-export type AssistantDetailChange = z.infer<typeof assistantDetailChangeSchema>;
 export type AssistantDetailsProposal = z.infer<typeof assistantDetailsProposalSchema>;
 export type AssistantIngredientProposal = z.infer<typeof assistantIngredientProposalSchema>;
 export type AssistantInstruction = z.infer<typeof assistantInstructionSchema>;
@@ -74,41 +52,6 @@ export type RecipeAssistantMessage = UIMessage<
 	Record<string, unknown>,
 	RecipeAssistantTools
 >;
-
-export function diffLists<T>(expected: T[], replacement: T[]) {
-	const expectedKeys = expected.map((value) => JSON.stringify(value));
-	const replacementKeys = replacement.map((value) => JSON.stringify(value));
-	const lengths = Array.from({ length: expected.length + 1 }, () =>
-		Array<number>(replacement.length + 1).fill(0)
-	);
-
-	for (let i = expected.length - 1; i >= 0; i--) {
-		for (let j = replacement.length - 1; j >= 0; j--) {
-			lengths[i][j] =
-				expectedKeys[i] === replacementKeys[j]
-					? lengths[i + 1][j + 1] + 1
-					: Math.max(lengths[i + 1][j], lengths[i][j + 1]);
-		}
-	}
-
-	const diff: { value: T; kind: 'unchanged' | 'removed' | 'added' }[] = [];
-	let i = 0;
-	let j = 0;
-	while (i < expected.length && j < replacement.length) {
-		if (expectedKeys[i] === replacementKeys[j]) {
-			diff.push({ value: expected[i++], kind: 'unchanged' });
-			j++;
-		} else if (lengths[i + 1][j] >= lengths[i][j + 1]) {
-			diff.push({ value: expected[i++], kind: 'removed' });
-		} else {
-			diff.push({ value: replacement[j++], kind: 'added' });
-		}
-	}
-	while (i < expected.length) diff.push({ value: expected[i++], kind: 'removed' });
-	while (j < replacement.length) diff.push({ value: replacement[j++], kind: 'added' });
-
-	return diff;
-}
 
 export function listProposalIsStale<T>(current: T[], expected: T[]): boolean {
 	return JSON.stringify(current) !== JSON.stringify(expected);
