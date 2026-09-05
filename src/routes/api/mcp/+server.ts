@@ -2,8 +2,6 @@ import { createMcpServer } from '$lib/server/mcp/server';
 import { createMcpHandler } from '@modelcontextprotocol/server';
 import type { RequestHandler } from './$types';
 
-export const config = { runtime: 'nodejs22.x' };
-
 const methodNotAllowed = () =>
 	new Response('Method Not Allowed', { status: 405, headers: { Allow: 'POST' } });
 
