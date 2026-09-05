@@ -1,4 +1,5 @@
 import { COURSES } from '$lib/shared/course';
+import { DURATION_BUCKETS, durationMinutesSchema } from '$lib/shared/duration';
 import type { UIMessage } from 'ai';
 import { z } from 'zod';
 
@@ -13,11 +14,11 @@ export const assistantDetailsStateSchema = z.object({
 		.enum(COURSES)
 		.nullable()
 		.describe('The position of the dish in a meal, or null only when the writer asked to clear it'),
-	durationMinutes: z
-		.int()
-		.nonnegative()
+	durationMinutes: durationMinutesSchema
 		.nullable()
-		.describe('Total time needed in minutes, or null only when the writer asked to clear it'),
+		.describe(
+			`Total time needed, as one of these exact values in minutes: ${DURATION_BUCKETS.join(', ')}. Pick the nearest one, or null only when the writer asked to clear it.`
+		),
 	portions: z
 		.int()
 		.min(1)

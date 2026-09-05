@@ -37,6 +37,24 @@ describe('recipe assistant proposals', () => {
 		).toBe(false);
 	});
 
+	it('holds detail values to the same limits as the edit form', () => {
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [{ field: 'durationMinutes', value: 45 }]
+			}).success
+		).toBe(true);
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [{ field: 'durationMinutes', value: 47 }]
+			}).success
+		).toBe(false);
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [{ field: 'portions', value: 100 }]
+			}).success
+		).toBe(false);
+	});
+
 	it('compares complete lists exactly', () => {
 		expect(listProposalIsStale(['salt', 'water'], ['salt', 'water'])).toBe(false);
 		expect(listProposalIsStale(['water', 'salt'], ['salt', 'water'])).toBe(true);
