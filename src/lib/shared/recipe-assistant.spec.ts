@@ -8,12 +8,33 @@ import {
 
 describe('recipe assistant proposals', () => {
 	it('accepts one or more detail values as a delta', () => {
-		expect(assistantDetailsProposalSchema.safeParse({ description: null }).success).toBe(true);
-		expect(assistantDetailsProposalSchema.safeParse({ name: 'Stew', portions: 6 }).success).toBe(
-			true
-		);
-		expect(assistantDetailsProposalSchema.safeParse({}).success).toBe(false);
-		expect(assistantDetailsProposalSchema.safeParse({ name: '' }).success).toBe(false);
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [{ field: 'description', value: null }]
+			}).success
+		).toBe(true);
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [
+					{ field: 'name', value: 'Stew' },
+					{ field: 'portions', value: 6 }
+				]
+			}).success
+		).toBe(true);
+		expect(assistantDetailsProposalSchema.safeParse({ changes: [] }).success).toBe(false);
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [{ field: 'name', value: '' }]
+			}).success
+		).toBe(false);
+		expect(
+			assistantDetailsProposalSchema.safeParse({
+				changes: [
+					{ field: 'name', value: 'Soup' },
+					{ field: 'name', value: 'Stew' }
+				]
+			}).success
+		).toBe(false);
 	});
 
 	it('compares complete lists exactly', () => {

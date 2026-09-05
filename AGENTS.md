@@ -42,6 +42,11 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 - **Usage in Components**: Import and call with `.enhance()` for forms or directly for commands/queries
 - **Refreshing Data**: Call `.refresh()` on queries after mutations to update UI
 
+## AI Schemas
+
+- **Describe every property**: Put `.describe()` on each field of a tool `inputSchema` or `Output.object` schema. Field-level rules belong in the schema, not the system prompt — the model reads them while filling the JSON.
+- **Partial updates**: Never model "change some fields" as an all-optional object. Models fill every key and send `null` for the ones they meant to leave alone, wiping data. Use an explicit list of field/value entries, as `assistantDetailsProposalSchema` does.
+
 ## Testing
 
 - **Naming**: Test files are `*.spec.ts`, colocated with their source. Component and rune-module tests are `*.svelte.spec.ts`.
