@@ -7,52 +7,22 @@ import {
 } from './recipe-assistant';
 
 describe('recipe assistant proposals', () => {
-	it('accepts one or more detail values as a delta', () => {
-		expect(
-			assistantDetailsProposalSchema.safeParse({
-				changes: [{ field: 'description', value: null }]
-			}).success
-		).toBe(true);
-		expect(
-			assistantDetailsProposalSchema.safeParse({
-				changes: [
-					{ field: 'name', value: 'Stew' },
-					{ field: 'portions', value: 6 }
-				]
-			}).success
-		).toBe(true);
-		expect(assistantDetailsProposalSchema.safeParse({ changes: [] }).success).toBe(false);
-		expect(
-			assistantDetailsProposalSchema.safeParse({
-				changes: [{ field: 'name', value: '' }]
-			}).success
-		).toBe(false);
-		expect(
-			assistantDetailsProposalSchema.safeParse({
-				changes: [
-					{ field: 'name', value: 'Soup' },
-					{ field: 'name', value: 'Stew' }
-				]
-			}).success
-		).toBe(false);
+	it('accepts one or more detail values as a partial update', () => {
+		expect(assistantDetailsProposalSchema.parse({ description: null })).toEqual({
+			description: null
+		});
+		expect(assistantDetailsProposalSchema.safeParse({ name: 'Stew', portions: 6 }).success).toBe(
+			true
+		);
+		expect(assistantDetailsProposalSchema.safeParse({}).success).toBe(false);
+		expect(assistantDetailsProposalSchema.safeParse({ name: '' }).success).toBe(false);
+		expect(assistantDetailsProposalSchema.safeParse({ name: null }).success).toBe(false);
 	});
 
 	it('holds detail values to the same limits as the edit form', () => {
-		expect(
-			assistantDetailsProposalSchema.safeParse({
-				changes: [{ field: 'durationMinutes', value: 45 }]
-			}).success
-		).toBe(true);
-		expect(
-			assistantDetailsProposalSchema.safeParse({
-				changes: [{ field: 'durationMinutes', value: 47 }]
-			}).success
-		).toBe(false);
-		expect(
-			assistantDetailsProposalSchema.safeParse({
-				changes: [{ field: 'portions', value: 100 }]
-			}).success
-		).toBe(false);
+		expect(assistantDetailsProposalSchema.safeParse({ durationMinutes: 45 }).success).toBe(true);
+		expect(assistantDetailsProposalSchema.safeParse({ durationMinutes: 47 }).success).toBe(false);
+		expect(assistantDetailsProposalSchema.safeParse({ portions: 100 }).success).toBe(false);
 	});
 
 	it('compares complete lists exactly', () => {

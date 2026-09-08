@@ -275,20 +275,15 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 	return {
 		updateDetails: tool({
 			description:
-				'Propose an explicit list of recipe detail field/value changes. Include only fields the writer asked to change.',
+				'Propose recipe detail changes. Include only fields the writer asked to change and omit every unchanged field.',
 			inputSchema: assistantDetailsProposalSchema,
 			needsApproval: true,
-			execute: (proposal) =>
+			execute: (changes) =>
 				safeToolExecution(async () => {
 					const recipe = await currentDraft(recipeId);
 					if (!recipe)
 						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
-					await recipeService.updateRecipe(
-						recipeId,
-						Object.fromEntries(
-							proposal.changes.map(({ field, value }) => [field, value])
-						) as Partial<AssistantDetailsState>
-					);
+					await recipeService.updateRecipe(recipeId, changes);
 					return toolResult(await recipeService.getRecipeById(recipeId, { includeDrafts: true }));
 				})
 		}),

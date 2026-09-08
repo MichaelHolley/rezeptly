@@ -27,33 +27,9 @@ export const assistantDetailsStateSchema = z.object({
 		.describe('Number of portions, or null only when the writer asked to clear it')
 });
 
-const assistantDetailChangeSchema = z.discriminatedUnion('field', [
-	z.object({ field: z.literal('name'), value: assistantDetailsStateSchema.shape.name }),
-	z.object({
-		field: z.literal('description'),
-		value: assistantDetailsStateSchema.shape.description
-	}),
-	z.object({ field: z.literal('course'), value: assistantDetailsStateSchema.shape.course }),
-	z.object({
-		field: z.literal('durationMinutes'),
-		value: assistantDetailsStateSchema.shape.durationMinutes
-	}),
-	z.object({ field: z.literal('portions'), value: assistantDetailsStateSchema.shape.portions })
-]);
-
-export const assistantDetailsProposalSchema = z.object({
-	changes: z
-		.array(assistantDetailChangeSchema)
-		.min(1)
-		.max(5)
-		.refine(
-			(changes) => new Set(changes.map(({ field }) => field)).size === changes.length,
-			'Each detail may only be changed once'
-		)
-		.describe(
-			'One entry per detail the writer explicitly asked to change. Omit every detail that stays the same rather than repeating its current value.'
-		)
-});
+export const assistantDetailsProposalSchema = assistantDetailsStateSchema
+	.partial()
+	.refine((changes) => Object.keys(changes).length > 0, 'At least one detail must change');
 
 export const assistantIngredientProposalSchema = z.object({
 	expected: z
@@ -79,7 +55,6 @@ export const assistantInstructionProposalSchema = z.object({
 });
 
 export type AssistantDetailsState = z.infer<typeof assistantDetailsStateSchema>;
-export type AssistantDetailChange = z.infer<typeof assistantDetailChangeSchema>;
 export type AssistantDetailsProposal = z.infer<typeof assistantDetailsProposalSchema>;
 export type AssistantIngredientProposal = z.infer<typeof assistantIngredientProposalSchema>;
 export type AssistantInstruction = z.infer<typeof assistantInstructionSchema>;

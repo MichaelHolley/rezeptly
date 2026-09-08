@@ -3,7 +3,6 @@
 	import { Spinner } from '$lib/components/ui/spinner';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import {
-		type AssistantDetailChange,
 		type AssistantDetailsProposal,
 		type AssistantToolResult,
 		type RecipeAssistantMessage
@@ -63,7 +62,7 @@
 		'What could I serve with this recipe?'
 	];
 
-	const detailLabels: Record<AssistantDetailChange['field'], string> = {
+	const detailLabels: Record<keyof AssistantDetailsProposal, string> = {
 		name: 'Name',
 		description: 'Description',
 		course: 'Course',
@@ -72,8 +71,8 @@
 	};
 
 	function detailRows(proposal: AssistantDetailsProposal) {
-		return proposal.changes.map(({ field, value }) => ({
-			label: detailLabels[field],
+		return Object.entries(proposal).map(([field, value]) => ({
+			label: detailLabels[field as keyof AssistantDetailsProposal],
 			value
 		}));
 	}

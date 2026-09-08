@@ -45,7 +45,7 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 ## AI Schemas
 
 - **Describe every property**: Put `.describe()` on each field of a tool `inputSchema` or `Output.object` schema. Field-level rules belong in the schema, not the system prompt — the model reads them while filling the JSON.
-- **Partial updates**: Never model "change some fields" as an all-optional object. Models fill every key and send `null` for the ones they meant to leave alone, wiping data. Use an explicit list of field/value entries, as `assistantDetailsProposalSchema` does.
+- **Partial updates**: Model "change some fields" as a partial object. Omission means "leave unchanged"; reserve `null` for nullable fields where the caller explicitly wants to clear the value.
 
 ## Testing
 
