@@ -27,9 +27,42 @@ export const assistantDetailsStateSchema = z.object({
 		.describe('Number of portions, or null only when the writer asked to clear it')
 });
 
-export const assistantDetailsProposalSchema = assistantDetailsStateSchema
-	.partial()
-	.refine((changes) => Object.keys(changes).length > 0, 'At least one detail must change');
+const assistantDetailChangeSchema = z.discriminatedUnion('field', [
+	z.object({
+		field: z.literal('name').describe('Selects the recipe name'),
+		value: assistantDetailsStateSchema.shape.name
+	}),
+	z.object({
+		field: z.literal('description').describe('Selects the recipe description'),
+		value: assistantDetailsStateSchema.shape.description
+	}),
+	z.object({
+		field: z.literal('course').describe('Selects the recipe course'),
+		value: assistantDetailsStateSchema.shape.course
+	}),
+	z.object({
+		field: z.literal('durationMinutes').describe('Selects the recipe duration'),
+		value: assistantDetailsStateSchema.shape.durationMinutes
+	}),
+	z.object({
+		field: z.literal('portions').describe('Selects the number of portions'),
+		value: assistantDetailsStateSchema.shape.portions
+	})
+]);
+
+export const assistantDetailsProposalSchema = z.object({
+	changes: z
+		.array(assistantDetailChangeSchema)
+		.min(1)
+		.max(5)
+		.refine(
+			(changes) => new Set(changes.map(({ field }) => field)).size === changes.length,
+			'Each detail may only be changed once'
+		)
+		.describe(
+			'One entry per detail the writer explicitly asked to change. A request to change one detail must produce exactly one entry. Never copy current values or add null placeholders. Use null only when the writer explicitly asked to clear that detail.'
+		)
+});
 
 export const assistantIngredientProposalSchema = z.object({
 	expected: z
@@ -55,6 +88,7 @@ export const assistantInstructionProposalSchema = z.object({
 });
 
 export type AssistantDetailsState = z.infer<typeof assistantDetailsStateSchema>;
+export type AssistantDetailChange = z.infer<typeof assistantDetailChangeSchema>;
 export type AssistantDetailsProposal = z.infer<typeof assistantDetailsProposalSchema>;
 export type AssistantIngredientProposal = z.infer<typeof assistantIngredientProposalSchema>;
 export type AssistantInstruction = z.infer<typeof assistantInstructionSchema>;
