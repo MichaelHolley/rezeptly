@@ -1,4 +1,5 @@
 import { COURSES } from '$lib/shared/course';
+import { durationMinutesSchema } from '$lib/shared/duration';
 import { z } from 'zod';
 
 const idSchema = z
@@ -26,5 +27,5 @@ export const recipeDetailsSchema = z.object({
 	tagDiet: z.array(z.string()).optional().default([]),
 	imageUrl: z.string().optional(),
 	course: z.enum(COURSES).optional(),
-	durationMinutes: z.int().nonnegative().optional()
+	durationMinutes: durationMinutesSchema.optional()
 });
