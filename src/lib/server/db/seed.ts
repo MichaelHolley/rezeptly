@@ -5,7 +5,14 @@ import * as readline from 'node:readline/promises';
 import postgres from 'postgres';
 import slugify from 'slugify';
 import type { RecipeCourse, TagCategory } from '../types';
-import { ingredients, instructions, recipes, recipesToTags, tags } from './schema';
+import {
+	ingredientSections,
+	ingredients,
+	instructions,
+	recipes,
+	recipesToTags,
+	tags
+} from './schema';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -15,7 +22,9 @@ if (!DATABASE_URL) {
 }
 
 const client = postgres(DATABASE_URL);
-const db = drizzle(client, { schema: { recipes, ingredients, instructions, tags, recipesToTags } });
+const db = drizzle(client, {
+	schema: { recipes, ingredientSections, ingredients, instructions, tags, recipesToTags }
+});
 
 const sampleData = [
 	{
@@ -24,11 +33,16 @@ const sampleData = [
 		durationMinutes: 15,
 		portions: 2,
 		description: 'Fluffy, creamy scrambled eggs perfect for breakfast',
-		ingredients: [
-			{ name: '4 large eggs' },
-			{ name: '2 tablespoons butter' },
-			{ name: '2 tablespoons milk' },
-			{ name: 'Salt and pepper to taste' }
+		ingredientGroups: [
+			{
+				heading: null,
+				items: [
+					'4 large eggs',
+					'2 tablespoons butter',
+					'2 tablespoons milk',
+					'Salt and pepper to taste'
+				]
+			}
 		],
 		instructions: [
 			{
@@ -65,13 +79,17 @@ const sampleData = [
 		durationMinutes: 45,
 		portions: 4,
 		description: 'Traditional Italian pizza with fresh mozzarella, basil, and tomato sauce',
-		ingredients: [
-			{ name: '1 pound pizza dough' },
-			{ name: '1 cup tomato sauce' },
-			{ name: '8 oz fresh mozzarella, sliced' },
-			{ name: 'Fresh basil leaves' },
-			{ name: '2 tablespoons olive oil' },
-			{ name: 'Salt to taste' }
+		ingredientGroups: [
+			{ heading: 'Dough', items: ['1 pound pizza dough', '2 tablespoons olive oil'] },
+			{
+				heading: 'Toppings',
+				items: [
+					'1 cup tomato sauce',
+					'8 oz fresh mozzarella, sliced',
+					'Fresh basil leaves',
+					'Salt to taste'
+				]
+			}
 		],
 		instructions: [
 			{
@@ -115,16 +133,22 @@ const sampleData = [
 		durationMinutes: 30,
 		portions: 4,
 		description: 'Quick and healthy Asian-inspired chicken with colorful vegetables',
-		ingredients: [
-			{ name: '1 lb boneless chicken breast, sliced' },
-			{ name: '2 cups mixed bell peppers, sliced' },
-			{ name: '1 cup broccoli florets' },
-			{ name: '3 cloves garlic, minced' },
-			{ name: '1 tablespoon ginger, grated' },
-			{ name: '3 tablespoons soy sauce' },
-			{ name: '1 tablespoon sesame oil' },
-			{ name: '2 tablespoons vegetable oil' },
-			{ name: '1 teaspoon cornstarch' }
+		ingredientGroups: [
+			{
+				heading: 'Sauce',
+				items: ['3 tablespoons soy sauce', '1 tablespoon sesame oil', '1 teaspoon cornstarch']
+			},
+			{
+				heading: 'Stir-Fry',
+				items: [
+					'1 lb boneless chicken breast, sliced',
+					'2 cups mixed bell peppers, sliced',
+					'1 cup broccoli florets',
+					'3 cloves garlic, minced',
+					'1 tablespoon ginger, grated',
+					'2 tablespoons vegetable oil'
+				]
+			}
 		],
 		instructions: [
 			{
@@ -172,16 +196,22 @@ const sampleData = [
 		durationMinutes: 30,
 		portions: 24,
 		description: 'Soft and chewy cookies loaded with chocolate chips',
-		ingredients: [
-			{ name: '2 1/4 cups all-purpose flour' },
-			{ name: '1 teaspoon baking soda' },
-			{ name: '1 teaspoon salt' },
-			{ name: '1 cup butter, softened' },
-			{ name: '3/4 cup granulated sugar' },
-			{ name: '3/4 cup brown sugar' },
-			{ name: '2 large eggs' },
-			{ name: '2 teaspoons vanilla extract' },
-			{ name: '2 cups chocolate chips' }
+		ingredientGroups: [
+			{
+				heading: 'Dry Ingredients',
+				items: ['2 1/4 cups all-purpose flour', '1 teaspoon baking soda', '1 teaspoon salt']
+			},
+			{
+				heading: 'Wet Ingredients',
+				items: [
+					'1 cup butter, softened',
+					'3/4 cup granulated sugar',
+					'3/4 cup brown sugar',
+					'2 large eggs',
+					'2 teaspoons vanilla extract'
+				]
+			},
+			{ heading: 'Mix-Ins', items: ['2 cups chocolate chips'] }
 		],
 		instructions: [
 			{
@@ -227,17 +257,27 @@ const sampleData = [
 		durationMinutes: 15,
 		portions: 2,
 		description: 'Fresh Mediterranean salad with feta cheese and olives',
-		ingredients: [
-			{ name: '4 cups romaine lettuce, chopped' },
-			{ name: '2 large tomatoes, diced' },
-			{ name: '1 cucumber, sliced' },
-			{ name: '1 red onion, thinly sliced' },
-			{ name: '1 cup kalamata olives' },
-			{ name: '1 cup feta cheese, crumbled' },
-			{ name: '1/4 cup olive oil' },
-			{ name: '2 tablespoons red wine vinegar' },
-			{ name: '1 teaspoon dried oregano' },
-			{ name: 'Salt and pepper to taste' }
+		ingredientGroups: [
+			{
+				heading: 'Salad',
+				items: [
+					'4 cups romaine lettuce, chopped',
+					'2 large tomatoes, diced',
+					'1 cucumber, sliced',
+					'1 red onion, thinly sliced',
+					'1 cup kalamata olives',
+					'1 cup feta cheese, crumbled'
+				]
+			},
+			{
+				heading: 'Dressing',
+				items: [
+					'1/4 cup olive oil',
+					'2 tablespoons red wine vinegar',
+					'1 teaspoon dried oregano',
+					'Salt and pepper to taste'
+				]
+			}
 		],
 		instructions: [
 			{
@@ -275,17 +315,27 @@ const sampleData = [
 		durationMinutes: 30,
 		portions: 4,
 		description: 'Flavorful Mexican-style tacos with seasoned ground beef',
-		ingredients: [
-			{ name: '1 lb ground beef' },
-			{ name: '1 onion, diced' },
-			{ name: '2 cloves garlic, minced' },
-			{ name: '2 tablespoons taco seasoning' },
-			{ name: '1/2 cup water' },
-			{ name: '8 taco shells' },
-			{ name: '1 cup shredded lettuce' },
-			{ name: '1 cup shredded cheddar cheese' },
-			{ name: '1 tomato, diced' },
-			{ name: 'Sour cream and salsa for serving' }
+		ingredientGroups: [
+			{
+				heading: 'Beef Filling',
+				items: [
+					'1 lb ground beef',
+					'1 onion, diced',
+					'2 cloves garlic, minced',
+					'2 tablespoons taco seasoning',
+					'1/2 cup water'
+				]
+			},
+			{
+				heading: 'For Assembly',
+				items: [
+					'8 taco shells',
+					'1 cup shredded lettuce',
+					'1 cup shredded cheddar cheese',
+					'1 tomato, diced',
+					'Sour cream and salsa for serving'
+				]
+			}
 		],
 		instructions: [
 			{
@@ -327,17 +377,25 @@ const sampleData = [
 		durationMinutes: 15,
 		portions: 4,
 		description: 'Fluffy buttermilk pancakes studded with fresh blueberries',
-		ingredients: [
-			{ name: '2 cups all-purpose flour' },
-			{ name: '2 tablespoons sugar' },
-			{ name: '2 teaspoons baking powder' },
-			{ name: '1 teaspoon baking soda' },
-			{ name: '1/2 teaspoon salt' },
-			{ name: '2 cups buttermilk' },
-			{ name: '2 large eggs' },
-			{ name: '1/4 cup melted butter' },
-			{ name: '1 cup fresh blueberries' },
-			{ name: 'Maple syrup for serving' }
+		ingredientGroups: [
+			{
+				heading: 'Dry Ingredients',
+				items: [
+					'2 cups all-purpose flour',
+					'2 tablespoons sugar',
+					'2 teaspoons baking powder',
+					'1 teaspoon baking soda',
+					'1/2 teaspoon salt'
+				]
+			},
+			{
+				heading: 'Wet Ingredients',
+				items: ['2 cups buttermilk', '2 large eggs', '1/4 cup melted butter']
+			},
+			{
+				heading: 'To Finish',
+				items: ['1 cup fresh blueberries', 'Maple syrup for serving']
+			}
 		],
 		instructions: [
 			{
@@ -385,13 +443,18 @@ const sampleData = [
 		durationMinutes: 15,
 		portions: 2,
 		description: 'Simple Italian salad with tomatoes, mozzarella, and basil',
-		ingredients: [
-			{ name: '4 large ripe tomatoes, sliced' },
-			{ name: '1 lb fresh mozzarella, sliced' },
-			{ name: 'Fresh basil leaves' },
-			{ name: '1/4 cup extra virgin olive oil' },
-			{ name: '2 tablespoons balsamic vinegar' },
-			{ name: 'Salt and pepper to taste' }
+		ingredientGroups: [
+			{
+				heading: null,
+				items: [
+					'4 large ripe tomatoes, sliced',
+					'1 lb fresh mozzarella, sliced',
+					'Fresh basil leaves',
+					'1/4 cup extra virgin olive oil',
+					'2 tablespoons balsamic vinegar',
+					'Salt and pepper to taste'
+				]
+			}
 		],
 		instructions: [
 			{
@@ -431,6 +494,8 @@ async function clearDatabase() {
 			console.log('   ✓ Cleared recipe-tag associations');
 			await tx.delete(ingredients);
 			console.log('   ✓ Cleared ingredients');
+			await tx.delete(ingredientSections);
+			console.log('   ✓ Cleared ingredient sections');
 			await tx.delete(instructions);
 			console.log('   ✓ Cleared instructions');
 			await tx.delete(recipes);
@@ -440,6 +505,7 @@ async function clearDatabase() {
 
 			// Reset sequences
 			await tx.execute(sql`ALTER SEQUENCE recipes_id_seq RESTART WITH 1`);
+			await tx.execute(sql`ALTER SEQUENCE ingredient_sections_id_seq RESTART WITH 1`);
 			await tx.execute(sql`ALTER SEQUENCE ingredients_id_seq RESTART WITH 1`);
 			await tx.execute(sql`ALTER SEQUENCE instructions_id_seq RESTART WITH 1`);
 			await tx.execute(sql`ALTER SEQUENCE tags_id_seq RESTART WITH 1`);
@@ -520,17 +586,33 @@ async function seed() {
 
 				console.log(`   ✓ Created recipe: ${recipe.name}${isDraft ? ' (draft)' : ''}`);
 
-				// Create ingredients
-				if (recipeData.ingredients.length > 0) {
-					await tx.insert(ingredients).values(
-						recipeData.ingredients.map((ing, index) => ({
-							name: ing.name,
-							ingredientOrder: index + 1,
-							recipeId: recipe.id
-						}))
-					);
-					console.log(`     - Added ${recipeData.ingredients.length} ingredients`);
+				// Create ingredient groups
+				let sectionOrder = 0;
+				let ingredientCount = 0;
+				for (const group of recipeData.ingredientGroups) {
+					let sectionId: number | null = null;
+					if (group.heading !== null) {
+						sectionOrder += 1;
+						const [section] = await tx
+							.insert(ingredientSections)
+							.values({ name: group.heading, sectionOrder, recipeId: recipe.id })
+							.returning({ id: ingredientSections.id });
+						sectionId = section.id;
+					}
+
+					if (group.items.length > 0) {
+						await tx.insert(ingredients).values(
+							group.items.map((name, index) => ({
+								name,
+								ingredientOrder: index + 1,
+								sectionId,
+								recipeId: recipe.id
+							}))
+						);
+						ingredientCount += group.items.length;
+					}
 				}
+				console.log(`     - Added ${ingredientCount} ingredients in ${sectionOrder} sections`);
 
 				// Create instructions
 				if (recipeData.instructions.length > 0) {
