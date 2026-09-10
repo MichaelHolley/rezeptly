@@ -64,13 +64,30 @@ export const assistantDetailsProposalSchema = z.object({
 		)
 });
 
+export const assistantIngredientGroupSchema = z.object({
+	heading: nullableTextSchema.describe(
+		'The ingredient section heading, or null for the first ungrouped block'
+	),
+	items: z
+		.array(z.string().trim().min(1))
+		.describe('Every ingredient in this group, in its desired order')
+});
+
+const assistantIngredientGroupsSchema = z
+	.array(assistantIngredientGroupSchema)
+	.min(1)
+	.refine(
+		(groups) => groups[0]?.heading === null && groups.slice(1).every(({ heading }) => heading),
+		'The first group must be ungrouped and every later group must have a heading'
+	);
+
 export const assistantIngredientProposalSchema = z.object({
-	expected: z
-		.array(z.string().trim().min(1))
-		.describe('An exact copy of the complete current ingredient list, in its current order'),
-	replacement: z
-		.array(z.string().trim().min(1))
-		.describe('The complete desired ingredient list, including every unchanged ingredient')
+	expected: assistantIngredientGroupsSchema.describe(
+		'An exact copy of all current ingredient groups, including order and empty named sections'
+	),
+	replacement: assistantIngredientGroupsSchema.describe(
+		'The complete desired ingredient groups, including every unchanged group and ingredient'
+	)
 });
 
 export const assistantInstructionSchema = z.object({
@@ -91,6 +108,7 @@ export type AssistantDetailsState = z.infer<typeof assistantDetailsStateSchema>;
 export type AssistantDetailChange = z.infer<typeof assistantDetailChangeSchema>;
 export type AssistantDetailsProposal = z.infer<typeof assistantDetailsProposalSchema>;
 export type AssistantIngredientProposal = z.infer<typeof assistantIngredientProposalSchema>;
+export type AssistantIngredientGroup = z.infer<typeof assistantIngredientGroupSchema>;
 export type AssistantInstruction = z.infer<typeof assistantInstructionSchema>;
 export type AssistantInstructionProposal = z.infer<typeof assistantInstructionProposalSchema>;
 

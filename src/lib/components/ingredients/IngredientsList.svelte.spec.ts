@@ -1,83 +1,73 @@
-import type { Ingredient } from '$lib/server/types';
+import type { Ingredient, IngredientSectionWithIngredients } from '$lib/server/types';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { page } from 'vitest/browser';
 import IngredientsList from './IngredientsList.svelte';
 
+const ingredient = (
+	id: number,
+	name: string,
+	ingredientOrder: number,
+	sectionId: number | null = null
+): Ingredient => ({ id, name, ingredientOrder, recipeId: 1, sectionId });
+
+const section = (
+	id: number,
+	name: string,
+	sectionOrder: number,
+	ingredients: Ingredient[]
+): IngredientSectionWithIngredients => ({ id, name, sectionOrder, recipeId: 1, ingredients });
+
 describe('IngredientsList.svelte', () => {
-	const mockIngredients: Ingredient[] = [
-		{ id: 1, name: '2 cups flour', recipeId: 1 },
-		{ id: 2, name: '1 cup sugar', recipeId: 1 },
-		{ id: 3, name: '3 eggs', recipeId: 1 }
-	];
+	it('renders an ungrouped recipe without a heading', () => {
+		const ingredients = [ingredient(1, 'Flour', 1), ingredient(2, 'Salt', 2)];
+		const { container } = render(IngredientsList, { ingredients, ingredientSections: [] });
 
-	describe('rendering', () => {
-		it('should render empty list when no ingredients provided', async () => {
-			const { container } = render(IngredientsList, { ingredients: [] });
-
-			const list = container.querySelector('ul');
-			expect(list).toBeTruthy();
-
-			const items = container.querySelectorAll('li');
-			expect(items.length).toBe(0);
-		});
-
-		it('should render all ingredients', async () => {
-			const { container } = render(IngredientsList, { ingredients: mockIngredients });
-
-			const items = container.querySelectorAll('li');
-			expect(items.length).toBe(3);
-		});
-
-		it('should render single ingredient correctly', async () => {
-			const singleIngredient: Ingredient[] = [{ id: 1, name: '1 teaspoon salt', recipeId: 1 }];
-
-			const { container } = render(IngredientsList, { ingredients: singleIngredient });
-
-			const items = container.querySelectorAll('li');
-			expect(items.length).toBe(1);
-
-			const saltElement = await page.getByText('1 teaspoon salt');
-			await expect.element(saltElement).toBeInTheDocument();
-		});
+		expect([...container.querySelectorAll('li')].map((item) => item.textContent)).toEqual([
+			'Flour',
+			'Salt'
+		]);
+		expect(container.querySelector('h4')).toBeNull();
 	});
 
-	describe('ingredient display', () => {
-		it('should display ingredient names correctly', async () => {
-			render(IngredientsList, { ingredients: mockIngredients });
+	it('renders named groups in section and ingredient order', () => {
+		const sauce = [ingredient(2, 'Tomatoes', 1, 20), ingredient(3, 'Garlic', 2, 20)];
+		const pasta = [ingredient(4, 'Spaghetti', 1, 21)];
+		const ingredients = [...sauce, ...pasta];
+		const ingredientSections = [section(20, 'Sauce', 1, sauce), section(21, 'Pasta', 2, pasta)];
+		const { container } = render(IngredientsList, { ingredients, ingredientSections });
 
-			const flourElement = await page.getByText('2 cups flour');
-			await expect.element(flourElement).toBeInTheDocument();
+		expect([...container.querySelectorAll('h4')].map((heading) => heading.textContent)).toEqual([
+			'Sauce',
+			'Pasta'
+		]);
+		expect([...container.querySelectorAll('li')].map((item) => item.textContent)).toEqual([
+			'Tomatoes',
+			'Garlic',
+			'Spaghetti'
+		]);
+	});
 
-			const sugarElement = await page.getByText('1 cup sugar');
-			await expect.element(sugarElement).toBeInTheDocument();
-
-			const eggsElement = await page.getByText('3 eggs');
-			await expect.element(eggsElement).toBeInTheDocument();
+	it('renders ungrouped ingredients before named groups', () => {
+		const ungrouped = ingredient(1, 'Salt', 1);
+		const grouped = ingredient(2, 'Tomatoes', 1, 20);
+		const { container } = render(IngredientsList, {
+			ingredients: [ungrouped, grouped],
+			ingredientSections: [section(20, 'Sauce', 1, [grouped])]
 		});
 
-		it('should render ingredients in order', async () => {
-			const { container } = render(IngredientsList, { ingredients: mockIngredients });
+		expect([...container.querySelectorAll('li')].map((item) => item.textContent)).toEqual([
+			'Salt',
+			'Tomatoes'
+		]);
+	});
 
-			const items = container.querySelectorAll('li span');
-			expect(items[0].textContent).toBe('2 cups flour');
-			expect(items[1].textContent).toBe('1 cup sugar');
-			expect(items[2].textContent).toBe('3 eggs');
+	it('omits empty sections', () => {
+		const { container } = render(IngredientsList, {
+			ingredients: [],
+			ingredientSections: [section(20, 'Future sauce', 1, [])]
 		});
 
-		it('should handle ingredients with special characters', async () => {
-			const specialIngredients: Ingredient[] = [
-				{ id: 1, name: '½ cup milk & cream', recipeId: 1 },
-				{ id: 2, name: "2 tbsp chef's seasoning", recipeId: 1 }
-			];
-
-			render(IngredientsList, { ingredients: specialIngredients });
-
-			const milkElement = await page.getByText('½ cup milk & cream');
-			await expect.element(milkElement).toBeInTheDocument();
-
-			const seasoningElement = await page.getByText("2 tbsp chef's seasoning");
-			await expect.element(seasoningElement).toBeInTheDocument();
-		});
+		expect(container.querySelector('h4')).toBeNull();
+		expect(container.querySelector('li')).toBeNull();
 	});
 });

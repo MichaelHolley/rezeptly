@@ -523,8 +523,9 @@ async function seed() {
 				// Create ingredients
 				if (recipeData.ingredients.length > 0) {
 					await tx.insert(ingredients).values(
-						recipeData.ingredients.map((ing) => ({
+						recipeData.ingredients.map((ing, index) => ({
 							name: ing.name,
+							ingredientOrder: index + 1,
 							recipeId: recipe.id
 						}))
 					);

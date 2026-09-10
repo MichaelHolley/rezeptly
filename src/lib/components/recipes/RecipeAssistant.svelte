@@ -5,6 +5,7 @@
 	import {
 		type AssistantDetailChange,
 		type AssistantDetailsProposal,
+		type AssistantIngredientGroup,
 		type AssistantToolResult,
 		type RecipeAssistantMessage
 	} from '$lib/shared/recipe-assistant';
@@ -126,6 +127,25 @@
 	</div>
 {/snippet}
 
+{#snippet ingredientGroups(groups: AssistantIngredientGroup[], strike: boolean)}
+	<div class:text-zinc-500={strike} class:line-through={strike} class="flex flex-col gap-2">
+		{#each groups as group, index (`${group.heading ?? 'ungrouped'}-${index}`)}
+			<div>
+				{#if group.heading}<p class="font-medium">{group.heading}</p>{/if}
+				<ul class="list-disc pl-5">
+					{#each group.items as name, itemIndex (`${name}-${itemIndex}`)}
+						<li>{name}</li>
+					{:else}
+						<li class="list-none italic text-zinc-500">
+							{group.heading ? 'Empty section' : 'No ungrouped ingredients'}
+						</li>
+					{/each}
+				</ul>
+			</div>
+		{/each}
+	</div>
+{/snippet}
+
 {#snippet toolState(part: { state: string; output?: unknown; errorText?: string })}
 	{#if part.state === 'approval-responded'}
 		<p class="mt-3 text-xs text-zinc-500">Decision saved. Waiting for the other proposals…</p>
@@ -232,19 +252,9 @@
 							{:else if part.type === 'tool-replaceIngredients' && part.state !== 'input-streaming' && part.input}
 								<div>
 									<p class="font-semibold">Proposed ingredient changes</p>
-									{#each [{ label: 'Current', items: part.input.expected, strike: true }, { label: 'Proposed', items: part.input.replacement, strike: false }] as list (list.label)}
+									{#each [{ label: 'Current', groups: part.input.expected, strike: true }, { label: 'Proposed', groups: part.input.replacement, strike: false }] as list (list.label)}
 										<p class="mt-2 text-xs font-medium text-zinc-500">{list.label}</p>
-										<ul
-											class="list-disc space-y-1 pl-5"
-											class:text-zinc-500={list.strike}
-											class:line-through={list.strike}
-										>
-											{#each list.items as name, i (i)}
-												<li>{name}</li>
-											{:else}
-												<li class="list-none italic text-zinc-500">Empty list</li>
-											{/each}
-										</ul>
+										{@render ingredientGroups(list.groups, list.strike)}
 									{/each}
 									{#if part.state === 'approval-requested'}{@render approvalActions(
 											part.approval.id

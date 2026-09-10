@@ -11,6 +11,7 @@ import {
 	type RecipeAssistantMessage
 } from '$lib/shared/recipe-assistant';
 import { COURSES, type RecipeCourse } from '$lib/shared/course';
+import { ingredientNameGroups } from '$lib/shared/ingredients';
 import { TAG_CATEGORIES } from '$lib/shared/tags';
 import { userCanWrite } from '$lib/server/auth/permissions';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
@@ -57,17 +58,29 @@ const extractionSchema = z.object({
 		.describe('Total time needed in minutes, or null if not stated'),
 	portions: z.number().nullable().describe('Number of portions, or null if not stated'),
 	tags: z.array(tagProposalSchema).describe('Tags chosen from the provided vocabulary'),
-	ingredients: z.array(
-		z
-			.object({
-				name: z
-					.string()
-					.describe(
-						"A single recipe ingredient. Must include both amount and title (e.g. '150g Mehl'"
-					)
-			})
-			.describe('The list of recipe ingredients')
-	),
+	ingredients: z
+		.array(
+			z
+				.object({
+					heading: z
+						.string()
+						.trim()
+						.min(1)
+						.nullable()
+						.describe('The section heading, or null for ungrouped ingredients'),
+					items: z
+						.array(
+							z
+								.string()
+								.trim()
+								.min(1)
+								.describe("A single ingredient with amount and title, for example '150g Mehl'")
+						)
+						.describe('The ordered ingredients in this section')
+				})
+				.describe('One ordered ingredient group')
+		)
+		.describe('All ingredient groups in source order'),
 	instructions: z
 		.array(
 			z
@@ -101,7 +114,7 @@ const SYSTEM_PROMPT = [
 	'Every other value is optional: return null or an empty array when it is not visible or unclear. Never guess a duration, a portion count or a tag.',
 	'durationMinutes is the total time in minutes. portions is a plain count of servings.',
 	'course is the position of the dish in a meal; return null when it is not obvious.',
-	'Ingredient-values must include both amount and title. Fix typos.',
+	'Preserve ingredient section headings and order. Use one null heading for ungrouped ingredients. Ingredient values must include both amount and title. Fix typos.',
 	'For instruction section headings: never use step numbers (e.g. "Step 1", "1.", "Schritt 1") as the heading — instead derive a short descriptive title that summarises the action (e.g. "Teig kneten", "Prepare the dough", "Faire revenir les oignons"). Keep the heading in the original language of the recipe.',
 	'If the ingredients list is grouped, it is recommended to write the list of ingredients again to the according step without their amount.'
 ].join(' ');
@@ -242,7 +255,7 @@ function recipeContext(recipe: RecipeWithDetails): string {
 	return JSON.stringify({
 		details: detailsState(recipe),
 		tags: recipe.tags.map(({ name, category }) => ({ name, category })),
-		ingredients: recipe.ingredients.map(({ name }) => name),
+		ingredients: ingredientNameGroups(recipe),
 		instructions: instructionState(recipe)
 	});
 }
@@ -292,7 +305,7 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 		}),
 		replaceIngredients: tool({
 			description:
-				'Propose replacing the complete ingredient list. Use only after an explicit request to change ingredients.',
+				'Propose replacing the complete ordered ingredient groups. Preserve unchanged headings, membership and order. Use only after an explicit request to change ingredients.',
 			inputSchema: assistantIngredientProposalSchema,
 			needsApproval: true,
 			execute: ({ expected, replacement }) =>
@@ -301,18 +314,13 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 					if (!recipe)
 						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
 					if (
-						listProposalIsStale(
-							recipe.ingredients.map(({ name }) => name),
-							expected
-						)
+						!(await ingredientService.replaceIngredientsForRecipe(recipeId, expected, replacement))
 					) {
 						return {
 							status: 'stale' as const,
-							message: 'The ingredient list changed after this proposal was created.'
+							message: 'The ingredient structure changed after this proposal was created.'
 						};
 					}
-
-					await ingredientService.replaceIngredientsForRecipe(recipeId, replacement);
 					return toolResult(await recipeService.getRecipeById(recipeId, { includeDrafts: true }));
 				})
 		}),

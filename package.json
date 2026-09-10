@@ -82,6 +82,7 @@
     "runed": "^0.37.1",
     "sharp": "^0.35.4",
     "slugify": "^1.6.9",
+    "svelte-dnd-action": "^0.9.79",
     "svelte-sonner": "^1.2.1"
   },
   "lint-staged": {
