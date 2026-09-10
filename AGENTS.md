@@ -4,6 +4,8 @@
 
 Commands and Scripts are defined in the `package.json` file. Prefer scripts over `pnpx` or `npx` commands.
 
+- **Env files**: In a worktree without a `.env`, copy `.env.example` to `.env` and fill in the values needed for testing.
+
 ## Coding Guidelines
 
 - **Components**: Use Svelte 5 runes (`$props`, `$state`, `$derived`).
