@@ -5,8 +5,10 @@
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import { COURSE_LABELS } from '$lib/shared/course';
 	import { formatDuration } from '$lib/shared/duration';
+	import CheckIcon from '@lucide/svelte/icons/check';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import PenIcon from '@lucide/svelte/icons/pen';
+	import Share2Icon from '@lucide/svelte/icons/share-2';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import UsersIcon from '@lucide/svelte/icons/users';
 	import { COURSE_ICONS } from './course-icons';
@@ -22,6 +24,8 @@
 	const favorites = favoritesStore;
 
 	let editDetails = $state(false);
+	let linkCopied = $state(false);
+	let resetCopiedTimeout: ReturnType<typeof setTimeout>;
 
 	const toggleFavorite = () => {
 		if (!recipe) {
@@ -37,6 +41,13 @@
 
 	const closeForm = () => {
 		editDetails = false;
+	};
+
+	const shareRecipe = async () => {
+		await navigator.clipboard.writeText(window.location.href);
+		linkCopied = true;
+		clearTimeout(resetCopiedTimeout);
+		resetCopiedTimeout = setTimeout(() => (linkCopied = false), 2000);
 	};
 </script>
 
@@ -93,6 +104,19 @@
 					<StarIcon class="text-zinc-400" />
 				{/if}
 				Favorite
+			</Button>
+			<Button
+				onclick={shareRecipe}
+				variant="outline"
+				size="icon"
+				aria-label="Share recipe"
+				title="Copy recipe link"
+			>
+				{#if linkCopied}
+					<CheckIcon />
+				{:else}
+					<Share2Icon />
+				{/if}
 			</Button>
 			{#if PermissionsStore.canEdit}
 				<Button
