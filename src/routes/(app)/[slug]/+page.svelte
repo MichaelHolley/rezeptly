@@ -43,7 +43,7 @@
 		fileUploadFormSubmitButton?.click();
 	};
 
-	const recipeQuery = $derived(getRecipeBySlug(params.slug));
+	const recipe = $derived(await getRecipeBySlug(params.slug));
 
 	const handleImageError = () => {
 		isImageBroken = true;
@@ -99,12 +99,10 @@
 </script>
 
 <svelte:head>
-	<title>rezeptly{recipeQuery.current?.name ? ` | ${recipeQuery.current.name}` : ''}</title>
+	<title>rezeptly | {recipe.name}</title>
 </svelte:head>
 
 <svelte:boundary>
-	{@const recipe = await recipeQuery}
-
 	<BreadcrumbComponent breadcrumbs={[{ name: recipe.name, href: `/${recipe.slug}` }]} />
 
 	<RecipeDetails {recipe} />
