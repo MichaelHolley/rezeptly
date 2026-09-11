@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
-	import { Spinner } from '$lib/components/ui/spinner';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
 	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
-	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import RecipeAssistant from '$lib/components/recipes/RecipeAssistant.svelte';
+	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import { reportError } from '$lib/shared/toast';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
@@ -43,7 +44,7 @@
 		fileUploadFormSubmitButton?.click();
 	};
 
-	const recipeQuery = $derived(getRecipeBySlug(params.slug));
+	const recipe = $derived(await getRecipeBySlug(params.slug));
 
 	const handleImageError = () => {
 		isImageBroken = true;
@@ -99,12 +100,26 @@
 </script>
 
 <svelte:head>
-	<title>rezeptly{recipeQuery.current?.name ? ` | ${recipeQuery.current.name}` : ''}</title>
+	<title>rezeptly | {recipe.name}</title>
+	<meta name="description" content={recipe.description} />
+
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content={recipe.name} />
+	<meta property="og:description" content={recipe.description} />
+	<meta property="og:url" content={page.url.href} />
+	{#if recipe.imageUrl}
+		<meta property="og:image" content={recipe.imageUrl} />
+	{/if}
+
+	<meta name="twitter:card" content={recipe.imageUrl ? 'summary_large_image' : 'summary'} />
+	<meta name="twitter:title" content={recipe.name} />
+	<meta name="twitter:description" content={recipe.description} />
+	{#if recipe.imageUrl}
+		<meta name="twitter:image" content={recipe.imageUrl} />
+	{/if}
 </svelte:head>
 
 <svelte:boundary>
-	{@const recipe = await recipeQuery}
-
 	<BreadcrumbComponent breadcrumbs={[{ name: recipe.name, href: `/${recipe.slug}` }]} />
 
 	<RecipeDetails {recipe} />
@@ -294,12 +309,6 @@
 			<RecipeAssistant recipeId={recipe.id} onApplied={handleAssistantApplied} />
 		{/key}
 	{/if}
-
-	{#snippet pending()}
-		<div class="flex h-64 items-center justify-center">
-			<Spinner class="h-8 w-8" />
-		</div>
-	{/snippet}
 
 	{#snippet failed(error, retry)}
 		<ErrorComponent {error} {retry} />

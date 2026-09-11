@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getManagedTags } from '$lib/api/tags.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import { Spinner } from '$lib/components/ui/spinner';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import CreateTagFormComponent from '$lib/components/tags/CreateTagFormComponent.svelte';
 	import TagRowComponent from '$lib/components/tags/TagRowComponent.svelte';
@@ -43,12 +42,6 @@
 				</Card.Root>
 			{/each}
 		</div>
-
-		{#snippet pending()}
-			<div class="flex h-64 items-center justify-center">
-				<Spinner class="h-8 w-8" />
-			</div>
-		{/snippet}
 
 		{#snippet failed(error, retry)}
 			<ErrorComponent {error} {retry} />
