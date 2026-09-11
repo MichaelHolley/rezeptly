@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
@@ -100,6 +101,22 @@
 
 <svelte:head>
 	<title>rezeptly | {recipe.name}</title>
+	<meta name="description" content={recipe.description} />
+
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content={recipe.name} />
+	<meta property="og:description" content={recipe.description} />
+	<meta property="og:url" content={page.url.href} />
+	{#if recipe.imageUrl}
+		<meta property="og:image" content={recipe.imageUrl} />
+	{/if}
+
+	<meta name="twitter:card" content={recipe.imageUrl ? 'summary_large_image' : 'summary'} />
+	<meta name="twitter:title" content={recipe.name} />
+	<meta name="twitter:description" content={recipe.description} />
+	{#if recipe.imageUrl}
+		<meta name="twitter:image" content={recipe.imageUrl} />
+	{/if}
 </svelte:head>
 
 <svelte:boundary>
