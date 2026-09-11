@@ -4,15 +4,15 @@
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
 	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
-	import { Spinner } from '$lib/components/ui/spinner';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
 	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
-	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import RecipeAssistant from '$lib/components/recipes/RecipeAssistant.svelte';
+	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import { reportError } from '$lib/shared/toast';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
@@ -294,12 +294,6 @@
 			<RecipeAssistant recipeId={recipe.id} onApplied={handleAssistantApplied} />
 		{/key}
 	{/if}
-
-	{#snippet pending()}
-		<div class="flex h-64 items-center justify-center">
-			<Spinner class="h-8 w-8" />
-		</div>
-	{/snippet}
 
 	{#snippet failed(error, retry)}
 		<ErrorComponent {error} {retry} />
