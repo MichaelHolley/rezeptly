@@ -3,7 +3,6 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
-	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
@@ -309,8 +308,4 @@
 			<RecipeAssistant recipeId={recipe.id} onApplied={handleAssistantApplied} />
 		{/key}
 	{/if}
-
-	{#snippet failed(error, retry)}
-		<ErrorComponent {error} {retry} />
-	{/snippet}
 </svelte:boundary>
