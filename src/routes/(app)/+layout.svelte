@@ -9,7 +9,7 @@
 	import { reportError } from '$lib/shared/toast';
 	import { AvailableTagsStore } from '$lib/store/available-tags.svelte.js';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
-	import type { Icon as IconType } from '@lucide/svelte';
+	import type { LucideIcon } from '@lucide/svelte';
 	import FileTextIcon from '@lucide/svelte/icons/file-text';
 	import ImageIcon from '@lucide/svelte/icons/image-plus';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
@@ -31,7 +31,7 @@
 		AvailableTagsStore.tags = availableTags.current || [];
 	});
 
-	type NavLink = { href: string; label: string; icon: typeof IconType };
+	type NavLink = { href: string; label: string; icon: LucideIcon };
 
 	const adminLinks = $derived<NavLink[]>([
 		{ href: '/drafts', label: 'Drafts', icon: FileTextIcon },
