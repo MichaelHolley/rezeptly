@@ -304,6 +304,19 @@ export const setRecipePublished = async (id: RecipeId, published: boolean): Prom
 	return updatedRecipe;
 };
 
+export const attachRecipeImageIfMissing = async (
+	id: RecipeId,
+	imageUrl: string
+): Promise<Recipe | null> => {
+	const [recipe] = await db
+		.update(recipes)
+		.set({ imageUrl })
+		.where(and(eq(recipes.id, id), sql`${recipes.imageUrl} is null`))
+		.returning();
+
+	return recipe ?? null;
+};
+
 export const deleteRecipe = async (id: RecipeId): Promise<void> => {
 	// Get recipe to find image URL before deletion (getRecipeById throws if not found)
 	const recipe = await getRecipeById(id, { includeDrafts: true });
