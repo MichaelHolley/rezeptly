@@ -69,7 +69,7 @@
 	availableTags={filterableTags}
 />
 
-<div class="card-container my-4 grid gap-4">
+<div class="card-container my-4 grid gap-5">
 	{#each filteredRecipes as recipe (recipe.id)}
 		<a
 			href={resolve('/(app)/[slug]', { slug: recipe.slug })}
