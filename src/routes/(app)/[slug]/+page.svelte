@@ -2,7 +2,12 @@
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
+	import {
+		deleteRecipeImage,
+		generateRecipeImage,
+		getRecipeBySlug,
+		uploadRecipeImage
+	} from '$lib/api/recipes.remote';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
@@ -18,6 +23,7 @@
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import UsersIcon from '@lucide/svelte/icons/users';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -58,6 +64,14 @@
 			reportError(error);
 		} finally {
 			release();
+		}
+	};
+
+	const handleGenerateImage = async (recipeId: number) => {
+		try {
+			await generateRecipeImage(recipeId);
+		} catch (error) {
+			reportError(error);
 		}
 	};
 
@@ -255,30 +269,48 @@
 				</div>
 			</div>
 		{:else if PermissionsStore.canEdit}
-			<button
-				class="flex size-32 items-center justify-center rounded-sm border-2 border-dashed hover:cursor-pointer transition-colors {isDragOver
-					? 'border-zinc-400 bg-zinc-100'
-					: 'border-zinc-300 bg-transparent hover:bg-zinc-50'}"
-				onclick={() => fileUploadInput?.click()}
-				ondragover={(e) => {
-					e.preventDefault();
-					isDragOver = true;
-				}}
-				ondragleave={() => {
-					isDragOver = false;
-				}}
-				ondrop={handleDrop}
-				disabled={!!uploadRecipeImage.pending}
-			>
-				{#if !!uploadRecipeImage.pending}
-					<Spinner />
-				{:else}
-					<div class="flex flex-col items-center gap-1">
-						<PlusIcon class="size-8 text-zinc-500" />
-						<span class="text-sm text-zinc-500">Add image</span>
-					</div>
+			<div class="flex items-center gap-3">
+				<button
+					class="flex size-32 items-center justify-center rounded-sm border-2 border-dashed hover:cursor-pointer transition-colors {isDragOver
+						? 'border-zinc-400 bg-zinc-100'
+						: 'border-zinc-300 bg-transparent hover:bg-zinc-50'}"
+					onclick={() => fileUploadInput?.click()}
+					ondragover={(e) => {
+						e.preventDefault();
+						isDragOver = true;
+					}}
+					ondragleave={() => {
+						isDragOver = false;
+					}}
+					ondrop={handleDrop}
+					disabled={!!uploadRecipeImage.pending || !!generateRecipeImage.pending}
+				>
+					{#if !!uploadRecipeImage.pending}
+						<Spinner />
+					{:else}
+						<div class="flex flex-col items-center gap-1">
+							<PlusIcon class="size-8 text-zinc-500" />
+							<span class="text-sm text-zinc-500">Add image</span>
+						</div>
+					{/if}
+				</button>
+				{#if data.features.imageGeneration}
+					<Button
+						variant="outline"
+						class="border-ai text-ai hover:bg-ai/10 hover:text-ai"
+						onclick={() => handleGenerateImage(recipe.id)}
+						disabled={!!uploadRecipeImage.pending || !!generateRecipeImage.pending}
+					>
+						{#if generateRecipeImage.pending}
+							<Spinner class="size-4" />
+							Generating…
+						{:else}
+							<SparklesIcon />
+							Generate with AI
+						{/if}
+					</Button>
 				{/if}
-			</button>
+			</div>
 			<form
 				{...uploadRecipeImage.enhance(async ({ submit }) => {
 					try {

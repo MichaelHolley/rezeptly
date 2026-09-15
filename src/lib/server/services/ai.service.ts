@@ -16,6 +16,7 @@ import { userCanWrite } from '$lib/server/auth/permissions';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import {
 	convertToModelMessages,
+	generateImage,
 	generateText,
 	Output,
 	isStepCount,
@@ -31,6 +32,58 @@ import * as recipeService from './recipe.service';
 
 export const aiEnabled = (): boolean =>
 	Boolean(env.OPENROUTER_API_KEY) && Boolean(env.OPENROUTER_MODEL_NAME);
+
+export const imageGenerationEnabled = (): boolean =>
+	Boolean(env.OPENROUTER_API_KEY) &&
+	Boolean(env.BLOB_READ_WRITE_TOKEN) &&
+	Boolean(env.BLOG_STORAGE_DIR);
+
+export type RecipeImageContext = {
+	name: string;
+	description: string | null;
+	course: RecipeCourse | null;
+	ingredientNames: string[];
+	instructionHeadings: string[];
+};
+
+export type GeneratedRecipeImage = {
+	bytes: Uint8Array;
+	mediaType: string;
+};
+
+export async function generateRecipeImage(
+	recipe: RecipeImageContext
+): Promise<GeneratedRecipeImage> {
+	const apiKey = env.OPENROUTER_API_KEY;
+	if (!apiKey) throw new Error('Recipe image generation is not configured');
+
+	const details = [
+		`Recipe name: ${recipe.name}`,
+		recipe.description ? `Description: ${recipe.description}` : null,
+		recipe.course ? `Course: ${recipe.course}` : null,
+		recipe.ingredientNames.length ? `Ingredients: ${recipe.ingredientNames.join(', ')}` : null,
+		recipe.instructionHeadings.length
+			? `Preparation: ${recipe.instructionHeadings.join(', ')}`
+			: null
+	].filter(Boolean);
+
+	const { image } = await generateImage({
+		model: createOpenRouter({ apiKey }).imageModel('openai/gpt-image-2.5-flare'),
+		prompt: [
+			'Create a realistic, appetizing editorial food photograph of the finished dish.',
+			'Use natural lighting and a clean, opaque background. Show only the food and appropriate tableware.',
+			'Do not include people, text, branding, logos, packaging, watermarks, or recipe-page imagery.',
+			...details
+		].join('\n'),
+		n: 1,
+		aspectRatio: '16:9',
+		maxRetries: 0,
+		abortSignal: AbortSignal.timeout(60_000),
+		providerOptions: { openrouter: { quality: 'medium', background: 'opaque' } }
+	});
+
+	return { bytes: image.uint8Array, mediaType: image.mediaType };
+}
 
 const tagCategorySchema = z.enum(TAG_CATEGORIES as [TagCategory, ...TagCategory[]]);
 
