@@ -185,7 +185,7 @@
 				<div class="flex h-full flex-col justify-center">
 					<h3 class="text-lg font-semibold">What would you like to refine?</h3>
 					<p class="mt-1 text-sm text-zinc-500">
-						Ask about the current draft or request a change. Nothing is saved until you approve it.
+						Ask about this recipe or request a change. Nothing is saved until you approve it.
 					</p>
 					<div class="mt-5 flex flex-col gap-2">
 						{#each examples as example (example)}
