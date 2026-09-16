@@ -335,7 +335,7 @@
 		{/if}
 	</div>
 
-	{#if data.features.recipeAssistant && PermissionsStore.canEdit && recipe.publishedAt == null}
+	{#if data.features.recipeAssistant && PermissionsStore.canEdit}
 		{#key recipe.id}
 			<RecipeAssistant recipeId={recipe.id} onApplied={handleAssistantApplied} />
 		{/key}

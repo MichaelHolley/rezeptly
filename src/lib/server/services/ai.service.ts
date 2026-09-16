@@ -265,7 +265,7 @@ export async function suggestRecipeTags(
 }
 
 const ASSISTANT_SYSTEM_PROMPT = [
-	'You are a focused assistant for the draft recipe supplied below.',
+	'You are a focused assistant for the recipe supplied below.',
 	'Answer questions about this recipe and closely related cooking topics, and politely decline unrelated requests.',
 	'Reply in the language used by the writer. Keep recipe content in its current language unless the writer explicitly asks for a translation.',
 	'Only call a mutation tool when the writer explicitly asks to change the recipe. Advice, review, questions, and discussion are not mutation intent.',
@@ -300,10 +300,9 @@ function recipeContext(recipe: RecipeWithDetails): string {
 	});
 }
 
-async function currentDraft(recipeId: RecipeId): Promise<RecipeWithDetails | null> {
+async function currentRecipe(recipeId: RecipeId): Promise<RecipeWithDetails | null> {
 	if (!userCanWrite()) return null;
-	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
-	return recipe.publishedAt == null ? recipe : null;
+	return recipeService.getRecipeById(recipeId, { includeDrafts: true });
 }
 
 function toolResult(recipe: RecipeWithDetails) {
@@ -333,9 +332,12 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 			needsApproval: true,
 			execute: (proposal) =>
 				safeToolExecution(async () => {
-					const recipe = await currentDraft(recipeId);
+					const recipe = await currentRecipe(recipeId);
 					if (!recipe)
-						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+						return {
+							status: 'unavailable' as const,
+							message: 'You do not have permission to change this recipe.'
+						};
 					const changes = Object.fromEntries(
 						proposal.changes.map(({ field, value }) => [field, value])
 					) as Partial<AssistantDetailsState>;
@@ -350,9 +352,12 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 			needsApproval: true,
 			execute: ({ expected, replacement }) =>
 				safeToolExecution(async () => {
-					const recipe = await currentDraft(recipeId);
+					const recipe = await currentRecipe(recipeId);
 					if (!recipe)
-						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+						return {
+							status: 'unavailable' as const,
+							message: 'You do not have permission to change this recipe.'
+						};
 					if (
 						listProposalIsStale(
 							recipe.ingredients.map(({ name }) => name),
@@ -376,9 +381,12 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 			needsApproval: true,
 			execute: ({ expected, replacement }) =>
 				safeToolExecution(async () => {
-					const recipe = await currentDraft(recipeId);
+					const recipe = await currentRecipe(recipeId);
 					if (!recipe)
-						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+						return {
+							status: 'unavailable' as const,
+							message: 'You do not have permission to change this recipe.'
+						};
 					if (listProposalIsStale(instructionState(recipe), expected)) {
 						return {
 							status: 'stale' as const,
