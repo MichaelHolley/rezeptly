@@ -9,17 +9,17 @@ importers:
   .:
     dependencies:
       '@ai-sdk/svelte':
-        specifier: ^5.0.94
-        version: 5.0.94(svelte@5.57.0(@typescript-eslint/types@8.70.0))(zod@4.6.5)
+        specifier: ^5.0.101
+        version: 5.0.101(svelte@5.57.0(@typescript-eslint/types@8.70.0))(zod@4.6.5)
       '@openrouter/ai-sdk-provider':
         specifier: ^3.0.0
-        version: 3.0.0(ai@7.0.94(zod@4.6.5))(zod@4.6.5)
+        version: 3.0.0(ai@7.0.101(zod@4.6.5))(zod@4.6.5)
       '@vercel/blob':
         specifier: ^2.8.0
         version: 2.8.0
       ai:
-        specifier: ^7.0.94
-        version: 7.0.94(zod@4.6.5)
+        specifier: ^7.0.101
+        version: 7.0.101(zod@4.6.5)
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@opentelemetry/api@1.9.1)(postgres@3.4.9)
@@ -174,24 +174,24 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@4.0.76':
-    resolution: {integrity: sha512-hWNtiveILLtkXm1t5tNmzeII8p+j/mzxlL2OtPAgU/0h4ZInkIVILX8Svx4SzI5U9d80B59gCPaKRAhb7jTtAw==}
+  '@ai-sdk/gateway@4.0.81':
+    resolution: {integrity: sha512-9TdKEg2l/qfaK7L4gC1FkrHNBrEXQjZSV3DvkRLCXkOSJTzojmarCn19ROWBbrlHqFVbW7OSOwQqz1n7ku9HQA==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider-utils@5.0.37':
-    resolution: {integrity: sha512-WzLQPWtpLpunKBanq/TX8+rbBz7JdKpl8Io4nl/g+bLvePbxMlMuxLrxT8JzquxJmgWKbW4nfFrQ5mnX4A8mpw==}
+  '@ai-sdk/provider-utils@5.0.40':
+    resolution: {integrity: sha512-zsXPwSAQ9mRJ2hvyITaLOYUyuGrBmzFhJXOg4mllGmla1PfNxZcm4GwqMiV2xQaDgcgBMdUGxXkp9xekZZNIkg==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider@4.0.11':
-    resolution: {integrity: sha512-A/Cyjma9RLTLsF9xv/2OSaw9eyFhOIBqzoeOVZhp+xKZD8wv5opN+qyIa83NE4Jug2SjQ/Kaf08w1JX6CESR/w==}
+  '@ai-sdk/provider@4.0.14':
+    resolution: {integrity: sha512-yukP2tbcQQErG5gLCMBGvpvb/rM3D3KlTKG6eKKOdNHLHqtNNDEeBxdYrY/JL+O76B2ig5dXY19H/f1HFSvRiQ==}
     engines: {node: '>=22'}
 
-  '@ai-sdk/svelte@5.0.94':
-    resolution: {integrity: sha512-s4G6jAbLUmbasTIzgAswnUgfQUVHDP93K68Xn1WfeOkcmB7eugy4wqk2/I/GM0YC6fGvKgOJlh186uL4R1YLww==}
+  '@ai-sdk/svelte@5.0.101':
+    resolution: {integrity: sha512-bf6RYj3etbM+i6ftzFQ3cvgqTt67Dr3jUj7UczEzkuj8CTQ/iFrgcGaeDuuag0BudHFh5hiLME+5KQc0rXDHqA==}
     engines: {node: '>=22'}
     peerDependencies:
       svelte: ^5.31.0
@@ -2509,8 +2509,8 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  ai@7.0.94:
-    resolution: {integrity: sha512-N70qu4y53SjhA+kHYQCGLNTXLsztV+Rh28l2JDuEzALY5EgNWloYvUDjssL2Pi1Ie2nILcgWShLRgTpU1HxGHg==}
+  ai@7.0.101:
+    resolution: {integrity: sha512-EOhih2g2Gu6TJdnkBojXORtNT6oZ6J4YeVeJhZXFO384ONLdXpPa+VPH183IMpSB8SkswQHTYRRoZ1tt+9Jt3Q==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -5278,30 +5278,30 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@4.0.76(zod@4.6.5)':
+  '@ai-sdk/gateway@4.0.81(zod@4.6.5)':
     dependencies:
-      '@ai-sdk/provider': 4.0.11
-      '@ai-sdk/provider-utils': 5.0.37(zod@4.6.5)
+      '@ai-sdk/provider': 4.0.14
+      '@ai-sdk/provider-utils': 5.0.40(zod@4.6.5)
       '@vercel/oidc': 3.2.0
       zod: 4.6.5
 
-  '@ai-sdk/provider-utils@5.0.37(zod@4.6.5)':
+  '@ai-sdk/provider-utils@5.0.40(zod@4.6.5)':
     dependencies:
-      '@ai-sdk/provider': 4.0.11
+      '@ai-sdk/provider': 4.0.14
       '@standard-schema/spec': 1.1.0
       '@workflow/serde': 4.1.0
       eventsource-parser: 3.1.1
       undici: 7.29.1
       zod: 4.6.5
 
-  '@ai-sdk/provider@4.0.11':
+  '@ai-sdk/provider@4.0.14':
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/svelte@5.0.94(svelte@5.57.0(@typescript-eslint/types@8.70.0))(zod@4.6.5)':
+  '@ai-sdk/svelte@5.0.101(svelte@5.57.0(@typescript-eslint/types@8.70.0))(zod@4.6.5)':
     dependencies:
-      '@ai-sdk/provider-utils': 5.0.37(zod@4.6.5)
-      ai: 7.0.94(zod@4.6.5)
+      '@ai-sdk/provider-utils': 5.0.40(zod@4.6.5)
+      ai: 7.0.101(zod@4.6.5)
       svelte: 5.57.0(@typescript-eslint/types@8.70.0)
     transitivePeerDependencies:
       - zod
@@ -6759,9 +6759,9 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 28.0.0
 
-  '@openrouter/ai-sdk-provider@3.0.0(ai@7.0.94(zod@4.6.5))(zod@4.6.5)':
+  '@openrouter/ai-sdk-provider@3.0.0(ai@7.0.101(zod@4.6.5))(zod@4.6.5)':
     dependencies:
-      ai: 7.0.94(zod@4.6.5)
+      ai: 7.0.101(zod@4.6.5)
       zod: 4.6.5
 
   '@opentelemetry/api@1.9.1':
@@ -7356,11 +7356,11 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  ai@7.0.94(zod@4.6.5):
+  ai@7.0.101(zod@4.6.5):
     dependencies:
-      '@ai-sdk/gateway': 4.0.76(zod@4.6.5)
-      '@ai-sdk/provider': 4.0.11
-      '@ai-sdk/provider-utils': 5.0.37(zod@4.6.5)
+      '@ai-sdk/gateway': 4.0.81(zod@4.6.5)
+      '@ai-sdk/provider': 4.0.14
+      '@ai-sdk/provider-utils': 5.0.40(zod@4.6.5)
       zod: 4.6.5
 
   ajv@6.15.0:
