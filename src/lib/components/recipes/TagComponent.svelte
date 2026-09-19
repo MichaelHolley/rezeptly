@@ -1,23 +1,26 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
+	import { cn } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 
 	const {
 		onSelect,
 		active,
 		children,
-		viewTransitionName
+		viewTransitionName,
+		class: className
 	}: {
 		active?: boolean;
 		onSelect?: () => void;
 		children?: Snippet;
 		viewTransitionName?: string;
+		class?: string;
 	} = $props();
 </script>
 
 <Badge
 	variant={active ? 'default' : 'secondary'}
-	class={onSelect && 'hover:cursor-pointer'}
+	class={cn(onSelect && 'hover:cursor-pointer', className)}
 	onclick={onSelect}
 	{viewTransitionName}
 >

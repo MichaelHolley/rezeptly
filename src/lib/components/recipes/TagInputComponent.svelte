@@ -123,7 +123,7 @@
 	<div class="flex flex-row flex-wrap gap-2">
 		<p class="text-neutral-500"><small>Suggestions:</small></p>
 		{#each aiSuggestedTags as tag (tag)}
-			<TagComponent onSelect={() => addTag(tag)}>
+			<TagComponent class="outline-2 outline-ai/50" onSelect={() => addTag(tag)}>
 				{tag}
 				<PlusIcon class="text-ai" />
 			</TagComponent>
