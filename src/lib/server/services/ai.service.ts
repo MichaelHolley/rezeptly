@@ -71,7 +71,7 @@ export async function generateRecipeImage(
 		model: createOpenRouter({ apiKey }).imageModel('openai/gpt-image-2.5-flare'),
 		prompt: [
 			'Create a realistic, appetizing editorial food photograph of the finished dish.',
-			'Use natural lighting and a clean, opaque background. Show only the food and appropriate tableware.',
+			'Use natural lighting and a clean, opaque background. Show the food and appropriate tableware, plus a few raw or whole key ingredients arranged subtly to the side as decoration, like a cookbook photo. Keep the plated dish the clear focus — the ingredients should be a light garnish touch, not clutter. A utensil (fork, knife, or spoon) may appear beside the plate if it fits the scene naturally, but it is not required.',
 			'Do not include people, text, branding, logos, packaging, watermarks, or recipe-page imagery.',
 			...details
 		].join('\n'),
