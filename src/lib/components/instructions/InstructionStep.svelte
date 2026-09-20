@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Instruction } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
+	import { parseInstruction } from './parse-instruction';
 
 	type Props = {
 		instr: Instruction;
@@ -8,8 +9,8 @@
 		done: boolean;
 		onToggle: () => void;
 	};
-
 	const { instr, stepNumber, done, onToggle }: Props = $props();
+	const blocks = $derived(parseInstruction(instr.instructions));
 </script>
 
 <div
@@ -48,12 +49,28 @@
 				{instr.heading}
 			</button>
 		{/if}
-		<p
-			class="whitespace-pre-wrap text-sm leading-relaxed transition-colors duration-150 {done
+		<div
+			class="space-y-2 text-sm leading-relaxed transition-colors duration-150 {done
 				? 'text-zinc-500'
 				: 'text-zinc-700'}"
 		>
-			{instr.instructions}
-		</p>
+			{#each blocks as block (block)}
+				{#if block.type === 'prose'}
+					<p class="whitespace-pre-wrap">{block.text}</p>
+				{:else if block.type === 'unordered-list'}
+					<ul class="ml-5 list-outside list-disc space-y-1">
+						{#each block.items as item (item)}
+							<li>{item.text}</li>
+						{/each}
+					</ul>
+				{:else}
+					<ol start={block.start} class="ml-5 list-outside list-decimal space-y-1">
+						{#each block.items as item (item)}
+							<li>{item.text}</li>
+						{/each}
+					</ol>
+				{/if}
+			{/each}
+		</div>
 	</div>
 </div>
