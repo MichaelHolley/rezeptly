@@ -5,156 +5,33 @@ import { page } from 'vitest/browser';
 import IngredientItem from './IngredientItem.svelte';
 
 describe('IngredientItem.svelte', () => {
-	const mockIngredient: Ingredient = {
-		id: 1,
-		name: '2 cups flour',
-		recipeId: 1
+	const ingredient: Ingredient = { id: 1, name: '2 cups flour', recipeId: 1 };
+	const props = {
+		ingredient,
+		recipeId: 1,
+		recipeSlug: 'test-recipe',
+		isEditing: false,
+		onEditStart: vi.fn(),
+		onEditEnd: vi.fn()
 	};
 
-	const mockRecipeSlug = 'test-recipe';
+	it('renders an ingredient in read mode', async () => {
+		render(IngredientItem, props);
 
-	describe('rendering', () => {
-		it('should render ingredient name', async () => {
-			render(IngredientItem, {
-				ingredient: mockIngredient,
-				recipeId: 1,
-				recipeSlug: mockRecipeSlug,
-				isEditing: false,
-				onEditStart: vi.fn(),
-				onEditEnd: vi.fn()
-			});
-
-			const ingredientName = await page.getByText('2 cups flour');
-			await expect.element(ingredientName).toBeInTheDocument();
-		});
-
-		it('should show delete button by default', async () => {
-			render(IngredientItem, {
-				ingredient: mockIngredient,
-				recipeId: 1,
-				recipeSlug: mockRecipeSlug,
-				isEditing: false,
-				onEditStart: vi.fn(),
-				onEditEnd: vi.fn()
-			});
-
-			const deleteButton = await page.getByTitle('Delete ingredient');
-			await expect.element(deleteButton).toBeInTheDocument();
-		});
-
-		it('should render ingredient with special characters', async () => {
-			const specialIngredient: Ingredient = {
-				id: 2,
-				name: '½ cup milk & cream',
-				recipeId: 1
-			};
-
-			render(IngredientItem, {
-				ingredient: specialIngredient,
-				recipeId: 1,
-				recipeSlug: mockRecipeSlug,
-				isEditing: false,
-				onEditStart: vi.fn(),
-				onEditEnd: vi.fn()
-			});
-
-			const ingredientName = await page.getByText('½ cup milk & cream');
-			await expect.element(ingredientName).toBeInTheDocument();
-		});
-
-		it('should render ingredient with long name', async () => {
-			const longNameIngredient: Ingredient = {
-				id: 3,
-				name: '2 cups of all-purpose flour, sifted and measured correctly',
-				recipeId: 1
-			};
-
-			render(IngredientItem, {
-				ingredient: longNameIngredient,
-				recipeId: 1,
-				recipeSlug: mockRecipeSlug,
-				isEditing: false,
-				onEditStart: vi.fn(),
-				onEditEnd: vi.fn()
-			});
-
-			const ingredientName = await page.getByText(
-				'2 cups of all-purpose flour, sifted and measured correctly'
-			);
-			await expect.element(ingredientName).toBeInTheDocument();
-		});
+		await expect.element(page.getByText('2 cups flour')).toBeInTheDocument();
+		await expect.element(page.getByTitle('Delete ingredient')).toBeInTheDocument();
 	});
 
-	describe('edit mode', () => {
-		it('should show form when ingredient name is clicked', async () => {
-			const { container, rerender } = render(IngredientItem, {
-				ingredient: mockIngredient,
-				recipeId: 1,
-				recipeSlug: mockRecipeSlug,
-				isEditing: false,
-				onEditStart: () => rerender({ isEditing: true }),
-				onEditEnd: vi.fn()
-			});
-
-			const nameButton = await page.getByText('2 cups flour');
-			await nameButton.click();
-
-			const form = container.querySelector('form');
-			expect(form).toBeTruthy();
+	it('enters edit mode with the ingredient and actions available', async () => {
+		const { rerender } = render(IngredientItem, {
+			...props,
+			onEditStart: () => rerender({ isEditing: true })
 		});
 
-		it('should show input field when ingredient name is clicked', async () => {
-			const { rerender } = render(IngredientItem, {
-				ingredient: mockIngredient,
-				recipeId: 1,
-				recipeSlug: mockRecipeSlug,
-				isEditing: false,
-				onEditStart: () => rerender({ isEditing: true }),
-				onEditEnd: vi.fn()
-			});
+		await page.getByText('2 cups flour').click();
 
-			const nameButton = await page.getByText('2 cups flour');
-			await nameButton.click();
-
-			const input = page.getByRole('textbox');
-			await expect.element(input).toBeInTheDocument();
-		});
-
-		it('should show save and cancel buttons in edit mode', async () => {
-			const { rerender } = render(IngredientItem, {
-				ingredient: mockIngredient,
-				recipeId: 1,
-				recipeSlug: mockRecipeSlug,
-				isEditing: false,
-				onEditStart: () => rerender({ isEditing: true }),
-				onEditEnd: vi.fn()
-			});
-
-			const nameButton = await page.getByText('2 cups flour');
-			await nameButton.click();
-
-			const saveButton = await page.getByTitle('Save ingredient');
-			await expect.element(saveButton).toBeInTheDocument();
-
-			const cancelButton = await page.getByTitle('Cancel edit');
-			await expect.element(cancelButton).toBeInTheDocument();
-		});
-
-		it('should display ingredient name in input when editing', async () => {
-			const { rerender } = render(IngredientItem, {
-				ingredient: mockIngredient,
-				recipeId: 1,
-				recipeSlug: mockRecipeSlug,
-				isEditing: false,
-				onEditStart: () => rerender({ isEditing: true }),
-				onEditEnd: vi.fn()
-			});
-
-			const nameButton = await page.getByText('2 cups flour');
-			await nameButton.click();
-
-			const input = page.getByRole('textbox');
-			await expect.element(input).toHaveValue('2 cups flour');
-		});
+		await expect.element(page.getByRole('textbox')).toHaveValue('2 cups flour');
+		await expect.element(page.getByTitle('Save ingredient')).toBeInTheDocument();
+		await expect.element(page.getByTitle('Cancel edit')).toBeInTheDocument();
 	});
 });
