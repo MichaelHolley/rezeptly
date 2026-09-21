@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import type { RecipeWithDetails, Tag } from '$lib/server/types';
-	import { favoritesStore } from '$lib/store/favorites';
-	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import { COURSE_LABELS } from '$lib/shared/course';
 	import { formatDuration } from '$lib/shared/duration';
+	import { favoritesStore } from '$lib/store/favorites';
+	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import StarIcon from '@lucide/svelte/icons/star';
@@ -68,7 +68,7 @@
 				{#if recipe.durationMinutes != null}
 					<RecipeStat
 						icon={ClockIcon}
-						label="Total"
+						label="Ready In"
 						value={formatDuration(recipe.durationMinutes)}
 					/>
 				{/if}
