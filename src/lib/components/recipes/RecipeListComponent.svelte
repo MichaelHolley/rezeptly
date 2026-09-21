@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
 	import FilterComponent from '$lib/components/recipes/FilterComponent.svelte';
 	import type { RecipeMetadata } from '$lib/server/types';
@@ -68,10 +69,10 @@
 	availableTags={filterableTags}
 />
 
-<div class="card-container my-4 grid gap-4">
+<div class="card-container my-4 grid gap-5">
 	{#each filteredRecipes as recipe (recipe.id)}
 		<a
-			href="/{recipe.slug}"
+			href={resolve('/(app)/[slug]', { slug: recipe.slug })}
 			class="block transition-all duration-200 hover:shadow-xl active:scale-[0.98] rounded-xl"
 		>
 			<CardComponent {recipe} />
@@ -81,6 +82,6 @@
 
 <style>
 	.card-container {
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
 	}
 </style>

@@ -6,13 +6,6 @@ import { z } from 'zod';
 
 const requestSchema = z.object({ messages: z.array(z.unknown()).min(1).max(30) });
 
-function hasApprovalResponse(value: unknown): boolean {
-	if (Array.isArray(value)) return value.some(hasApprovalResponse);
-	if (!value || typeof value !== 'object') return false;
-	const record = value as Record<string, unknown>;
-	return record.state === 'approval-responded' || Object.values(record).some(hasApprovalResponse);
-}
-
 export const POST: RequestHandler = async ({ params, request, locals }) => {
 	if (!locals.roles?.includes('admin')) {
 		error(403, { message: 'You cannot use the recipe assistant.', code: 'PERMISSION_DENIED' });
@@ -40,12 +33,6 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	if (!parsed.success) error(400, { message: 'Invalid request.', code: 'VALIDATION_ERROR' });
 
 	const recipe = await recipeService.getRecipeById(recipeId.data, { includeDrafts: true });
-	if (recipe.publishedAt != null && !hasApprovalResponse(parsed.data.messages)) {
-		error(404, {
-			message: 'Recipe assistant is only available for drafts.',
-			code: 'NOT_FOUND'
-		});
-	}
 
 	return streamRecipeAssistant(recipe, parsed.data.messages);
 };

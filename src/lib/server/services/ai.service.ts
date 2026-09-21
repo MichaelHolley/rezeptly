@@ -17,6 +17,7 @@ import { userCanWrite } from '$lib/server/auth/permissions';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import {
 	convertToModelMessages,
+	generateImage,
 	generateText,
 	Output,
 	isStepCount,
@@ -32,6 +33,58 @@ import * as recipeService from './recipe.service';
 
 export const aiEnabled = (): boolean =>
 	Boolean(env.OPENROUTER_API_KEY) && Boolean(env.OPENROUTER_MODEL_NAME);
+
+export const imageGenerationEnabled = (): boolean =>
+	Boolean(env.OPENROUTER_API_KEY) &&
+	Boolean(env.BLOB_READ_WRITE_TOKEN) &&
+	Boolean(env.BLOG_STORAGE_DIR);
+
+export type RecipeImageContext = {
+	name: string;
+	description: string | null;
+	course: RecipeCourse | null;
+	ingredientNames: string[];
+	instructionHeadings: string[];
+};
+
+export type GeneratedRecipeImage = {
+	bytes: Uint8Array;
+	mediaType: string;
+};
+
+export async function generateRecipeImage(
+	recipe: RecipeImageContext
+): Promise<GeneratedRecipeImage> {
+	const apiKey = env.OPENROUTER_API_KEY;
+	if (!apiKey) throw new Error('Recipe image generation is not configured');
+
+	const details = [
+		`Recipe name: ${recipe.name}`,
+		recipe.description ? `Description: ${recipe.description}` : null,
+		recipe.course ? `Course: ${recipe.course}` : null,
+		recipe.ingredientNames.length ? `Ingredients: ${recipe.ingredientNames.join(', ')}` : null,
+		recipe.instructionHeadings.length
+			? `Preparation: ${recipe.instructionHeadings.join(', ')}`
+			: null
+	].filter(Boolean);
+
+	const { image } = await generateImage({
+		model: createOpenRouter({ apiKey }).imageModel('openai/gpt-image-2.5-flare'),
+		prompt: [
+			'Create a realistic, appetizing editorial food photograph of the finished dish.',
+			'Use natural lighting and a clean, opaque background. Show the food and appropriate tableware, plus a few raw or whole key ingredients arranged subtly to the side as decoration, like a cookbook photo. Keep the plated dish the clear focus — the ingredients should be a light garnish touch, not clutter. A utensil (fork, knife, or spoon) may appear beside the plate if it fits the scene naturally, but it is not required.',
+			'Do not include people, text, branding, logos, packaging, watermarks, or recipe-page imagery.',
+			...details
+		].join('\n'),
+		n: 1,
+		aspectRatio: '16:9',
+		maxRetries: 0,
+		abortSignal: AbortSignal.timeout(60_000),
+		providerOptions: { openrouter: { quality: 'medium', background: 'opaque' } }
+	});
+
+	return { bytes: image.uint8Array, mediaType: image.mediaType };
+}
 
 const tagCategorySchema = z.enum(TAG_CATEGORIES as [TagCategory, ...TagCategory[]]);
 
@@ -225,7 +278,7 @@ export async function suggestRecipeTags(
 }
 
 const ASSISTANT_SYSTEM_PROMPT = [
-	'You are a focused assistant for the draft recipe supplied below.',
+	'You are a focused assistant for the recipe supplied below.',
 	'Answer questions about this recipe and closely related cooking topics, and politely decline unrelated requests.',
 	'Reply in the language used by the writer. Keep recipe content in its current language unless the writer explicitly asks for a translation.',
 	'Only call a mutation tool when the writer explicitly asks to change the recipe. Advice, review, questions, and discussion are not mutation intent.',
@@ -260,10 +313,9 @@ function recipeContext(recipe: RecipeWithDetails): string {
 	});
 }
 
-async function currentDraft(recipeId: RecipeId): Promise<RecipeWithDetails | null> {
+async function currentRecipe(recipeId: RecipeId): Promise<RecipeWithDetails | null> {
 	if (!userCanWrite()) return null;
-	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
-	return recipe.publishedAt == null ? recipe : null;
+	return recipeService.getRecipeById(recipeId, { includeDrafts: true });
 }
 
 function toolResult(recipe: RecipeWithDetails) {
@@ -293,9 +345,12 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 			needsApproval: true,
 			execute: (proposal) =>
 				safeToolExecution(async () => {
-					const recipe = await currentDraft(recipeId);
+					const recipe = await currentRecipe(recipeId);
 					if (!recipe)
-						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+						return {
+							status: 'unavailable' as const,
+							message: 'You do not have permission to change this recipe.'
+						};
 					const changes = Object.fromEntries(
 						proposal.changes.map(({ field, value }) => [field, value])
 					) as Partial<AssistantDetailsState>;
@@ -310,9 +365,12 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 			needsApproval: true,
 			execute: ({ expected, replacement }) =>
 				safeToolExecution(async () => {
-					const recipe = await currentDraft(recipeId);
+					const recipe = await currentRecipe(recipeId);
 					if (!recipe)
-						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+						return {
+							status: 'unavailable' as const,
+							message: 'You do not have permission to change this recipe.'
+						};
 					if (
 						!(await ingredientService.replaceIngredientsForRecipe(recipeId, expected, replacement))
 					) {
@@ -331,9 +389,12 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 			needsApproval: true,
 			execute: ({ expected, replacement }) =>
 				safeToolExecution(async () => {
-					const recipe = await currentDraft(recipeId);
+					const recipe = await currentRecipe(recipeId);
 					if (!recipe)
-						return { status: 'unavailable' as const, message: 'This recipe is no longer a draft.' };
+						return {
+							status: 'unavailable' as const,
+							message: 'You do not have permission to change this recipe.'
+						};
 					if (listProposalIsStale(instructionState(recipe), expected)) {
 						return {
 							status: 'stale' as const,

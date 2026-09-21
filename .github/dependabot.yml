@@ -21,6 +21,12 @@ updates:
         update-types:
           - 'version-update:semver-major'
     groups:
+      ai-dependencies:
+        patterns:
+          - 'ai'
+          - '@ai-sdk/*'
+          - '@openrouter/*'
+          - '@modelcontextprotocol/*'
       dev-dependencies:
         dependency-type: 'development'
         update-types:

@@ -411,6 +411,48 @@ export const uploadRecipeImage = form(
 	}
 );
 
+export const generateRecipeImage = command(recipeIdSchema, async (recipeId) => {
+	if (!userCanWrite()) {
+		throwNewPermissionError();
+	}
+	if (!aiService.imageGenerationEnabled()) {
+		error(503, {
+			message: 'Recipe image generation is not configured',
+			code: 'CONFIGURATION_ERROR'
+		});
+	}
+
+	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
+	if (recipe.imageUrl) {
+		error(409, { message: 'Recipe already has an image', code: 'VALIDATION_ERROR' });
+	}
+
+	const generated = await aiService.generateRecipeImage({
+		name: recipe.name,
+		description: recipe.description,
+		course: recipe.course,
+		ingredientNames: recipe.ingredients.map(({ name }) => name),
+		instructionHeadings: recipe.instructions.flatMap(({ heading }) =>
+			heading?.trim() ? [heading.trim()] : []
+		)
+	});
+	const bytes = new Uint8Array(generated.bytes.byteLength);
+	bytes.set(generated.bytes);
+	const file = new File([bytes], `${recipe.slug}.${generated.mediaType.split('/')[1]}`, {
+		type: generated.mediaType
+	});
+	const url = await imageService.uploadImage(file);
+	const attached = await recipeService.attachRecipeImageIfMissing(recipeId, url);
+
+	if (!attached) {
+		await imageService.deleteImage(url);
+		error(409, { message: 'Recipe already has an image', code: 'VALIDATION_ERROR' });
+	}
+
+	await getRecipeBySlug(recipe.slug).refresh();
+	return { url };
+});
+
 export const updateRecipePortions = command(
 	z.object({
 		recipeId: recipeIdSchema,

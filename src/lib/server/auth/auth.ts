@@ -10,8 +10,7 @@ export const sessionCookieName = 'auth-session';
 export const SESSION_ISSUER = 'rezeptly';
 export const SESSION_ALGORITHM = 'HS256';
 
-const SESSION_DURATION_IN_S = 60 * 60 * 24; // 1 day in seconds
-const SESSION_TOKEN_LIFETIME_IN_DAYS = 7;
+const SESSION_TOKEN_LIFETIME_IN_S = 60 * 60 * 24 * 7; // 7 days
 
 /**
  * Constant-time comparison of two secrets. Both inputs are hashed to fixed-length
@@ -41,13 +40,10 @@ export function deleteSessionTokenCookie(event: RequestEvent) {
 }
 
 export function generateSessionToken(): { token: string; expires: Date } {
-	// * 1000 to convert to ms
-	const expires = new Date(
-		Date.now() + SESSION_DURATION_IN_S * SESSION_TOKEN_LIFETIME_IN_DAYS * 1000
-	);
+	const expires = new Date(Date.now() + SESSION_TOKEN_LIFETIME_IN_S * 1000);
 
 	const token = jwt.sign({ app: 'rezeptly', roles: [ADMIN_ROLE] }, JWT_SECRET, {
-		expiresIn: `${SESSION_DURATION_IN_S * SESSION_TOKEN_LIFETIME_IN_DAYS}s`,
+		expiresIn: `${SESSION_TOKEN_LIFETIME_IN_S}s`,
 		issuer: SESSION_ISSUER,
 		algorithm: SESSION_ALGORITHM
 	});

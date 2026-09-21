@@ -1,23 +1,29 @@
 <script lang="ts">
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { deleteRecipeImage, getRecipeBySlug, uploadRecipeImage } from '$lib/api/recipes.remote';
-	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
+	import { page } from '$app/state';
+	import {
+		deleteRecipeImage,
+		generateRecipeImage,
+		getRecipeBySlug,
+		uploadRecipeImage
+	} from '$lib/api/recipes.remote';
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
-	import { Spinner } from '$lib/components/ui/spinner';
 	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
 	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
 	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
 	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
-	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import RecipeAssistant from '$lib/components/recipes/RecipeAssistant.svelte';
+	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import { reportError } from '$lib/shared/toast';
 	import { getUploadAllowedTypes } from '$lib/shared/upload';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import UsersIcon from '@lucide/svelte/icons/users';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -43,7 +49,7 @@
 		fileUploadFormSubmitButton?.click();
 	};
 
-	const recipeQuery = $derived(getRecipeBySlug(params.slug));
+	const recipe = $derived(await getRecipeBySlug(params.slug));
 
 	const handleImageError = () => {
 		isImageBroken = true;
@@ -58,6 +64,14 @@
 			reportError(error);
 		} finally {
 			release();
+		}
+	};
+
+	const handleGenerateImage = async (recipeId: number) => {
+		try {
+			await generateRecipeImage(recipeId);
+		} catch (error) {
+			reportError(error);
 		}
 	};
 
@@ -99,12 +113,26 @@
 </script>
 
 <svelte:head>
-	<title>rezeptly{recipeQuery.current?.name ? ` | ${recipeQuery.current.name}` : ''}</title>
+	<title>rezeptly | {recipe.name}</title>
+	<meta name="description" content={recipe.description} />
+
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content={recipe.name} />
+	<meta property="og:description" content={recipe.description} />
+	<meta property="og:url" content={page.url.href} />
+	{#if recipe.imageUrl}
+		<meta property="og:image" content={recipe.imageUrl} />
+	{/if}
+
+	<meta name="twitter:card" content={recipe.imageUrl ? 'summary_large_image' : 'summary'} />
+	<meta name="twitter:title" content={recipe.name} />
+	<meta name="twitter:description" content={recipe.description} />
+	{#if recipe.imageUrl}
+		<meta name="twitter:image" content={recipe.imageUrl} />
+	{/if}
 </svelte:head>
 
 <svelte:boundary>
-	{@const recipe = await recipeQuery}
-
 	<BreadcrumbComponent breadcrumbs={[{ name: recipe.name, href: `/${recipe.slug}` }]} />
 
 	<RecipeDetails {recipe} />
@@ -249,30 +277,48 @@
 				</div>
 			</div>
 		{:else if PermissionsStore.canEdit}
-			<button
-				class="flex size-32 items-center justify-center rounded-sm border-2 border-dashed hover:cursor-pointer transition-colors {isDragOver
-					? 'border-zinc-400 bg-zinc-100'
-					: 'border-zinc-300 bg-transparent hover:bg-zinc-50'}"
-				onclick={() => fileUploadInput?.click()}
-				ondragover={(e) => {
-					e.preventDefault();
-					isDragOver = true;
-				}}
-				ondragleave={() => {
-					isDragOver = false;
-				}}
-				ondrop={handleDrop}
-				disabled={!!uploadRecipeImage.pending}
-			>
-				{#if !!uploadRecipeImage.pending}
-					<Spinner />
-				{:else}
-					<div class="flex flex-col items-center gap-1">
-						<PlusIcon class="size-8 text-zinc-500" />
-						<span class="text-sm text-zinc-500">Add image</span>
-					</div>
+			<div class="flex items-center gap-3">
+				<button
+					class="flex size-32 items-center justify-center rounded-sm border-2 border-dashed hover:cursor-pointer transition-colors {isDragOver
+						? 'border-zinc-400 bg-zinc-100'
+						: 'border-zinc-300 bg-transparent hover:bg-zinc-50'}"
+					onclick={() => fileUploadInput?.click()}
+					ondragover={(e) => {
+						e.preventDefault();
+						isDragOver = true;
+					}}
+					ondragleave={() => {
+						isDragOver = false;
+					}}
+					ondrop={handleDrop}
+					disabled={!!uploadRecipeImage.pending || !!generateRecipeImage.pending}
+				>
+					{#if !!uploadRecipeImage.pending}
+						<Spinner />
+					{:else}
+						<div class="flex flex-col items-center gap-1">
+							<PlusIcon class="size-8 text-zinc-500" />
+							<span class="text-sm text-zinc-500">Add image</span>
+						</div>
+					{/if}
+				</button>
+				{#if data.features.imageGeneration}
+					<Button
+						variant="outline"
+						class="border-ai text-ai hover:bg-ai/10 hover:text-ai"
+						onclick={() => handleGenerateImage(recipe.id)}
+						disabled={!!uploadRecipeImage.pending || !!generateRecipeImage.pending}
+					>
+						{#if generateRecipeImage.pending}
+							<Spinner class="size-4" />
+							Generating…
+						{:else}
+							<SparklesIcon />
+							Generate with AI
+						{/if}
+					</Button>
 				{/if}
-			</button>
+			</div>
 			<form
 				{...uploadRecipeImage.enhance(async ({ submit }) => {
 					try {
@@ -297,19 +343,9 @@
 		{/if}
 	</div>
 
-	{#if data.features.recipeAssistant && PermissionsStore.canEdit && recipe.publishedAt == null}
+	{#if data.features.recipeAssistant && PermissionsStore.canEdit}
 		{#key recipe.id}
 			<RecipeAssistant recipeId={recipe.id} onApplied={handleAssistantApplied} />
 		{/key}
 	{/if}
-
-	{#snippet pending()}
-		<div class="flex h-64 items-center justify-center">
-			<Spinner class="h-8 w-8" />
-		</div>
-	{/snippet}
-
-	{#snippet failed(error, retry)}
-		<ErrorComponent {error} {retry} />
-	{/snippet}
 </svelte:boundary>

@@ -2,11 +2,13 @@
 	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
 	import DraftBadgeComponent from '$lib/components/recipes/DraftBadgeComponent.svelte';
 	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
-	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card/';
 	import type { RecipeMetadata } from '$lib/server/types';
+	import { COURSE_LABELS } from '$lib/shared/course';
 	import { formatDuration } from '$lib/shared/duration';
 	import ClockIcon from '@lucide/svelte/icons/clock';
+	import UsersIcon from '@lucide/svelte/icons/users';
+	import { COURSE_ICONS } from './course-icons';
 
 	interface Props {
 		recipe: RecipeMetadata;
@@ -21,7 +23,7 @@
 	};
 </script>
 
-<Card.Root class="group h-full gap-0 overflow-hidden px-0 pt-0">
+<Card.Root class="group h-full gap-0 overflow-hidden bg-white! px-0 py-0 [background-image:none]!">
 	<Card.Header class="p-0">
 		<div class="relative h-48 overflow-hidden">
 			<DraftBadgeComponent publishedAt={recipe.publishedAt} class="absolute top-2 left-2 z-10" />
@@ -43,25 +45,62 @@
 				</div>
 			{/if}
 		</div>
-		<Card.Title class="truncate px-6 pt-2 pb-1 text-base tracking-tight" title={recipe.name}>
-			<span style:view-transition-name="recipe-title-{recipe.id}">{recipe.name}</span>
-		</Card.Title>
 	</Card.Header>
-	<Card.Content>
+	<Card.Content class="flex flex-1 flex-col py-4">
 		<TagsContainerComponent
 			tags={recipe.tags.map((t) => t.name)}
 			class="-mx-1 mb-3"
 			viewTransitionPrefix={`recipe-tag-${recipe.id}`}
-		>
-			{#if recipe.durationMinutes != null}
-				<Badge class="border-orange-300 bg-orange-50/40 text-orange-700">
-					<ClockIcon />
-					{formatDuration(recipe.durationMinutes)}
-				</Badge>
-			{/if}
-		</TagsContainerComponent>
-		<p class="line-clamp-3 text-sm text-zinc-500">
-			{recipe.description}
-		</p>
+		/>
+		<Card.Title class="line-clamp-2 font-fraunces text-xl leading-tight" title={recipe.name}>
+			<span style:view-transition-name="recipe-title-{recipe.id}">{recipe.name}</span>
+		</Card.Title>
+		{#if recipe.description}
+			<p class="mt-2 line-clamp-3 text-sm leading-relaxed text-zinc-500">
+				{recipe.description}
+			</p>
+		{/if}
 	</Card.Content>
+	{#if recipe.durationMinutes != null || recipe.portions != null || recipe.course != null}
+		<dl class="grid auto-cols-fr grid-flow-col divide-x border-t bg-white">
+			{#if recipe.durationMinutes != null}
+				<div class="flex min-w-0 items-center gap-2 px-3 py-3.5">
+					<ClockIcon class="size-4 shrink-0 text-orange-600" aria-hidden="true" />
+					<div class="min-w-0">
+						<dt class="text-[9px] leading-none font-medium tracking-wider text-zinc-400 uppercase">
+							Ready in
+						</dt>
+						<dd class="mt-1 text-xs leading-tight font-semibold">
+							{formatDuration(recipe.durationMinutes)}
+						</dd>
+					</div>
+				</div>
+			{/if}
+			{#if recipe.portions != null}
+				<div class="flex min-w-0 items-center gap-2 px-3 py-3.5">
+					<UsersIcon class="size-4 shrink-0 text-zinc-500" aria-hidden="true" />
+					<div class="min-w-0">
+						<dt class="text-[9px] leading-none font-medium tracking-wider text-zinc-400 uppercase">
+							Portions
+						</dt>
+						<dd class="mt-1 text-xs leading-tight font-semibold">{recipe.portions}</dd>
+					</div>
+				</div>
+			{/if}
+			{#if recipe.course != null}
+				{@const CourseIcon = COURSE_ICONS[recipe.course]}
+				<div class="flex min-w-0 items-center gap-2 px-3 py-3.5">
+					<CourseIcon class="size-4 shrink-0 text-zinc-500" />
+					<div class="min-w-0">
+						<dt class="text-[9px] leading-none font-medium tracking-wider text-zinc-400 uppercase">
+							Course
+						</dt>
+						<dd class="mt-1 text-xs leading-tight font-semibold">
+							{COURSE_LABELS[recipe.course]}
+						</dd>
+					</div>
+				</div>
+			{/if}
+		</dl>
+	{/if}
 </Card.Root>
