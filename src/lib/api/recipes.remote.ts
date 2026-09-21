@@ -173,10 +173,13 @@ export const createRecipe = form(
 			diet: tagDiet
 		});
 
-		const extracted =
-			importImage && importImage.size > 0
-				? await aiService.extractRecipeFromImage(importImage)
-				: { ingredients: [], instructions: [] };
+		if (importImage && importImage.size > 0) {
+			imageService.validateImageFile(importImage);
+		}
+
+		const extracted = importImage?.size
+			? await aiService.extractRecipeFromImage(importImage)
+			: { ingredients: [], instructions: [] };
 
 		const recipe = await recipeService.createRecipe({
 			name: name.trim(),
