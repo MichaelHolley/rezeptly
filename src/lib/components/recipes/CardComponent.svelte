@@ -62,7 +62,15 @@
 		{/if}
 	</Card.Content>
 	{#if recipe.durationMinutes != null || recipe.portions != null || recipe.course != null}
-		<dl class="grid auto-cols-fr grid-flow-col divide-x border-t bg-white">
+		<dl
+			class={[
+				'grid auto-cols-fr grid-flow-col divide-x border-t bg-white',
+				recipe.durationMinutes != null &&
+					recipe.portions != null &&
+					recipe.course != null &&
+					'grid-cols-[1fr_0.8fr_1.25fr]'
+			]}
+		>
 			{#if recipe.durationMinutes != null}
 				<div class="flex min-w-0 items-center gap-2 px-3 py-3.5">
 					<ClockIcon class="size-4 shrink-0 text-orange-600" aria-hidden="true" />
