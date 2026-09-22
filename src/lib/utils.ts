@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import type { Attachment } from 'svelte/attachments';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -20,6 +21,12 @@ export function sanitizeViewTransitionName(name: string | undefined): string | u
 		.replace(/^-+|-+$/g, '');
 
 	return sanitized || 'tag';
+}
+
+export function viewTransition(name: string | undefined): Attachment<HTMLElement> {
+	return (node) => {
+		node.style.viewTransitionName = sanitizeViewTransitionName(name) ?? '';
+	};
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

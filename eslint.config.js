@@ -45,7 +45,7 @@ export default ts.config(
 		},
 		rules: {
 			'shadcn/no-unknown-classes': 'error',
-			'shadcn/no-inline-styles': ['error', { allow: ['view-transition-name'] }]
+			'shadcn/no-inline-styles': 'error'
 		}
 	}
 );

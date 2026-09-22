@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
-	import { cn } from '$lib/utils';
+	import { cn, viewTransition } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 
 	const {
@@ -22,7 +22,7 @@
 	variant={active ? 'default' : 'secondary'}
 	class={cn(onSelect && 'hover:cursor-pointer', className)}
 	onclick={onSelect}
-	{viewTransitionName}
+	{@attach viewTransition(viewTransitionName)}
 >
 	{#if children}
 		{@render children()}
