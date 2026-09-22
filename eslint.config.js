@@ -44,7 +44,8 @@ export default ts.config(
 			}
 		},
 		rules: {
-			'shadcn/no-unknown-classes': 'error'
+			'shadcn/no-unknown-classes': 'error',
+			'shadcn/no-inline-styles': 'error'
 		}
 	}
 );
