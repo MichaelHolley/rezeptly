@@ -1,5 +1,6 @@
 import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
+import { plugin as shadcn } from '@shadcn/lint';
 import prettier from 'eslint-config-prettier';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
@@ -33,6 +34,7 @@ export default ts.config(
 	},
 	{
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
+		plugins: { shadcn },
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
@@ -40,6 +42,9 @@ export default ts.config(
 				parser: ts.parser,
 				svelteConfig
 			}
+		},
+		rules: {
+			'shadcn/no-unknown-classes': 'error'
 		}
 	}
 );
