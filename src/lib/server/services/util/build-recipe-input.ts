@@ -1,7 +1,8 @@
 import type { RecipeCourse } from '$lib/shared/course';
 import { DURATION_BUCKETS } from '$lib/shared/duration';
 import type { ExtractedRecipeData } from '../ai.service';
-import type { NewIngredient, NewInstruction, Tag, TagInput } from '../../types';
+import type { NewInstruction, Tag, TagInput } from '../../types';
+import type { IngredientGroupNames } from '../ingredient.service';
 import { resolveTags } from './resolve-tags';
 
 export type RecipeInput = {
@@ -10,7 +11,7 @@ export type RecipeInput = {
 	course: RecipeCourse | null;
 	durationMinutes: number | null;
 	portions: number | null;
-	ingredients: Omit<NewIngredient, 'recipeId'>[];
+	ingredientGroups: IngredientGroupNames[];
 	instructions: Omit<NewInstruction, 'recipeId'>[];
 	tags: TagInput[];
 };
@@ -37,6 +38,23 @@ function emptyToNull(value: string | null | undefined): string | null {
 	return value?.trim() || null;
 }
 
+export function buildIngredientGroups(
+	groups: ExtractedRecipeData['ingredients']
+): IngredientGroupNames[] {
+	const normalized = groups.map((group) => ({
+		heading: emptyToNull(group.heading),
+		items: group.items.map((name) => name.trim()).filter(Boolean)
+	}));
+	const named = normalized.filter(
+		(group): group is { heading: string; items: string[] } => group.heading !== null
+	);
+	const ungrouped = normalized
+		.filter(({ heading }) => heading === null)
+		.flatMap(({ items }) => items);
+
+	return named.length || ungrouped.length ? [{ heading: null, items: ungrouped }, ...named] : [];
+}
+
 export function buildRecipeInput(extracted: ExtractedRecipeData, existingTags: Tag[]): RecipeInput {
 	return {
 		name: extracted.name?.trim() ?? '',
@@ -44,9 +62,7 @@ export function buildRecipeInput(extracted: ExtractedRecipeData, existingTags: T
 		course: extracted.course,
 		durationMinutes: snapToDurationBucket(extracted.durationMinutes),
 		portions: clampPortions(extracted.portions),
-		ingredients: extracted.ingredients
-			.map((ingredient) => ({ name: ingredient.name?.trim() ?? '' }))
-			.filter((ingredient) => ingredient.name.length > 0),
+		ingredientGroups: buildIngredientGroups(extracted.ingredients),
 		instructions: extracted.instructions
 			.filter((section) => section.instructions?.trim())
 			.map((section, index) => ({

@@ -1,6 +1,6 @@
-import type { ingredients, instructions, recipes, tags } from './db/schema';
+import type { ingredientSections, ingredients, instructions, recipes, tags } from './db/schema';
 
-export type { IngredientId, RecipeId, TagId } from '$lib/api/schemas';
+export type { IngredientId, IngredientSectionId, RecipeId, TagId } from '$lib/api/schemas';
 export type { RecipeCourse } from '$lib/shared/course';
 
 export type TagCategory = 'type' | 'cuisine' | 'nutrition' | 'diet';
@@ -10,6 +10,10 @@ export type NewRecipe = typeof recipes.$inferInsert;
 
 export type Ingredient = typeof ingredients.$inferSelect;
 export type NewIngredient = typeof ingredients.$inferInsert;
+
+export type IngredientSection = typeof ingredientSections.$inferSelect;
+export type NewIngredientSection = typeof ingredientSections.$inferInsert;
+export type IngredientSectionWithIngredients = IngredientSection & { ingredients: Ingredient[] };
 
 export type Instruction = typeof instructions.$inferSelect;
 export type NewInstruction = typeof instructions.$inferInsert;
@@ -25,6 +29,7 @@ export type TagInput = {
 
 export type RecipeWithDetails = Recipe & {
 	ingredients: Ingredient[];
+	ingredientSections: IngredientSectionWithIngredients[];
 	instructions: Instruction[];
 	tags: Tag[];
 };

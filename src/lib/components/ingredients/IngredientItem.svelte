@@ -1,32 +1,54 @@
 <script lang="ts">
-	import { editIngredient, getRecipeBySlug, removeIngredient } from '$lib/api/recipes.remote';
+	import { editIngredient, removeIngredient } from '$lib/api/recipes.remote';
 	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Input } from '$lib/components/ui/input';
 	import { reportError } from '$lib/shared/toast';
 	import type { Ingredient } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
+	import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
+	import MoreHorizontalIcon from '@lucide/svelte/icons/more-horizontal';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
+	import { untrack } from 'svelte';
+	import { dragHandle } from 'svelte-dnd-action';
+
+	type MoveTarget = { id: number | null; name: string };
 
 	const {
 		ingredient,
 		recipeId,
-		recipeSlug,
 		isEditing,
 		onEditStart,
-		onEditEnd
+		onEditEnd,
+		onSaved,
+		canMoveUp,
+		canMoveDown,
+		moveTargets,
+		onMoveUp,
+		onMoveDown,
+		onMoveTo,
+		disabled = false
 	}: {
 		ingredient: Ingredient;
 		recipeId: number;
-		recipeSlug: string;
 		isEditing: boolean;
 		onEditStart: () => void;
 		onEditEnd: () => void;
+		onSaved: () => Promise<void>;
+		canMoveUp: boolean;
+		canMoveDown: boolean;
+		moveTargets: MoveTarget[];
+		onMoveUp: () => void;
+		onMoveDown: () => void;
+		onMoveTo: (sectionId: number | null) => void;
+		disabled?: boolean;
 	} = $props();
 
+	const editForm = $derived(editIngredient.for(ingredient.id));
 	let inputRef = $state<HTMLInputElement | null>(null);
-	let editValue = $state('');
+	let editValue = $state(untrack(() => ingredient.name));
 
 	function editItem() {
 		editValue = ingredient.name;
@@ -35,63 +57,62 @@
 	}
 
 	function cancelEdit() {
-		editIngredient.element?.reset();
+		editForm.element?.reset();
 		onEditEnd();
 	}
 </script>
 
-<div class="flex flex-row items-center justify-between gap-2">
+<div class="flex flex-row items-center gap-1" aria-label={ingredient.name}>
+	<button
+		type="button"
+		use:dragHandle
+		class="text-muted-foreground hover:text-foreground cursor-grab rounded p-1 focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-50"
+		aria-label={`Drag ${ingredient.name}`}
+		{disabled}
+	>
+		<GripVerticalIcon />
+	</button>
 	{#if isEditing}
 		<form
-			{...editIngredient.enhance(async ({ submit }) => {
+			{...editForm.enhance(async ({ submit }) => {
 				try {
-					await submit()
-						.updates(
-							getRecipeBySlug(recipeSlug).withOverride((recipe) => ({
-								...recipe,
-								ingredients: recipe.ingredients.map((i) =>
-									i.id === ingredient.id ? { ...i, name: editValue } : i
-								)
-							}))
-						)
-						.then((success) => {
-							if (success) onEditEnd();
-						});
+					if (await submit()) {
+						onEditEnd();
+						await onSaved();
+					}
 				} catch (error) {
 					reportError(error);
 				}
 			})}
-			class="flex flex-1 flex-row items-center gap-2"
+			class="flex flex-1 flex-row items-start gap-1"
 		>
-			<input {...editIngredient.fields.recipeId.as('hidden', recipeId)} />
-			<input {...editIngredient.fields.ingrId.as('hidden', ingredient.id)} />
+			<input {...editForm.fields.recipeId.as('hidden', recipeId)} />
+			<input {...editForm.fields.ingrId.as('hidden', ingredient.id)} />
 			<div class="form-group flex-1">
 				<Input
 					required
-					{...editIngredient.fields.name.as('text')}
+					{...editForm.fields.name.as('text')}
 					bind:value={editValue}
 					bind:ref={inputRef}
-					disabled={!!editIngredient.pending}
+					disabled={!!editForm.pending}
 					class="text-sm"
-					onkeydown={(e) => {
-						e.stopPropagation();
-						if (e.key === 'Escape') {
-							cancelEdit();
-						}
+					onkeydown={(event) => {
+						event.stopPropagation();
+						if (event.key === 'Escape') cancelEdit();
 					}}
 				/>
-				<FieldIssues issues={editIngredient.fields.name.issues()} />
+				<FieldIssues issues={editForm.fields.name.issues()} />
 			</div>
 			<Button
 				type="submit"
 				variant="ghost"
-				size="sm"
-				disabled={!!editIngredient.pending}
+				size="icon-sm"
+				disabled={!!editForm.pending}
 				title="Save ingredient"
 			>
 				<CheckIcon />
 			</Button>
-			<Button type="button" variant="ghost" size="sm" onclick={cancelEdit} title="Cancel edit">
+			<Button type="button" variant="ghost" size="icon-sm" onclick={cancelEdit} title="Cancel edit">
 				<XIcon />
 			</Button>
 		</form>
@@ -103,21 +124,49 @@
 		>
 			{ingredient.name}
 		</button>
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger
+				class={buttonVariants({ variant: 'ghost', size: 'icon-sm' })}
+				aria-label={`Move ${ingredient.name}`}
+				{disabled}
+			>
+				<MoreHorizontalIcon />
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content align="end">
+				<DropdownMenu.Group>
+					<DropdownMenu.Item disabled={!canMoveUp} onSelect={onMoveUp}>Move up</DropdownMenu.Item>
+					<DropdownMenu.Item disabled={!canMoveDown} onSelect={onMoveDown}
+						>Move down</DropdownMenu.Item
+					>
+					{#if moveTargets.length > 0}
+						<DropdownMenu.Sub>
+							<DropdownMenu.SubTrigger>Move to section</DropdownMenu.SubTrigger>
+							<DropdownMenu.SubContent>
+								<DropdownMenu.Group>
+									{#each moveTargets as target (`${target.id}`)}
+										<DropdownMenu.Item onSelect={() => onMoveTo(target.id)}>
+											{target.name}
+										</DropdownMenu.Item>
+									{/each}
+								</DropdownMenu.Group>
+							</DropdownMenu.SubContent>
+						</DropdownMenu.Sub>
+					{/if}
+				</DropdownMenu.Group>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
 		<Button
 			variant="secondary"
 			type="button"
-			size="sm"
+			size="icon-sm"
 			title="Delete ingredient"
+			{disabled}
 			onclick={async () => {
 				try {
-					await removeIngredient({ recipeId, ingrId: ingredient.id }).updates(
-						getRecipeBySlug(recipeSlug).withOverride((recipe) => ({
-							...recipe,
-							ingredients: recipe.ingredients.filter((i) => i.id !== ingredient.id)
-						}))
-					);
-				} catch (e) {
-					reportError(e);
+					await removeIngredient({ recipeId, ingrId: ingredient.id });
+					await onSaved();
+				} catch (error) {
+					reportError(error);
 				}
 			}}
 		>

@@ -11,7 +11,7 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 - **Components**: Use Svelte 5 runes (`$props`, `$state`, `$derived`).
 - **UI Library**: svelte-shadcn provides most of the shadcn components, stored in `src/lib/components/ui/`. Prefer these over building custom components.
 - **Styling**: Tailwind CSS (v4) with `clsx` and `tailwind-merge` for dynamic classes.
-- **Database**: Use Drizzle ORM with transactions for multi-step operations. Use `pnpm db:push` for rapid prototyping and `pnpm db:generate` for production migrations. Migration files must be generated. Hand-edits require approval.
+- **Database**: Use Drizzle ORM with transactions for multi-step operations. Use `pnpm db:push` for rapid prototyping and `pnpm db:generate --name <DescriptiveName>` for production migrations. Migration files must be generated with a descriptive name. Hand-edits require approval.
 - **Services**: Keep business logic in `$lib/server/services/`, database queries in services not routes, and blob/file side effects in services too.
 - **Architecture**: Keep routes and remote functions thin; put validation at the boundary and refresh remote queries after mutations.
 - **Cron jobs**: Background jobs live in `src/routes/api/cron/` and are scheduled in `vercel.json`.
