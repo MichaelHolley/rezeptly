@@ -77,7 +77,7 @@
     "@openrouter/ai-sdk-provider": "^3.0.0",
     "@vercel/blob": "^2.8.0",
     "ai": "^7.0.101",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "^0.45.3",
     "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.9",
     "runed": "^0.37.1",
