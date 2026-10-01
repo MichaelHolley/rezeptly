@@ -1,9 +1,6 @@
 packages: []
 
 minimumReleaseAge: 4320
-minimumReleaseAgeExclude:
-  - '@shadcn/lint@0.2.0'
-  - 'cn@0.3.2'
 
 allowBuilds:
   esbuild: true
