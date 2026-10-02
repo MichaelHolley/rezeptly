@@ -27,6 +27,10 @@ updates:
           - '@ai-sdk/*'
           - '@openrouter/*'
           - '@modelcontextprotocol/*'
+      drizzle:
+        patterns:
+          - 'drizzle-*'
+          - 'postgres'
       dev-dependencies:
         dependency-type: 'development'
         update-types:
