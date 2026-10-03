@@ -31,27 +31,59 @@ export const recipes = pgTable('recipes', {
 
 export const recipesRelations = relations(recipes, ({ many }) => ({
 	ingredients: many(ingredients),
+	ingredientSections: many(ingredientSections),
 	instructions: many(instructions),
 	tags: many(recipesToTags)
 }));
+
+export const ingredientSections = pgTable(
+	'ingredient_sections',
+	{
+		id: serial('id').primaryKey(),
+		name: text('name').notNull(),
+		sectionOrder: integer('section_order').notNull(),
+		recipeId: integer('recipe_id')
+			.notNull()
+			.references(() => recipes.id, { onDelete: 'cascade' })
+	},
+	(t) => [index('ingredient_sections_recipe_order_idx').on(t.recipeId, t.sectionOrder)]
+);
 
 export const ingredients = pgTable(
 	'ingredients',
 	{
 		id: serial('id').primaryKey(),
 		name: text('name').notNull(),
+		ingredientOrder: integer('ingredient_order').notNull(),
+		sectionId: integer('section_id').references(() => ingredientSections.id, {
+			onDelete: 'set null'
+		}),
 		recipeId: integer('recipe_id')
 			.notNull()
 			.references(() => recipes.id, { onDelete: 'cascade' })
 	},
-	(t) => [index('ingredients_recipe_id_idx').on(t.recipeId)]
+	(t) => [
+		index('ingredients_recipe_section_order_idx').on(t.recipeId, t.sectionId, t.ingredientOrder)
+	]
 );
 
 export const ingredientsRelations = relations(ingredients, ({ one }) => ({
 	recipe: one(recipes, {
 		fields: [ingredients.recipeId],
 		references: [recipes.id]
+	}),
+	section: one(ingredientSections, {
+		fields: [ingredients.sectionId],
+		references: [ingredientSections.id]
 	})
+}));
+
+export const ingredientSectionsRelations = relations(ingredientSections, ({ one, many }) => ({
+	recipe: one(recipes, {
+		fields: [ingredientSections.recipeId],
+		references: [recipes.id]
+	}),
+	ingredients: many(ingredients)
 }));
 
 export const instructions = pgTable(
