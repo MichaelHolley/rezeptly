@@ -117,16 +117,12 @@ const extractionSchema = z.object({
 				.object({
 					heading: z
 						.string()
-						.trim()
-						.min(1)
 						.nullable()
 						.describe('The section heading, or null for ungrouped ingredients'),
 					items: z
 						.array(
 							z
 								.string()
-								.trim()
-								.min(1)
 								.describe("A single ingredient with amount and title, for example '150g Mehl'")
 						)
 						.describe('The ordered ingredients in this section')
