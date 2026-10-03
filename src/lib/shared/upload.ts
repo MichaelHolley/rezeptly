@@ -1,6 +1,5 @@
-import { env as publicEnv } from '$env/dynamic/public';
+import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$app/env/public';
 
 export const DEFAULT_UPLOAD_ALLOWED_TYPES = 'image/jpeg,image/png,image/webp';
-
 export const getUploadAllowedTypes = (): string =>
-	publicEnv.PUBLIC_UPLOAD_ALLOWED_TYPES || DEFAULT_UPLOAD_ALLOWED_TYPES;
+	PUBLIC_UPLOAD_ALLOWED_TYPES || DEFAULT_UPLOAD_ALLOWED_TYPES;

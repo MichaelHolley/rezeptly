@@ -1,7 +1,7 @@
 import type { ingredients, instructions, recipes, tags } from './db/schema';
 
-export type { IngredientId, RecipeId, TagId } from '$lib/api/schemas';
-export type { RecipeCourse } from '$lib/shared/course';
+export type { IngredientId, RecipeId, TagId } from '#lib/api/schemas.js';
+export type { RecipeCourse } from '#lib/shared/course.js';
 
 export type TagCategory = 'type' | 'cuisine' | 'nutrition' | 'diet';
 

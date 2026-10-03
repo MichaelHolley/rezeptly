@@ -1,5 +1,5 @@
-import type { Tag } from '$lib/server/types';
-import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
+import type { Tag } from '#lib/server/types.js';
+import { AvailableTagsStore } from '#lib/store/available-tags.svelte.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';

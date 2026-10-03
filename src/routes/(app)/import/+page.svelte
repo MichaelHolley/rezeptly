@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { importRecipeFromImage } from '$lib/api/recipes.remote';
-	import { Spinner } from '$lib/components/ui/spinner';
-	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
-	import { toAppError } from '$lib/shared/error';
-	import { getUploadAllowedTypes } from '$lib/shared/upload';
+	import { importRecipeFromImage } from '#lib/api/recipes.remote.js';
+	import { Spinner } from '#lib/components/ui/spinner/index.js';
+	import BreadcrumbComponent from '#lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import { toAppError } from '#lib/shared/error.js';
+	import { getUploadAllowedTypes } from '#lib/shared/upload.js';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import type { PageData } from './$types';
 

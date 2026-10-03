@@ -1,3 +1,5 @@
+import adapter from '@sveltejs/adapter-vercel';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { playwright } from '@vitest/browser-playwright';
@@ -8,7 +10,12 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig(({ mode }) => ({
 	plugins: [
 		tailwindcss(),
-		sveltekit(),
+		sveltekit({
+			preprocess: vitePreprocess(),
+			compilerOptions: { experimental: { async: true } },
+			adapter: adapter(),
+			experimental: { remoteFunctions: true }
+		}),
 		...(mode !== 'test'
 			? [
 					VitePWA({

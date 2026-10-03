@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Instruction } from '$lib/server/types';
+	import type { Instruction } from '#lib/server/types.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import { parseInstruction } from './parse-instruction';
 

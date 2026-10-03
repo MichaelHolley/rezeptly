@@ -1,14 +1,14 @@
 import { command, form, query } from '$app/server';
-import { guardedQuery, userCanWrite } from '$lib/server/auth/permissions';
-import * as aiService from '$lib/server/services/ai.service';
-import * as imageService from '$lib/server/services/image.service';
-import * as ingredientService from '$lib/server/services/ingredient.service';
-import * as instructionService from '$lib/server/services/instruction.service';
-import * as recipeService from '$lib/server/services/recipe.service';
-import * as tagService from '$lib/server/services/tag.service';
-import { buildRecipeInput } from '$lib/server/services/util/build-recipe-input';
-import { resolveTags } from '$lib/server/services/util/resolve-tags';
-import type { TagCategory, TagInput } from '$lib/server/types';
+import { guardedQuery, userCanWrite } from '#lib/server/auth/permissions.js';
+import * as aiService from '#lib/server/services/ai.service.js';
+import * as imageService from '#lib/server/services/image.service.js';
+import * as ingredientService from '#lib/server/services/ingredient.service.js';
+import * as instructionService from '#lib/server/services/instruction.service.js';
+import * as recipeService from '#lib/server/services/recipe.service.js';
+import * as tagService from '#lib/server/services/tag.service.js';
+import { buildRecipeInput } from '#lib/server/services/util/build-recipe-input.js';
+import { resolveTags } from '#lib/server/services/util/resolve-tags.js';
+import type { TagCategory, TagInput } from '#lib/server/types.js';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
@@ -207,8 +207,7 @@ export const importRecipeFromImage = command(z.instanceof(File), async (image) =
 	const extracted = await aiService.extractRecipeFromImage(image, existingTags);
 
 	if (!extracted.isRecipe) {
-		error(422, {
-			message: 'This image does not look like a recipe. Nothing was imported.',
+		error(422, 'This image does not look like a recipe. Nothing was imported.', {
 			code: 'VALIDATION_ERROR'
 		});
 	}
@@ -216,8 +215,7 @@ export const importRecipeFromImage = command(z.instanceof(File), async (image) =
 	const input = buildRecipeInput(extracted, existingTags);
 
 	if (!input.name) {
-		error(422, {
-			message: 'Could not determine a recipe name from this image. Nothing was imported.',
+		error(422, 'Could not determine a recipe name from this image. Nothing was imported.', {
 			code: 'VALIDATION_ERROR'
 		});
 	}
@@ -335,15 +333,12 @@ export const generateRecipeImage = command(recipeIdSchema, async (recipeId) => {
 		throwNewPermissionError();
 	}
 	if (!aiService.imageGenerationEnabled()) {
-		error(503, {
-			message: 'Recipe image generation is not configured',
-			code: 'CONFIGURATION_ERROR'
-		});
+		error(503, 'Recipe image generation is not configured', { code: 'CONFIGURATION_ERROR' });
 	}
 
 	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 	if (recipe.imageUrl) {
-		error(409, { message: 'Recipe already has an image', code: 'VALIDATION_ERROR' });
+		error(409, 'Recipe already has an image', { code: 'VALIDATION_ERROR' });
 	}
 
 	const generated = await aiService.generateRecipeImage({
@@ -365,7 +360,7 @@ export const generateRecipeImage = command(recipeIdSchema, async (recipeId) => {
 
 	if (!attached) {
 		await imageService.deleteImage(url);
-		error(409, { message: 'Recipe already has an image', code: 'VALIDATION_ERROR' });
+		error(409, 'Recipe already has an image', { code: 'VALIDATION_ERROR' });
 	}
 
 	await getRecipeBySlug(recipe.slug).refresh();
@@ -414,7 +409,7 @@ export const deleteRecipeImage = command(recipeIdSchema, async (recipeId) => {
 	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 
 	if (!recipe.imageUrl) {
-		error(400, { message: 'Recipe does not have an image to delete', code: 'VALIDATION_ERROR' });
+		error(400, 'Recipe does not have an image to delete', { code: 'VALIDATION_ERROR' });
 	}
 
 	await imageService.deleteImage(recipe.imageUrl);
