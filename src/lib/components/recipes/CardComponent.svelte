@@ -6,6 +6,7 @@
 	import type { RecipeMetadata } from '$lib/server/types';
 	import { COURSE_LABELS } from '$lib/shared/course';
 	import { formatDuration } from '$lib/shared/duration';
+	import { viewTransition } from '$lib/utils';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import UsersIcon from '@lucide/svelte/icons/users';
 	import { COURSE_ICONS } from './course-icons';
@@ -53,7 +54,7 @@
 			viewTransitionPrefix={`recipe-tag-${recipe.id}`}
 		/>
 		<Card.Title class="line-clamp-2 font-fraunces text-xl leading-tight" title={recipe.name}>
-			<span style:view-transition-name="recipe-title-{recipe.id}">{recipe.name}</span>
+			<span {@attach viewTransition(`recipe-title-${recipe.id}`)}>{recipe.name}</span>
 		</Card.Title>
 		{#if recipe.description}
 			<p class="mt-2 line-clamp-3 text-sm leading-relaxed text-zinc-500">
@@ -62,7 +63,15 @@
 		{/if}
 	</Card.Content>
 	{#if recipe.durationMinutes != null || recipe.portions != null || recipe.course != null}
-		<dl class="grid auto-cols-fr grid-flow-col divide-x border-t bg-white">
+		<dl
+			class={[
+				'grid auto-cols-fr grid-flow-col divide-x border-t bg-white',
+				recipe.durationMinutes != null &&
+					recipe.portions != null &&
+					recipe.course != null &&
+					'grid-cols-[1fr_0.8fr_1.25fr]'
+			]}
+		>
 			{#if recipe.durationMinutes != null}
 				<div class="flex min-w-0 items-center gap-2 px-3 py-3.5">
 					<ClockIcon class="size-4 shrink-0 text-orange-600" aria-hidden="true" />

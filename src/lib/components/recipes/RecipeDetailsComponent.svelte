@@ -5,6 +5,7 @@
 	import { formatDuration } from '$lib/shared/duration';
 	import { favoritesStore } from '$lib/store/favorites';
 	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import { viewTransition } from '$lib/utils';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import PenIcon from '@lucide/svelte/icons/pen';
@@ -57,7 +58,7 @@
 	{:else}
 		<div class="mt-2 flex flex-row flex-wrap items-center gap-3">
 			<h2
-				style:view-transition-name="recipe-title-{recipe.id}"
+				{@attach viewTransition(`recipe-title-${recipe.id}`)}
 				class="font-fraunces text-3xl font-extrabold tracking-tight text-shadow-xs sm:text-4xl"
 			>
 				{recipe.name}

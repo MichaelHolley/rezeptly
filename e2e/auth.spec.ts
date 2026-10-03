@@ -54,3 +54,16 @@ test('keeps write permissions after a full page reload', async ({ page }) => {
 	await expect(page.getByRole('button', { name: 'Delete Recipe' })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Edit instructions' })).toBeVisible();
 });
+
+test('logs out and loses access to protected routes', async ({ page }) => {
+	await login(page);
+	await expect(page).toHaveURL('/');
+
+	await page.getByRole('button', { name: 'Logout' }).click();
+
+	await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Logout' })).toHaveCount(0);
+
+	await page.goto('/create');
+	await expect(page).toHaveURL('/auth?returnTo=%2Fcreate');
+});

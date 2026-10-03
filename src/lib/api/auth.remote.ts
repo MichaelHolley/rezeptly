@@ -8,6 +8,7 @@ import {
 } from '$lib/server/auth/auth';
 import { ADMIN_ROLE } from '$lib/server/auth/permissions';
 import { checkRateLimit, recordFailedAttempt, resetAttempts } from '$lib/server/auth/rateLimiter';
+import { safeRedirectPath } from '$lib/server/auth/safe-redirect';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -48,6 +49,6 @@ export const login = form(
 		setSessionTokenCookie(event, token, expires);
 		event.locals.roles = [ADMIN_ROLE];
 
-		redirect(303, returnTo || '/');
+		redirect(303, safeRedirectPath(returnTo));
 	}
 );

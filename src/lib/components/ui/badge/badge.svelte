@@ -22,7 +22,7 @@
 </script>
 
 <script lang="ts">
-	import { cn, sanitizeViewTransitionName, type WithElementRef } from '$lib/utils.js';
+	import { cn, type WithElementRef } from '$lib/utils.js';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
 	let {
@@ -30,15 +30,11 @@
 		href,
 		class: className,
 		variant = 'default',
-		viewTransitionName,
 		children,
 		...restProps
 	}: WithElementRef<HTMLAnchorAttributes> & {
-		viewTransitionName?: string;
 		variant?: BadgeVariant;
 	} = $props();
-
-	const sanitizedViewTransitionName = $derived(sanitizeViewTransitionName(viewTransitionName));
 </script>
 
 <svelte:element
@@ -48,7 +44,6 @@
 	{href}
 	class={cn(badgeVariants({ variant }), className)}
 	{...restProps}
-	style:view-transition-name={sanitizedViewTransitionName}
 >
 	{@render children?.()}
 </svelte:element>

@@ -5,6 +5,8 @@ import { json } from '@sveltejs/kit';
 import { list } from '@vercel/blob';
 import type { RequestHandler } from './$types';
 
+const ORPHAN_GRACE_PERIOD_MS = 24 * 60 * 60 * 1000;
+
 export const GET: RequestHandler = async ({ request }) => {
 	// Verify Vercel cron secret for security
 	const authHeader = request.headers.get('authorization');
@@ -26,17 +28,29 @@ export const GET: RequestHandler = async ({ request }) => {
 		return new Response('Server configuration error', { status: 500 });
 	}
 
+	const storageDir = env.BLOG_STORAGE_DIR;
+	if (!storageDir) {
+		console.error('BLOG_STORAGE_DIR not configured');
+		return new Response('Server configuration error', { status: 500 });
+	}
+
 	try {
-		// Get all blobs from Vercel Blob storage
-		const { blobs } = await list({ token });
-		const blobUrls = new Set(blobs.map((b) => b.url));
+		const blobs = [];
+		let cursor: string | undefined;
+		do {
+			const page = await list({ token, prefix: `${storageDir.replace(/\/+$/, '')}/`, cursor });
+			blobs.push(...page.blobs);
+			cursor = page.hasMore ? page.cursor : undefined;
+		} while (cursor);
 
 		// Drafts must be included, otherwise their images count as orphaned and get deleted
 		const allRecipes = await getRecipesMetadata(undefined, undefined, { includeDrafts: true });
 		const dbImageUrls = new Set(allRecipes.map((r) => r.imageUrl).filter(Boolean) as string[]);
 
-		// Find orphaned blobs (in Vercel Blob but not in database)
-		const orphanedUrls = [...blobUrls].filter((url) => !dbImageUrls.has(url));
+		const orphanCutoff = Date.now() - ORPHAN_GRACE_PERIOD_MS;
+		const orphanedUrls = blobs
+			.filter((blob) => blob.uploadedAt.getTime() <= orphanCutoff && !dbImageUrls.has(blob.url))
+			.map((blob) => blob.url);
 
 		console.log(`Found ${orphanedUrls.length} orphaned images to clean up`);
 
