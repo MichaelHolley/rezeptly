@@ -8,19 +8,13 @@ const groups = [
 ];
 
 describe('assistant ingredient proposals', () => {
-	it('accepts ordered groups, empty sections and duplicate headings', () => {
+	it.each([
+		['accepts ordered groups, empty sections and duplicate headings', groups, true],
+		['requires one ungrouped group first', [{ heading: 'Sauce', items: ['Tomato'] }], false]
+	])('%s', (_, expected, success) => {
 		expect(
-			assistantIngredientProposalSchema.safeParse({ expected: groups, replacement: groups }).success
-		).toBe(true);
-	});
-
-	it('requires one ungrouped group first', () => {
-		expect(
-			assistantIngredientProposalSchema.safeParse({
-				expected: [{ heading: 'Sauce', items: ['Tomato'] }],
-				replacement: groups
-			}).success
-		).toBe(false);
+			assistantIngredientProposalSchema.safeParse({ expected, replacement: groups }).success
+		).toBe(success);
 	});
 
 	it('detects structural changes even when ingredient names are unchanged', () => {

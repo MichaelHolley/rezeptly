@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createRecipe, uniqueName } from './helpers';
+import { createRecipe, dragBelow, uniqueName } from './helpers';
 
 test('edits the recipe name and description', async ({ page }) => {
 	const name = uniqueName('E2E Edit Recipe');
@@ -65,8 +65,12 @@ test('groups and reorders ingredients', async ({ page }) => {
 
 	await dough.getByLabel('Move Water').click();
 	await page.getByRole('menuitem', { name: 'Move up', exact: true }).click();
+	const doughItems = dough.getByTitle('Edit ingredient', { exact: true });
+	await expect(doughItems).toHaveText(['Water', 'Flour']);
 
-	await dough.getByLabel('Drag Water').dragTo(dough.getByLabel('Drag Flour'));
+	await dragBelow(page, dough.getByLabel('Drag Water'), dough.getByLabel('Drag Flour'));
+	await expect(page.getByText('Ingredient order saved.')).toBeAttached();
+	await expect(doughItems).toHaveText(['Flour', 'Water']);
 
 	await sauce.getByTitle('Edit section').click();
 	await sauce.getByLabel('Section name').fill('Tomato sauce');
@@ -85,6 +89,11 @@ test('groups and reorders ingredients', async ({ page }) => {
 			.getByRole('region', { name: 'Tomato sauce ingredients' })
 			.getByTitle('Edit ingredient', { exact: true })
 	).toHaveText(['Tomato', 'Salt']);
+	await expect(
+		page
+			.getByRole('region', { name: 'Dough ingredients' })
+			.getByTitle('Edit ingredient', { exact: true })
+	).toHaveText(['Flour', 'Water']);
 });
 
 test('deleting a section preserves its ingredients as ungrouped', async ({ page }) => {

@@ -114,36 +114,31 @@ describe('buildRecipeInput', () => {
 	});
 
 	describe('ingredients', () => {
-		it('should preserve headings and order while dropping blank ingredients', () => {
-			const result = buildRecipeInput(
-				{
-					...emptyExtraction(),
-					ingredients: [{ heading: '  Sauce  ', items: ['  150g Mehl  ', '   ', 'Salz'] }]
-				},
-				[]
+		it.each([
+			[
+				'should preserve headings and order while dropping blank ingredients',
+				[{ heading: '  Sauce  ', items: ['  150g Mehl  ', '   ', 'Salz'] }],
+				[
+					{ heading: null, items: [] },
+					{ heading: 'Sauce', items: ['150g Mehl', 'Salz'] }
+				]
+			],
+			[
+				'should merge ungrouped items into the first group',
+				[
+					{ heading: 'Sauce', items: ['Tomato'] },
+					{ heading: null, items: ['Salt'] },
+					{ heading: null, items: ['Pepper'] }
+				],
+				[
+					{ heading: null, items: ['Salt', 'Pepper'] },
+					{ heading: 'Sauce', items: ['Tomato'] }
+				]
+			]
+		])('%s', (_, ingredients, expected) => {
+			expect(buildRecipeInput({ ...emptyExtraction(), ingredients }, []).ingredientGroups).toEqual(
+				expected
 			);
-			expect(result.ingredientGroups).toEqual([
-				{ heading: null, items: [] },
-				{ heading: 'Sauce', items: ['150g Mehl', 'Salz'] }
-			]);
-		});
-
-		it('should merge ungrouped items into the first group', () => {
-			const result = buildRecipeInput(
-				{
-					...emptyExtraction(),
-					ingredients: [
-						{ heading: 'Sauce', items: ['Tomato'] },
-						{ heading: null, items: ['Salt'] },
-						{ heading: null, items: ['Pepper'] }
-					]
-				},
-				[]
-			);
-			expect(result.ingredientGroups).toEqual([
-				{ heading: null, items: ['Salt', 'Pepper'] },
-				{ heading: 'Sauce', items: ['Tomato'] }
-			]);
 		});
 	});
 
