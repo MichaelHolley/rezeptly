@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		addIngredientSection,
+		getRecipeBySlug,
 		reorderIngredientHierarchy,
 		updateRecipePortions
 	} from '$lib/api/recipes.remote';
@@ -91,6 +92,7 @@
 		} catch (error) {
 			groups = previous;
 			reportError(error);
+			getRecipeBySlug(recipeSlug).refresh().catch(reportError);
 			announcement = 'The previous ingredient order was restored.';
 		} finally {
 			isSaving = false;
