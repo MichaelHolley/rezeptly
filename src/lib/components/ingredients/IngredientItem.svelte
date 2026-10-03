@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { editIngredient, removeIngredient } from '$lib/api/recipes.remote';
+	import { editIngredient, getRecipeBySlug, removeIngredient } from '$lib/api/recipes.remote';
 	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -19,10 +19,10 @@
 	const {
 		ingredient,
 		recipeId,
+		recipeSlug,
 		isEditing,
 		onEditStart,
 		onEditEnd,
-		onSaved,
 		canMoveUp,
 		canMoveDown,
 		moveTargets,
@@ -33,10 +33,10 @@
 	}: {
 		ingredient: Ingredient;
 		recipeId: number;
+		recipeSlug: string;
 		isEditing: boolean;
 		onEditStart: () => void;
 		onEditEnd: () => void;
-		onSaved: () => Promise<void>;
 		canMoveUp: boolean;
 		canMoveDown: boolean;
 		moveTargets: MoveTarget[];
@@ -54,6 +54,17 @@
 		editValue = ingredient.name;
 		onEditStart();
 		setTimeout(() => inputRef?.focus(), 50);
+	}
+
+	function overrideIngredients(update: (items: Ingredient[]) => Ingredient[]) {
+		return getRecipeBySlug(recipeSlug).withOverride((recipe) => ({
+			...recipe,
+			ingredients: update(recipe.ingredients),
+			ingredientSections: recipe.ingredientSections.map((section) => ({
+				...section,
+				ingredients: update(section.ingredients)
+			}))
+		}));
 	}
 
 	function cancelEdit() {
@@ -76,10 +87,12 @@
 		<form
 			{...editForm.enhance(async ({ submit }) => {
 				try {
-					if (await submit()) {
-						onEditEnd();
-						await onSaved();
-					}
+					const saved = await submit().updates(
+						overrideIngredients((items) =>
+							items.map((item) => (item.id === ingredient.id ? { ...item, name: editValue } : item))
+						)
+					);
+					if (saved) onEditEnd();
 				} catch (error) {
 					reportError(error);
 				}
@@ -163,8 +176,9 @@
 			{disabled}
 			onclick={async () => {
 				try {
-					await removeIngredient({ recipeId, ingrId: ingredient.id });
-					await onSaved();
+					await removeIngredient({ recipeId, ingrId: ingredient.id }).updates(
+						overrideIngredients((items) => items.filter(({ id }) => id !== ingredient.id))
+					);
 				} catch (error) {
 					reportError(error);
 				}

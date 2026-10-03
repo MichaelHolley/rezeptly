@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Ingredient } from '$lib/server/types';
-	import type { IngredientSectionWithIngredients } from '$lib/server/types';
+	import type { Ingredient, IngredientSectionWithIngredients } from '$lib/server/types';
 	import { groupIngredients } from '$lib/shared/ingredients';
 
 	const {
@@ -17,7 +16,7 @@
 </script>
 
 <div class={[className, 'flex max-w-sm flex-col gap-5']}>
-	{#each groups as group, index (`${group.heading ?? 'ungrouped'}-${index}`)}
+	{#each groups as group (group.id ?? 'ungrouped')}
 		<section class="flex flex-col gap-3">
 			{#if group.heading}<h4 class="font-semibold">{group.heading}</h4>{/if}
 			<ul class="flex flex-col gap-3">

@@ -64,7 +64,7 @@ export const assistantDetailsProposalSchema = z.object({
 		)
 });
 
-export const assistantIngredientGroupSchema = z.object({
+const assistantIngredientGroupSchema = z.object({
 	heading: nullableTextSchema.describe(
 		'The ingredient section heading, or null for the first ungrouped block'
 	),
@@ -108,7 +108,6 @@ export type AssistantDetailsState = z.infer<typeof assistantDetailsStateSchema>;
 export type AssistantDetailChange = z.infer<typeof assistantDetailChangeSchema>;
 export type AssistantDetailsProposal = z.infer<typeof assistantDetailsProposalSchema>;
 export type AssistantIngredientProposal = z.infer<typeof assistantIngredientProposalSchema>;
-export type AssistantIngredientGroup = z.infer<typeof assistantIngredientGroupSchema>;
 export type AssistantInstruction = z.infer<typeof assistantInstructionSchema>;
 export type AssistantInstructionProposal = z.infer<typeof assistantInstructionProposalSchema>;
 

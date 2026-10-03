@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {
 		addIngredientSection,
-		getRecipeBySlug,
 		reorderIngredientHierarchy,
 		updateRecipePortions
 	} from '$lib/api/recipes.remote';
@@ -10,7 +9,7 @@
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Sheet from '$lib/components/ui/sheet/';
-	import { ingredientEditorGroups, type IngredientEditorGroup } from '$lib/shared/ingredients';
+	import { groupIngredients, type IngredientGroup } from '$lib/shared/ingredients';
 	import { reportError } from '$lib/shared/toast';
 	import type { Ingredient, IngredientSectionWithIngredients } from '$lib/server/types';
 	import PenIcon from '@lucide/svelte/icons/pen';
@@ -37,13 +36,11 @@
 	} = $props();
 
 	let draftPortions = $state(untrack(() => portions));
-	let groups = $state<IngredientEditorGroup[]>(
-		untrack(() => ingredientEditorGroups({ ingredients, ingredientSections }))
-	);
+	let groups = $derived(groupIngredients({ ingredients, ingredientSections }));
 	let editingId = $state<number | null>(null);
 	let isSaving = $state(false);
 	let announcement = $state('');
-	let dragSnapshot: IngredientEditorGroup[] | null = null;
+	let dragSnapshot: IngredientGroup[] | null = null;
 	let persistTimer: ReturnType<typeof setTimeout> | undefined;
 
 	const namedGroups = $derived(groups.slice(1));
@@ -54,17 +51,8 @@
 		400
 	);
 
-	function cloneGroups(source: IngredientEditorGroup[]): IngredientEditorGroup[] {
+	function cloneGroups(source: IngredientGroup[]): IngredientGroup[] {
 		return source.map((group) => ({ ...group, items: [...group.items] }));
-	}
-
-	function syncFromProps() {
-		groups = ingredientEditorGroups({ ingredients, ingredientSections });
-	}
-
-	async function refreshGroups() {
-		await getRecipeBySlug(recipeSlug).refresh();
-		syncFromProps();
 	}
 
 	function handlePortionsChange(value: number | null) {
@@ -94,17 +82,15 @@
 		};
 	}
 
-	async function persist(previous: IngredientEditorGroup[], successMessage: string) {
+	async function persist(previous: IngredientGroup[], successMessage: string) {
 		if (isSaving) return;
 		isSaving = true;
 		try {
 			await reorderIngredientHierarchy(hierarchyInput());
 			announcement = successMessage;
 		} catch (error) {
-			groups = cloneGroups(previous);
+			groups = previous;
 			reportError(error);
-			await getRecipeBySlug(recipeSlug).refresh();
-			syncFromProps();
 			announcement = 'The previous ingredient order was restored.';
 		} finally {
 			isSaving = false;
@@ -113,6 +99,7 @@
 	}
 
 	function scheduleDragSave() {
+		// A drag across sections finalizes both zones; defer so they persist as one save.
 		if (persistTimer) clearTimeout(persistTimer);
 		persistTimer = setTimeout(() => {
 			const previous = dragSnapshot;
@@ -120,10 +107,7 @@
 		}, 0);
 	}
 
-	function handleSectionDnd(
-		event: CustomEvent<DndEvent<IngredientEditorGroup>>,
-		finalized: boolean
-	) {
+	function handleSectionDnd(event: CustomEvent<DndEvent<IngredientGroup>>, finalized: boolean) {
 		beginDrag();
 		groups = [groups[0], ...event.detail.items];
 		if (finalized) scheduleDragSave();
@@ -193,7 +177,6 @@
 	onOpenChange={(open) => {
 		if (open) {
 			draftPortions = portions;
-			syncFromProps();
 		} else {
 			editingId = null;
 			sectionForm.element?.reset();
@@ -219,10 +202,7 @@
 			<form
 				{...sectionForm.enhance(async (form) => {
 					try {
-						if (await form.submit()) {
-							form.element.reset();
-							await refreshGroups();
-						}
+						if (await form.submit()) form.element.reset();
 					} catch (error) {
 						reportError(error);
 					}
@@ -262,13 +242,9 @@
 						{editingId}
 						onEditStart={(id) => (editingId = id)}
 						onEditEnd={() => (editingId = null)}
-						onChanged={refreshGroups}
+						{recipeSlug}
 						onItemsConsider={(items) => handleIngredientDnd(null, items, false)}
 						onItemsFinalize={(items) => handleIngredientDnd(null, items, true)}
-						canMoveSectionUp={false}
-						canMoveSectionDown={false}
-						onMoveSectionUp={() => {}}
-						onMoveSectionDown={() => {}}
 						moveTargets={namedGroups.map((group) => ({ id: group.id, name: group.heading! }))}
 						onMoveIngredientUp={(id) => moveIngredientWithin(null, id, -1)}
 						onMoveIngredientDown={(id) => moveIngredientWithin(null, id, 1)}
@@ -299,7 +275,7 @@
 								{editingId}
 								onEditStart={(id) => (editingId = id)}
 								onEditEnd={() => (editingId = null)}
-								onChanged={refreshGroups}
+								{recipeSlug}
 								onItemsConsider={(items) => handleIngredientDnd(group.id, items, false)}
 								onItemsFinalize={(items) => handleIngredientDnd(group.id, items, true)}
 								canMoveSectionUp={index > 0}

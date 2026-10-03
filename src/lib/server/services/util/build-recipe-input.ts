@@ -2,7 +2,7 @@ import type { RecipeCourse } from '$lib/shared/course';
 import { DURATION_BUCKETS } from '$lib/shared/duration';
 import type { ExtractedRecipeData } from '../ai.service';
 import type { NewInstruction, Tag, TagInput } from '../../types';
-import type { IngredientGroupNames } from '../ingredient.service';
+import type { IngredientNameGroup } from '$lib/shared/ingredients';
 import { resolveTags } from './resolve-tags';
 
 export type RecipeInput = {
@@ -11,7 +11,7 @@ export type RecipeInput = {
 	course: RecipeCourse | null;
 	durationMinutes: number | null;
 	portions: number | null;
-	ingredientGroups: IngredientGroupNames[];
+	ingredientGroups: IngredientNameGroup[];
 	instructions: Omit<NewInstruction, 'recipeId'>[];
 	tags: TagInput[];
 };
@@ -40,7 +40,7 @@ function emptyToNull(value: string | null | undefined): string | null {
 
 export function buildIngredientGroups(
 	groups: ExtractedRecipeData['ingredients']
-): IngredientGroupNames[] {
+): IngredientNameGroup[] {
 	const normalized = groups.map((group) => ({
 		heading: emptyToNull(group.heading),
 		items: group.items.map((name) => name.trim()).filter(Boolean)

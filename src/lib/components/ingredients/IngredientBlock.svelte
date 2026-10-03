@@ -9,7 +9,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
-	import type { IngredientEditorGroup } from '$lib/shared/ingredients';
+	import type { IngredientGroup } from '$lib/shared/ingredients';
 	import { reportError } from '$lib/shared/toast';
 	import type { Ingredient } from '$lib/server/types';
 	import CheckIcon from '@lucide/svelte/icons/check';
@@ -26,15 +26,15 @@
 	const {
 		group,
 		recipeId,
+		recipeSlug,
 		isSaving,
 		editingId,
 		onEditStart,
 		onEditEnd,
-		onChanged,
 		onItemsConsider,
 		onItemsFinalize,
-		canMoveSectionUp,
-		canMoveSectionDown,
+		canMoveSectionUp = false,
+		canMoveSectionDown = false,
 		onMoveSectionUp,
 		onMoveSectionDown,
 		moveTargets,
@@ -42,19 +42,19 @@
 		onMoveIngredientDown,
 		onMoveIngredientTo
 	}: {
-		group: IngredientEditorGroup;
+		group: IngredientGroup;
 		recipeId: number;
+		recipeSlug: string;
 		isSaving: boolean;
 		editingId: number | null;
 		onEditStart: (id: number) => void;
 		onEditEnd: () => void;
-		onChanged: () => Promise<void>;
 		onItemsConsider: (items: Ingredient[]) => void;
 		onItemsFinalize: (items: Ingredient[]) => void;
-		canMoveSectionUp: boolean;
-		canMoveSectionDown: boolean;
-		onMoveSectionUp: () => void;
-		onMoveSectionDown: () => void;
+		canMoveSectionUp?: boolean;
+		canMoveSectionDown?: boolean;
+		onMoveSectionUp?: () => void;
+		onMoveSectionDown?: () => void;
 		moveTargets: { id: number | null; name: string }[];
 		onMoveIngredientUp: (ingredientId: number) => void;
 		onMoveIngredientDown: (ingredientId: number) => void;
@@ -104,10 +104,7 @@
 				<form
 					{...renameForm.enhance(async ({ submit }) => {
 						try {
-							if (await submit()) {
-								isEditingSection = false;
-								await onChanged();
-							}
+							if (await submit()) isEditingSection = false;
 						} catch (error) {
 							reportError(error);
 						}
@@ -188,7 +185,6 @@
 					onclick={async () => {
 						try {
 							await removeIngredientSection({ recipeId, sectionId: group.id! });
-							await onChanged();
 						} catch (error) {
 							reportError(error);
 						}
@@ -205,7 +201,6 @@
 			try {
 				if (await form.submit()) {
 					form.element.reset();
-					await onChanged();
 					setTimeout(() => inputRef?.focus(), 50);
 				}
 			} catch (error) {
@@ -260,7 +255,7 @@
 					isEditing={editingId === ingredient.id}
 					onEditStart={() => onEditStart(ingredient.id)}
 					{onEditEnd}
-					onSaved={onChanged}
+					{recipeSlug}
 					canMoveUp={index > 0}
 					canMoveDown={index < group.items.length - 1}
 					{moveTargets}

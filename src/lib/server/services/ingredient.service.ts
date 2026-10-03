@@ -9,13 +9,20 @@ import type {
 	IngredientSectionId,
 	RecipeId
 } from '../types';
+import { ingredientNameGroups, type IngredientNameGroup } from '$lib/shared/ingredients';
+import { listProposalIsStale } from '$lib/shared/recipe-assistant';
 import { validateIngredientHierarchy } from './util/validate-ingredient-hierarchy';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-export type IngredientGroupNames = {
-	heading: string | null;
-	items: string[];
+const ingredientOrder = [asc(ingredients.ingredientOrder), asc(ingredients.id)];
+
+export const orderedIngredientRelations = {
+	ingredients: { orderBy: ingredientOrder },
+	ingredientSections: {
+		orderBy: [asc(ingredientSections.sectionOrder)],
+		with: { ingredients: { orderBy: ingredientOrder } }
+	}
 };
 
 export type IngredientHierarchy = {
@@ -169,7 +176,7 @@ export const deleteIngredientSection = async (
 		const grouped = await tx
 			.select()
 			.from(ingredients)
-			.where(eq(ingredients.sectionId, sectionId))
+			.where(and(eq(ingredients.recipeId, recipeId), eq(ingredients.sectionId, sectionId)))
 			.orderBy(asc(ingredients.ingredientOrder));
 
 		for (const [index, ingredient] of grouped.entries()) {
@@ -244,63 +251,55 @@ export const reorderIngredientHierarchy = async (
 	});
 };
 
-async function ingredientGroupState(tx: Tx, recipeId: RecipeId): Promise<IngredientGroupNames[]> {
-	const ungrouped = await tx
-		.select({ name: ingredients.name })
-		.from(ingredients)
-		.where(and(eq(ingredients.recipeId, recipeId), isNull(ingredients.sectionId)))
-		.orderBy(asc(ingredients.ingredientOrder));
-	const sections = await tx.query.ingredientSections.findMany({
-		where: eq(ingredientSections.recipeId, recipeId),
-		orderBy: (section, { asc }) => [asc(section.sectionOrder)],
-		with: { ingredients: { orderBy: (ingredient, { asc }) => [asc(ingredient.ingredientOrder)] } }
-	});
-	return [
-		{ heading: null, items: ungrouped.map(({ name }) => name) },
-		...sections.map((section) => ({
-			heading: section.name,
-			items: section.ingredients.map(({ name }) => name)
-		}))
-	];
+export async function insertIngredientGroups(
+	tx: Tx,
+	recipeId: RecipeId,
+	groups: IngredientNameGroup[]
+): Promise<void> {
+	let sectionOrder = 0;
+	for (const group of groups) {
+		let sectionId: number | null = null;
+		if (group.heading !== null) {
+			sectionOrder += 1;
+			const [section] = await tx
+				.insert(ingredientSections)
+				.values({ recipeId, name: group.heading, sectionOrder })
+				.returning({ id: ingredientSections.id });
+			sectionId = section.id;
+		}
+
+		if (group.items.length > 0) {
+			await tx.insert(ingredients).values(
+				group.items.map((name, index) => ({
+					name,
+					recipeId,
+					sectionId,
+					ingredientOrder: index + 1
+				}))
+			);
+		}
+	}
 }
 
 export const replaceIngredientsForRecipe = async (
 	recipeId: RecipeId,
-	expected: IngredientGroupNames[],
-	replacement: IngredientGroupNames[]
+	expected: IngredientNameGroup[],
+	replacement: IngredientNameGroup[]
 ): Promise<boolean> => {
 	return db.transaction(async (tx) => {
 		await lockRecipe(tx, recipeId);
-		if (JSON.stringify(await ingredientGroupState(tx, recipeId)) !== JSON.stringify(expected)) {
+		const current = await tx.query.recipes.findFirst({
+			where: eq(recipes.id, recipeId),
+			columns: { id: true },
+			with: orderedIngredientRelations
+		});
+		if (!current || listProposalIsStale(ingredientNameGroups(current), expected)) {
 			return false;
 		}
 
 		await tx.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
 		await tx.delete(ingredientSections).where(eq(ingredientSections.recipeId, recipeId));
-
-		let sectionOrder = 0;
-		for (const group of replacement) {
-			let sectionId: number | null = null;
-			if (group.heading !== null) {
-				sectionOrder += 1;
-				const [section] = await tx
-					.insert(ingredientSections)
-					.values({ recipeId, name: group.heading, sectionOrder })
-					.returning({ id: ingredientSections.id });
-				sectionId = section.id;
-			}
-
-			if (group.items.length > 0) {
-				await tx.insert(ingredients).values(
-					group.items.map((name, index) => ({
-						name,
-						recipeId,
-						sectionId,
-						ingredientOrder: index + 1
-					}))
-				);
-			}
-		}
+		await insertIngredientGroups(tx, recipeId, replacement);
 		return true;
 	});
 };

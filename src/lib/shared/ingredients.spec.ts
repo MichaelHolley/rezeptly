@@ -1,6 +1,6 @@
 import type { Ingredient, IngredientSectionWithIngredients } from '$lib/server/types';
 import { describe, expect, it } from 'vitest';
-import { groupIngredients } from './ingredients';
+import { ingredientNameGroups } from './ingredients';
 
 const ingredient = (id: number, name: string, sectionId: number | null = null): Ingredient => ({
 	id,
@@ -20,7 +20,7 @@ const salt = ingredient(1, 'Salt');
 const tomato = ingredient(2, 'Tomato', 20);
 const spaghetti = ingredient(3, 'Spaghetti', 21);
 
-describe('groupIngredients without empty sections', () => {
+describe('ingredientNameGroups without empty sections', () => {
 	it.each([
 		['an empty recipe', [], [], []],
 		['ungrouped ingredients only', [salt], [], [{ heading: null, items: ['Salt'] }]],
@@ -41,10 +41,6 @@ describe('groupIngredients without empty sections', () => {
 			[{ heading: 'Sauce', items: ['Tomato'] }]
 		]
 	])('groups %s', (_, ingredients, ingredientSections, expected) => {
-		const groups = groupIngredients({ ingredients, ingredientSections }, false);
-
-		expect(
-			groups.map(({ heading, items }) => ({ heading, items: items.map(({ name }) => name) }))
-		).toEqual(expected);
+		expect(ingredientNameGroups({ ingredients, ingredientSections }, false)).toEqual(expected);
 	});
 });

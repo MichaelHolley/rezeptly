@@ -5,10 +5,10 @@
 	import {
 		type AssistantDetailChange,
 		type AssistantDetailsProposal,
-		type AssistantIngredientGroup,
 		type AssistantToolResult,
 		type RecipeAssistantMessage
 	} from '$lib/shared/recipe-assistant';
+	import type { IngredientNameGroup } from '$lib/shared/ingredients';
 	import { Chat } from '@ai-sdk/svelte';
 	import BotIcon from '@lucide/svelte/icons/bot';
 	import CheckIcon from '@lucide/svelte/icons/check';
@@ -127,7 +127,7 @@
 	</div>
 {/snippet}
 
-{#snippet ingredientGroups(groups: AssistantIngredientGroup[], strike: boolean)}
+{#snippet ingredientGroups(groups: IngredientNameGroup[], strike: boolean)}
 	<div class:text-zinc-500={strike} class:line-through={strike} class="flex flex-col gap-2">
 		{#each groups as group, index (`${group.heading ?? 'ungrouped'}-${index}`)}
 			<div>
