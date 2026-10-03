@@ -5,7 +5,7 @@ import { toAppError } from './error';
 describe('toAppError', () => {
 	it('extracts status, message, and code from an HttpError', () => {
 		try {
-			error(409, { message: 'Tag already exists', code: 'VALIDATION_ERROR' });
+			error(409, 'Tag already exists', { code: 'VALIDATION_ERROR' });
 		} catch (e) {
 			expect(toAppError(e)).toEqual({
 				status: 409,

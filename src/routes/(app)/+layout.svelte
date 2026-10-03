@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { logout } from '$lib/api/auth.remote';
-	import { getAvailableTags } from '$lib/api/recipes.remote';
-	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
-	import { Button } from '$lib/components/ui/button/';
-	import { Separator } from '$lib/components/ui/separator/';
-	import * as Sheet from '$lib/components/ui/sheet/';
-	import { reportError } from '$lib/shared/toast';
-	import { AvailableTagsStore } from '$lib/store/available-tags.svelte.js';
-	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import { logout } from '#lib/api/auth.remote.js';
+	import { getAvailableTags } from '#lib/api/recipes.remote.js';
+	import RezeptlyHeader from '#lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Separator } from '#lib/components/ui/separator/index.js';
+	import * as Sheet from '#lib/components/ui/sheet/index.js';
+	import { reportError } from '#lib/shared/toast.js';
+	import { AvailableTagsStore } from '#lib/store/available-tags.svelte.js';
+	import { PermissionsStore } from '#lib/store/roles.svelte.js';
 	import type { LucideIcon } from '@lucide/svelte';
 	import FileTextIcon from '@lucide/svelte/icons/file-text';
 	import ImageIcon from '@lucide/svelte/icons/image-plus';

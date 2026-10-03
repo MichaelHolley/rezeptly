@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getRecipesMetadata } from '$lib/api/recipes.remote';
-	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import RecipeListComponent from '$lib/components/recipes/RecipeListComponent.svelte';
+	import { getRecipesMetadata } from '#lib/api/recipes.remote.js';
+	import ErrorComponent from '#lib/components/common/ErrorComponent.svelte';
+	import RecipeListComponent from '#lib/components/recipes/RecipeListComponent.svelte';
 </script>
 
 <svelte:head>

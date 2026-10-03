@@ -1,4 +1,4 @@
-import { createMcpServer } from '$lib/server/mcp/server';
+import { createMcpServer } from '#lib/server/mcp/server.js';
 import { createMcpHandler } from '@modelcontextprotocol/server';
 import type { RequestHandler } from './$types';
 

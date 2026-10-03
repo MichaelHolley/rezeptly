@@ -1,4 +1,4 @@
-import { PermissionsStore } from '$lib/store/roles.svelte';
+import { PermissionsStore } from '#lib/store/roles.svelte.js';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import CardComponent from '$lib/components/recipes/CardComponent.svelte';
-	import FilterComponent from '$lib/components/recipes/FilterComponent.svelte';
-	import type { RecipeMetadata } from '$lib/server/types';
-	import { COURSES } from '$lib/shared/course';
-	import { TAG_CATEGORIES } from '$lib/shared/tags';
-	import { favoritesStore } from '$lib/store/favorites';
+	import CardComponent from '#lib/components/recipes/CardComponent.svelte';
+	import FilterComponent from '#lib/components/recipes/FilterComponent.svelte';
+	import type { RecipeMetadata } from '#lib/server/types.js';
+	import { COURSES } from '#lib/shared/course.js';
+	import { TAG_CATEGORIES } from '#lib/shared/tags.js';
+	import { favoritesStore } from '#lib/store/favorites.js';
 	import { Debounced } from 'runed';
 	import { useSearchParams } from 'runed/kit';
 	import z from 'zod';

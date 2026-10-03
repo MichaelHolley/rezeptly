@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import CopyButtonComponent from '$lib/components/common/CopyButtonComponent.svelte';
-	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import CopyButtonComponent from '#lib/components/common/CopyButtonComponent.svelte';
+	import BreadcrumbComponent from '#lib/components/common/navigation/BreadcrumbComponent.svelte';
 
 	const endpoint = $derived(`${page.url.origin}/api/mcp`);
 

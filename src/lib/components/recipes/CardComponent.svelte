@@ -1,12 +1,12 @@
 <script lang="ts">
-	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
-	import DraftBadgeComponent from '$lib/components/recipes/DraftBadgeComponent.svelte';
-	import TagsContainerComponent from '$lib/components/recipes/TagsContainerComponent.svelte';
-	import * as Card from '$lib/components/ui/card/';
-	import type { RecipeMetadata } from '$lib/server/types';
-	import { COURSE_LABELS } from '$lib/shared/course';
-	import { formatDuration } from '$lib/shared/duration';
-	import { viewTransition } from '$lib/utils';
+	import ImagePlaceholderComponent from '#lib/components/common/ImagePlaceholderComponent.svelte';
+	import DraftBadgeComponent from '#lib/components/recipes/DraftBadgeComponent.svelte';
+	import TagsContainerComponent from '#lib/components/recipes/TagsContainerComponent.svelte';
+	import * as Card from '#lib/components/ui/card/index.js';
+	import type { RecipeMetadata } from '#lib/server/types.js';
+	import { COURSE_LABELS } from '#lib/shared/course.js';
+	import { formatDuration } from '#lib/shared/duration.js';
+	import { viewTransition } from '#lib/utils.js';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import UsersIcon from '@lucide/svelte/icons/users';
 	import { COURSE_ICONS } from './course-icons';

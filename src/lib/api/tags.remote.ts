@@ -1,7 +1,7 @@
 import { form } from '$app/server';
-import { guardedQuery, userCanWrite } from '$lib/server/auth/permissions';
-import { tagCategoryEnum } from '$lib/server/db/schema';
-import * as tagService from '$lib/server/services/tag.service';
+import { guardedQuery, userCanWrite } from '#lib/server/auth/permissions.js';
+import { tagCategoryEnum } from '#lib/server/db/schema.js';
+import * as tagService from '#lib/server/services/tag.service.js';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
 import { getAvailableTags, getRecipesMetadata } from './recipes.remote';

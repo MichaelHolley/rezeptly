@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { setRecipePublished } from '$lib/api/recipes.remote';
-	import { Spinner } from '$lib/components/ui/spinner';
-	import { Button } from '$lib/components/ui/button';
-	import { reportError } from '$lib/shared/toast';
-	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import { setRecipePublished } from '#lib/api/recipes.remote.js';
+	import { Spinner } from '#lib/components/ui/spinner/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { reportError } from '#lib/shared/toast.js';
+	import { PermissionsStore } from '#lib/store/roles.svelte.js';
 	import EyeOffIcon from '@lucide/svelte/icons/eye-off';
 	import SendIcon from '@lucide/svelte/icons/send';
 

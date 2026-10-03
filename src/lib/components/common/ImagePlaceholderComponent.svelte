@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Empty from '$lib/components/ui/empty/';
+	import * as Empty from '#lib/components/ui/empty/index.js';
 	import BugIcon from '@lucide/svelte/icons/bug';
 	import SoupIcon from '@lucide/svelte/icons/soup';
 
