@@ -8,7 +8,9 @@ import { fileURLToPath } from 'node:url';
 import ts from 'typescript-eslint';
 import { loadConfig } from '@sveltejs/load-config';
 
-const svelteConfig = (await loadConfig('./', { traverse: false }))?.config;
+const loadedConfig = await loadConfig('./', { traverse: false });
+if (loadedConfig && 'error' in loadedConfig) throw loadedConfig.error;
+const svelteConfig = loadedConfig?.config;
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
