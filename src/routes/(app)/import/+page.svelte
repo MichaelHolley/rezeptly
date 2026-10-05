@@ -4,7 +4,7 @@
 	import { Spinner } from '#lib/components/ui/spinner/index.js';
 	import BreadcrumbComponent from '#lib/components/common/navigation/BreadcrumbComponent.svelte';
 	import { toAppError } from '#lib/shared/error.js';
-	import { getUploadAllowedTypes } from '#lib/shared/upload.js';
+	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$app/env/public';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import type { PageData } from './$types';
 
@@ -61,7 +61,7 @@
 		<input
 			bind:this={fileInput}
 			type="file"
-			accept={getUploadAllowedTypes()}
+			accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
 			oninput={(e) => runImport(e.currentTarget.files?.[0])}
 			class="hidden"
 		/>

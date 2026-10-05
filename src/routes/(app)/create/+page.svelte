@@ -12,7 +12,7 @@
 	import type { RecipeCourse } from '#lib/shared/course.js';
 	import { DURATION_BUCKETS, formatDuration } from '#lib/shared/duration.js';
 	import { toAppError } from '#lib/shared/error.js';
-	import { getUploadAllowedTypes } from '#lib/shared/upload.js';
+	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$app/env/public';
 	import type { PageData } from './$types';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 
@@ -111,7 +111,7 @@
 		<div class="form-group mt-6">
 			<input
 				bind:this={importImageInput}
-				accept={getUploadAllowedTypes()}
+				accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
 				{...createRecipe.fields.importImage.as('file')}
 				oninput={(e) => {
 					importImageName = e.currentTarget.files?.[0]?.name ?? null;

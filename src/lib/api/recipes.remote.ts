@@ -1,3 +1,4 @@
+import { PUBLIC_UPLOAD_MAX_BYTES } from '$app/env/public';
 import { command, form, query } from '$app/server';
 import { guardedQuery, userCanWrite } from '#lib/server/auth/permissions.js';
 import * as aiService from '#lib/server/services/ai.service.js';
@@ -310,7 +311,7 @@ export const updateInstructions = form(
 export const uploadRecipeImage = form(
 	z.object({
 		recipeId: recipeIdSchema,
-		file: z.instanceof(File).refine((f) => f.size <= imageService.getMaxUploadBytes(), {
+		file: z.instanceof(File).refine((f) => f.size <= PUBLIC_UPLOAD_MAX_BYTES, {
 			message: 'File is too large.'
 		})
 	}),

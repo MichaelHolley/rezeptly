@@ -9,35 +9,20 @@ const ORPHAN_GRACE_PERIOD_MS = 24 * 60 * 60 * 1000;
 export const GET: RequestHandler = async ({ request }) => {
 	// Verify Vercel cron secret for security
 	const authHeader = request.headers.get('authorization');
-	const cronSecret = CRON_SECRET;
-
-	if (!cronSecret) {
-		console.error('CRON_SECRET not configured');
-		return new Response('Server configuration error', { status: 500 });
-	}
-
-	if (authHeader !== `Bearer ${cronSecret}`) {
+	if (authHeader !== `Bearer ${CRON_SECRET}`) {
 		console.error('Unauthorized cron request');
 		return new Response('Unauthorized', { status: 401 });
-	}
-
-	const token = BLOB_READ_WRITE_TOKEN;
-	if (!token) {
-		console.error('BLOB_READ_WRITE_TOKEN not configured');
-		return new Response('Server configuration error', { status: 500 });
-	}
-
-	const storageDir = BLOG_STORAGE_DIR;
-	if (!storageDir) {
-		console.error('BLOG_STORAGE_DIR not configured');
-		return new Response('Server configuration error', { status: 500 });
 	}
 
 	try {
 		const blobs = [];
 		let cursor: string | undefined;
 		do {
-			const page = await list({ token, prefix: `${storageDir.replace(/\/+$/, '')}/`, cursor });
+			const page = await list({
+				token: BLOB_READ_WRITE_TOKEN,
+				prefix: `${BLOG_STORAGE_DIR.replace(/\/+$/, '')}/`,
+				cursor
+			});
 			blobs.push(...page.blobs);
 			cursor = page.hasMore ? page.cursor : undefined;
 		} while (cursor);

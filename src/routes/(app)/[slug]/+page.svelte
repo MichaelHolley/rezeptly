@@ -19,7 +19,7 @@
 	import { Button } from '#lib/components/ui/button/index.js';
 	import { Spinner } from '#lib/components/ui/spinner/index.js';
 	import { reportError } from '#lib/shared/toast.js';
-	import { getUploadAllowedTypes } from '#lib/shared/upload.js';
+	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$app/env/public';
 	import { PermissionsStore } from '#lib/store/roles.svelte.js';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -324,7 +324,7 @@
 				<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
 
 				<input
-					accept={getUploadAllowedTypes()}
+					accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
 					hidden
 					{...uploadRecipeImage.fields.file.as('file')}
 					bind:this={fileUploadInput}
