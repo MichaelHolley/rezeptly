@@ -4,89 +4,32 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import InstructionStep from './InstructionStep.svelte';
 
-const instruction = (overrides: Partial<Instruction> = {}): Instruction => ({
+const instr: Instruction = {
 	id: 1,
 	heading: 'Prep',
 	instructions: 'Chop the onions',
 	stepOrder: 1,
-	recipeId: 1,
-	...overrides
-});
+	recipeId: 1
+};
 
 describe('InstructionStep.svelte', () => {
-	describe('rendering', () => {
-		it('should render heading and instructions text', async () => {
-			render(InstructionStep, {
-				instr: instruction(),
-				stepNumber: 1,
-				done: false,
-				onToggle: () => {}
-			});
-			await expect.element(page.getByText('Prep')).toBeInTheDocument();
-			await expect.element(page.getByText('Chop the onions')).toBeInTheDocument();
-		});
+	it('should toggle from both the step button and the heading', async () => {
+		const onToggle = vi.fn();
+		render(InstructionStep, { instr, stepNumber: 3, done: false, onToggle });
 
-		it('should not render a heading button when heading is null', async () => {
-			render(InstructionStep, {
-				instr: instruction({ heading: null }),
-				stepNumber: 1,
-				done: false,
-				onToggle: () => {}
-			});
-			await expect.element(page.getByText('Prep')).not.toBeInTheDocument();
-		});
+		const button = page.getByRole('button', { name: 'Mark step 3 as complete' });
+		await expect.element(button).toHaveAttribute('aria-pressed', 'false');
+		await button.click();
+		await page.getByText('Prep').click();
+
+		expect(onToggle).toHaveBeenCalledTimes(2);
 	});
 
-	describe('done state', () => {
-		it('should show the step number when not done', async () => {
-			render(InstructionStep, {
-				instr: instruction(),
-				stepNumber: 3,
-				done: false,
-				onToggle: () => {}
-			});
-			const button = page.getByRole('button', { name: 'Mark step 3 as complete' });
-			await expect.element(button).toBeInTheDocument();
-			await expect.element(button).toHaveAttribute('aria-pressed', 'false');
-			await expect.element(button).toHaveTextContent('3');
-		});
+	it('should expose the done state', async () => {
+		render(InstructionStep, { instr, stepNumber: 3, done: true, onToggle: () => {} });
 
-		it('should switch label and aria-pressed when done', async () => {
-			render(InstructionStep, {
-				instr: instruction(),
-				stepNumber: 3,
-				done: true,
-				onToggle: () => {}
-			});
-			const button = page.getByRole('button', { name: 'Unmark step 3 as complete' });
-			await expect.element(button).toBeInTheDocument();
-			await expect.element(button).toHaveAttribute('aria-pressed', 'true');
-		});
-	});
-
-	describe('interaction', () => {
-		it('should call onToggle when the step button is clicked', async () => {
-			const onToggle = vi.fn();
-			render(InstructionStep, {
-				instr: instruction(),
-				stepNumber: 1,
-				done: false,
-				onToggle
-			});
-			await page.getByRole('button', { name: 'Mark step 1 as complete' }).click();
-			expect(onToggle).toHaveBeenCalledOnce();
-		});
-
-		it('should call onToggle when the heading is clicked', async () => {
-			const onToggle = vi.fn();
-			render(InstructionStep, {
-				instr: instruction(),
-				stepNumber: 1,
-				done: false,
-				onToggle
-			});
-			await page.getByText('Prep').click();
-			expect(onToggle).toHaveBeenCalledOnce();
-		});
+		await expect
+			.element(page.getByRole('button', { name: 'Unmark step 3 as complete' }))
+			.toHaveAttribute('aria-pressed', 'true');
 	});
 });

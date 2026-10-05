@@ -51,11 +51,14 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 
 ## Testing
 
+Test behavior that can break **silently**: auth and redirects, validation at the boundary, draft/published visibility, and parsing or normalizing data. Each behavior has one **owner**: an e2e flow or a unit/component test, never both.
+
 - **Naming**: Test files are `*.spec.ts`, colocated with their source. Component and rune-module tests are `*.svelte.spec.ts`.
-- **Scope**: Cover core components and core logic. Minor details stay untested.
-- **E2E**: Every new feature ships with e2e coverage in `e2e/`.
-- **Unit**: Required for core features.
-- **Component**: Write one whenever the setup is easy.
+- **Red**: Every assertion can go red when its behavior breaks. One test may assert several facets of the same behavior.
+- **Tables**: Cases that differ only in input share one `it.each` table.
+- **E2E**: Only core flows get e2e coverage in `e2e/`: auth, and creating, editing, publishing and finding recipes. A new feature adds e2e only when it is a new core flow; admin-only management pages (e.g. `/tags`) never are.
+- **Unit**: Pure logic in the categories above.
+- **Component**: Only for logic e2e doesn't reach: state transitions, bounds, submitted form values. Markup, prop pass-through and framework behavior (`bind:value`, `$state` assignment) are covered by the type checker and the framework.
 - **AI features**: Leave untested — real calls cost money and turn flaky.
 - **Services**: `*.service.ts` files stay untested — e2e covers them. Pure helpers in `services/util/` are unit-tested.
 - **Removals**: Removing a feature removes or updates its tests. Deleted behavior needs no regression test.
@@ -63,3 +66,5 @@ Commands and Scripts are defined in the `package.json` file. Prefer scripts over
 ## Feedback Loop
 
 Making changes to the codebase requires validation via `pnpm check`. All issues must be resolved before continuing.
+
+- `pnpm test:e2e <spec>` is self-contained (Docker test DB + preview build); pass one spec to run just it.
