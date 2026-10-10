@@ -1,4 +1,4 @@
-import type { Tag } from '$lib/server/types';
+import type { Tag } from '#lib/server/types.js';
 
 class AvailableTags {
 	tags = $state<Tag[]>([]);

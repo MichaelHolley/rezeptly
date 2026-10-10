@@ -1,7 +1,7 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
-import type { ROLE } from '$lib/server/auth/permissions';
-import type { ErrorCode } from '$lib/shared/error';
+import type { ROLE } from '#lib/server/auth/permissions.js';
+import type { ErrorCode } from '#lib/shared/error.js';
 
 declare global {
 	namespace App {

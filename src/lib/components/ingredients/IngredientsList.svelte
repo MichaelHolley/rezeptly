@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Ingredient } from '$lib/server/types';
+	import type { Ingredient } from '#lib/server/types.js';
 
 	const {
 		ingredients,

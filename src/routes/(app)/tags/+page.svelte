@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { getManagedTags } from '$lib/api/tags.remote';
-	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
-	import CreateTagFormComponent from '$lib/components/tags/CreateTagFormComponent.svelte';
-	import TagRowComponent from '$lib/components/tags/TagRowComponent.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
+	import { getManagedTags } from '#lib/api/tags.remote.js';
+	import ErrorComponent from '#lib/components/common/ErrorComponent.svelte';
+	import BreadcrumbComponent from '#lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import CreateTagFormComponent from '#lib/components/tags/CreateTagFormComponent.svelte';
+	import TagRowComponent from '#lib/components/tags/TagRowComponent.svelte';
+	import * as Card from '#lib/components/ui/card/index.js';
+	import { TAG_CATEGORY_CONFIG } from '#lib/shared/tags.js';
 </script>
 
 <svelte:head>

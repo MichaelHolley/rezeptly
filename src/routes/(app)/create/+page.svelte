@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { createRecipe } from '$lib/api/recipes.remote';
-	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
-	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
-	import CategoryTagInputComponent from '$lib/components/recipes/CategoryTagInputComponent.svelte';
-	import CoursePickerComponent from '$lib/components/recipes/CoursePickerComponent.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import type { RecipeCourse } from '$lib/shared/course';
-	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
-	import { toAppError } from '$lib/shared/error';
-	import { getUploadAllowedTypes } from '$lib/shared/upload';
+	import { createRecipe } from '#lib/api/recipes.remote.js';
+	import FieldIssues from '#lib/components/common/FieldIssues.svelte';
+	import BreadcrumbComponent from '#lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import SingleSelectComponent from '#lib/components/common/SingleSelectComponent.svelte';
+	import CategoryTagInputComponent from '#lib/components/recipes/CategoryTagInputComponent.svelte';
+	import CoursePickerComponent from '#lib/components/recipes/CoursePickerComponent.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Label } from '#lib/components/ui/label/index.js';
+	import { Textarea } from '#lib/components/ui/textarea/index.js';
+	import type { RecipeCourse } from '#lib/shared/course.js';
+	import { DURATION_BUCKETS, formatDuration } from '#lib/shared/duration.js';
+	import { toAppError } from '#lib/shared/error.js';
+	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$app/env/public';
 	import type { PageData } from './$types';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 
@@ -111,7 +111,7 @@
 		<div class="form-group mt-6">
 			<input
 				bind:this={importImageInput}
-				accept={getUploadAllowedTypes()}
+				accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
 				{...createRecipe.fields.importImage.as('file')}
 				oninput={(e) => {
 					importImageName = e.currentTarget.files?.[0]?.name ?? null;

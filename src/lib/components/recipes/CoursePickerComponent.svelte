@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { COURSE_LABELS, COURSES, type RecipeCourse } from '$lib/shared/course';
-	import { cn } from '$lib/utils';
+	import { COURSE_LABELS, COURSES, type RecipeCourse } from '#lib/shared/course.js';
+	import { cn } from '#lib/utils.js';
 	import { COURSE_ICONS } from './course-icons';
 
 	let { value = $bindable() }: { value: RecipeCourse | null } = $props();

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { deleteRecipe } from '$lib/api/recipes.remote';
-	import { Button, buttonVariants } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { toAppError } from '$lib/shared/error';
+	import { deleteRecipe } from '#lib/api/recipes.remote.js';
+	import { Button, buttonVariants } from '#lib/components/ui/button/index.js';
+	import * as Dialog from '#lib/components/ui/dialog/index.js';
+	import { toAppError } from '#lib/shared/error.js';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 

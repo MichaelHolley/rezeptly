@@ -1,5 +1,5 @@
-import { COURSES } from '$lib/shared/course';
-import { TAG_CATEGORIES } from '$lib/shared/tags';
+import { COURSES } from '#lib/shared/course.js';
+import { TAG_CATEGORIES } from '#lib/shared/tags.js';
 import { z } from 'zod';
 import type { TagCategory } from '../types';
 

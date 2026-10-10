@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { deleteTag } from '$lib/api/tags.remote';
-	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
-	import { Button, buttonVariants } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { toAppError } from '$lib/shared/error';
-	import { getTagCategoryLabel } from '$lib/shared/tags';
-	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
+	import { deleteTag } from '#lib/api/tags.remote.js';
+	import SingleSelectComponent from '#lib/components/common/SingleSelectComponent.svelte';
+	import { Button, buttonVariants } from '#lib/components/ui/button/index.js';
+	import * as Dialog from '#lib/components/ui/dialog/index.js';
+	import { toAppError } from '#lib/shared/error.js';
+	import { getTagCategoryLabel } from '#lib/shared/tags.js';
+	import { AvailableTagsStore } from '#lib/store/available-tags.svelte.js';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';
 

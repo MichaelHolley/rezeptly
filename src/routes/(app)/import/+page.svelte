@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { importRecipeFromImage } from '$lib/api/recipes.remote';
-	import { Spinner } from '$lib/components/ui/spinner';
-	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
-	import { toAppError } from '$lib/shared/error';
-	import { getUploadAllowedTypes } from '$lib/shared/upload';
+	import { importRecipeFromImage } from '#lib/api/recipes.remote.js';
+	import { Spinner } from '#lib/components/ui/spinner/index.js';
+	import BreadcrumbComponent from '#lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import { toAppError } from '#lib/shared/error.js';
+	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$app/env/public';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import type { PageData } from './$types';
 
@@ -61,7 +61,7 @@
 		<input
 			bind:this={fileInput}
 			type="file"
-			accept={getUploadAllowedTypes()}
+			accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
 			oninput={(e) => runImport(e.currentTarget.files?.[0])}
 			class="hidden"
 		/>
