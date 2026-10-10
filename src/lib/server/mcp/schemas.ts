@@ -23,7 +23,12 @@ export const recipeSummarySchema = z.object({
 
 export const recipeDetailSchema = recipeSummarySchema.extend({
 	url: z.string(),
-	ingredients: z.array(z.string()),
+	ingredients: z.array(
+		z.object({
+			heading: z.string().nullable(),
+			items: z.array(z.string())
+		})
+	),
 	instructions: z.array(
 		z.object({
 			heading: z.string().nullable(),

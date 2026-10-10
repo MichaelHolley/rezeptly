@@ -1,9 +1,8 @@
 import { error } from '@sveltejs/kit';
-import { and, count, eq, ilike, inArray, like, ne, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, inArray, like, ne, or, sql, type SQL } from 'drizzle-orm';
 import { db } from '../db';
-import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
+import { instructions, recipes, recipesToTags, tags } from '../db/schema';
 import type {
-	NewIngredient,
 	NewInstruction,
 	NewRecipe,
 	Recipe,
@@ -15,6 +14,8 @@ import type {
 } from '../types';
 import type { RecipeCourse } from '$lib/shared/course';
 import { deleteImage } from './image.service';
+import type { IngredientNameGroup } from '$lib/shared/ingredients';
+import { insertIngredientGroups, orderedIngredientRelations } from './ingredient.service';
 import { upsertTags } from './tag.service';
 import { generateSlug } from './util/generate-slug';
 import { recipeVisibility, type ReadOptions } from './util/recipe-visibility';
@@ -36,6 +37,12 @@ export type RecipeFilter = {
 const escapeLike = (term: string) => term.replace(/[\\%_]/g, '\\$&');
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+const recipeDetailRelations = {
+	...orderedIngredientRelations,
+	instructions: { orderBy: [asc(instructions.stepOrder)] },
+	tags: { with: { tag: true as const } }
+};
 
 /** Appends `-2`, `-3`, … until the slug is free. `excludeId` keeps a recipe from colliding with itself. */
 const resolveUniqueSlug = async (tx: Tx, base: string, excludeId?: RecipeId): Promise<string> => {
@@ -123,11 +130,7 @@ export const getRecipeById = async (
 ): Promise<RecipeWithDetails> => {
 	const result = await db.query.recipes.findFirst({
 		where: and(eq(recipes.id, id), recipeVisibility(options)),
-		with: {
-			ingredients: true,
-			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
-			tags: { with: { tag: true } }
-		}
+		with: recipeDetailRelations
 	});
 
 	if (!result) {
@@ -143,11 +146,7 @@ export const getRecipeBySlug = async (
 ): Promise<RecipeWithDetails> => {
 	const result = await db.query.recipes.findFirst({
 		where: and(eq(recipes.slug, slug), recipeVisibility(options)),
-		with: {
-			ingredients: true,
-			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
-			tags: { with: { tag: true } }
-		}
+		with: recipeDetailRelations
 	});
 
 	if (!result) {
@@ -159,7 +158,7 @@ export const getRecipeBySlug = async (
 
 export const createRecipe = async (
 	data: Omit<NewRecipe, 'id' | 'slug' | 'createdAt'> & {
-		ingredients: Omit<NewIngredient, 'recipeId'>[];
+		ingredientGroups: IngredientNameGroup[];
 		instructions: Omit<NewInstruction, 'recipeId'>[];
 		tags: TagInput[];
 	}
@@ -189,14 +188,7 @@ export const createRecipe = async (
 			})
 			.returning();
 
-		if (data.ingredients && data.ingredients.length > 0) {
-			const newIngredients = data.ingredients.map((ingredient) => ({
-				...ingredient,
-				recipeId: createdRecipe.id
-			}));
-
-			await tx.insert(ingredients).values(newIngredients);
-		}
+		await insertIngredientGroups(tx, createdRecipe.id as RecipeId, data.ingredientGroups);
 
 		if (data.instructions && data.instructions.length > 0) {
 			const newInstructions = data.instructions.map((instruction) => ({

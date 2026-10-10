@@ -104,7 +104,7 @@ export function registerGetRecipe(server: McpServer, baseUrl: string): void {
 		{
 			title: 'Get recipe',
 			description:
-				'Get a single recipe by its slug, including its ingredients and ordered instructions.',
+				'Get a single recipe by its slug, including ordered ingredient groups and instructions.',
 			inputSchema: z.object({
 				slug: z
 					.string()
