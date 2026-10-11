@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { editIngredient, getRecipeBySlug, removeIngredient } from '$lib/api/recipes.remote';
-	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { reportError } from '$lib/shared/toast';
-	import type { Ingredient } from '$lib/server/types';
+	import { editIngredient, getRecipeBySlug, removeIngredient } from '#lib/api/recipes.remote.js';
+	import FieldIssues from '#lib/components/common/FieldIssues.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { reportError } from '#lib/shared/toast.js';
+	import type { Ingredient } from '#lib/server/types.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import XIcon from '@lucide/svelte/icons/x';

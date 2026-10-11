@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { suggestRecipeTags, updateRecipeDetails } from '$lib/api/recipes.remote';
-	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import { Spinner } from '$lib/components/ui/spinner';
-	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import type { RecipeWithDetails, TagCategory } from '$lib/server/types';
-	import type { RecipeCourse } from '$lib/shared/course';
-	import { DURATION_BUCKETS, formatDuration } from '$lib/shared/duration';
-	import { reportError } from '$lib/shared/toast';
+	import { suggestRecipeTags, updateRecipeDetails } from '#lib/api/recipes.remote.js';
+	import FieldIssues from '#lib/components/common/FieldIssues.svelte';
+	import { Spinner } from '#lib/components/ui/spinner/index.js';
+	import SingleSelectComponent from '#lib/components/common/SingleSelectComponent.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Textarea } from '#lib/components/ui/textarea/index.js';
+	import type { RecipeWithDetails, TagCategory } from '#lib/server/types.js';
+	import type { RecipeCourse } from '#lib/shared/course.js';
+	import { DURATION_BUCKETS, formatDuration } from '#lib/shared/duration.js';
+	import { reportError } from '#lib/shared/toast.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import XIcon from '@lucide/svelte/icons/x';

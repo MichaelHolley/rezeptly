@@ -5,7 +5,7 @@ import * as tagService from '../services/tag.service';
 import { toToolError, toolResult } from './result';
 import { recipeDetailSchema, recipeSummarySchema, tagSchema } from './schemas';
 import { serializeDetail, serializeSummary } from './serializers';
-import { COURSES } from '$lib/shared/course';
+import { COURSES } from '#lib/shared/course.js';
 
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 25;

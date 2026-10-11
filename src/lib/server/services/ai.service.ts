@@ -1,5 +1,6 @@
-import { env } from '$env/dynamic/private';
-import { recipeIdSchema } from '$lib/api/schemas';
+import { OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME, JWT_SECRET } from '$app/env/private';
+
+import { recipeIdSchema } from '#lib/api/schemas.js';
 import {
 	assistantDetailsProposalSchema,
 	assistantIngredientProposalSchema,
@@ -9,10 +10,10 @@ import {
 	type AssistantInstruction,
 	type AssistantToolResult,
 	type RecipeAssistantMessage
-} from '$lib/shared/recipe-assistant';
-import { COURSES, type RecipeCourse } from '$lib/shared/course';
-import { TAG_CATEGORIES } from '$lib/shared/tags';
-import { userCanWrite } from '$lib/server/auth/permissions';
+} from '#lib/shared/recipe-assistant.js';
+import { COURSES, type RecipeCourse } from '#lib/shared/course.js';
+import { TAG_CATEGORIES } from '#lib/shared/tags.js';
+import { userCanWrite } from '#lib/server/auth/permissions.js';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import {
 	convertToModelMessages,
@@ -31,12 +32,8 @@ import * as instructionService from './instruction.service';
 import * as recipeService from './recipe.service';
 
 export const aiEnabled = (): boolean =>
-	Boolean(env.OPENROUTER_API_KEY) && Boolean(env.OPENROUTER_MODEL_NAME);
-
-export const imageGenerationEnabled = (): boolean =>
-	Boolean(env.OPENROUTER_API_KEY) &&
-	Boolean(env.BLOB_READ_WRITE_TOKEN) &&
-	Boolean(env.BLOG_STORAGE_DIR);
+	Boolean(OPENROUTER_API_KEY) && Boolean(OPENROUTER_MODEL_NAME);
+export const imageGenerationEnabled = (): boolean => Boolean(OPENROUTER_API_KEY);
 
 export type RecipeImageContext = {
 	name: string;
@@ -54,7 +51,8 @@ export type GeneratedRecipeImage = {
 export async function generateRecipeImage(
 	recipe: RecipeImageContext
 ): Promise<GeneratedRecipeImage> {
-	const apiKey = env.OPENROUTER_API_KEY;
+	const apiKey = OPENROUTER_API_KEY;
+
 	if (!apiKey) throw new Error('Recipe image generation is not configured');
 
 	const details = [
@@ -176,8 +174,8 @@ export async function extractRecipeFromImage(
 	file: File,
 	existingTags: Tag[] = []
 ): Promise<ExtractedRecipeData> {
-	const apiKey = env.OPENROUTER_API_KEY;
-	const modelName = env.OPENROUTER_MODEL_NAME;
+	const apiKey = OPENROUTER_API_KEY;
+	const modelName = OPENROUTER_MODEL_NAME;
 
 	if (!apiKey || !modelName) {
 		return EMPTY_EXTRACTION;
@@ -238,8 +236,8 @@ export async function suggestRecipeTags(
 	recipe: RecipeTagContext,
 	existingTags: Tag[] = []
 ): Promise<TagProposal[]> {
-	const apiKey = env.OPENROUTER_API_KEY;
-	const modelName = env.OPENROUTER_MODEL_NAME;
+	const apiKey = OPENROUTER_API_KEY;
+	const modelName = OPENROUTER_MODEL_NAME;
 
 	if (!apiKey || !modelName) {
 		return [];
@@ -412,11 +410,10 @@ export async function streamRecipeAssistant(
 	recipe: RecipeWithDetails,
 	messages: unknown
 ): Promise<Response> {
-	const apiKey = env.OPENROUTER_API_KEY;
-	const modelName = env.OPENROUTER_MODEL_NAME;
-	const approvalSecret = env.JWT_SECRET;
-	if (!apiKey || !modelName || !approvalSecret)
-		throw new Error('Recipe assistant is not configured');
+	const apiKey = OPENROUTER_API_KEY;
+	const modelName = OPENROUTER_MODEL_NAME;
+
+	if (!apiKey || !modelName) throw new Error('Recipe assistant is not configured');
 
 	const tools = createRecipeAssistantTools(recipeIdSchema.parse(recipe.id));
 	const validatedMessages = await validateUIMessages<RecipeAssistantMessage>({ messages, tools });
@@ -430,7 +427,7 @@ export async function streamRecipeAssistant(
 		tools,
 		stopWhen: isStepCount(5),
 		maxOutputTokens: 1200,
-		experimental_toolApprovalSecret: approvalSecret
+		experimental_toolApprovalSecret: JWT_SECRET
 	});
 
 	return result.toUIMessageStreamResponse({

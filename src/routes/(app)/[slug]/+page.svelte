@@ -7,20 +7,20 @@
 		generateRecipeImage,
 		getRecipeBySlug,
 		uploadRecipeImage
-	} from '$lib/api/recipes.remote';
-	import ImagePlaceholderComponent from '$lib/components/common/ImagePlaceholderComponent.svelte';
-	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
-	import IngredientsListComponent from '$lib/components/ingredients/IngredientsList.svelte';
-	import IngredientsSheet from '$lib/components/ingredients/IngredientsSheet.svelte';
-	import InstructionsFormComponent from '$lib/components/instructions/InstructionsForm.svelte';
-	import InstructionStep from '$lib/components/instructions/InstructionStep.svelte';
-	import RecipeAssistant from '$lib/components/recipes/RecipeAssistant.svelte';
-	import RecipeDetails from '$lib/components/recipes/RecipeDetailsComponent.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Spinner } from '$lib/components/ui/spinner';
-	import { reportError } from '$lib/shared/toast';
-	import { getUploadAllowedTypes } from '$lib/shared/upload';
-	import { PermissionsStore } from '$lib/store/roles.svelte';
+	} from '#lib/api/recipes.remote.js';
+	import ImagePlaceholderComponent from '#lib/components/common/ImagePlaceholderComponent.svelte';
+	import BreadcrumbComponent from '#lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import IngredientsListComponent from '#lib/components/ingredients/IngredientsList.svelte';
+	import IngredientsSheet from '#lib/components/ingredients/IngredientsSheet.svelte';
+	import InstructionsFormComponent from '#lib/components/instructions/InstructionsForm.svelte';
+	import InstructionStep from '#lib/components/instructions/InstructionStep.svelte';
+	import RecipeAssistant from '#lib/components/recipes/RecipeAssistant.svelte';
+	import RecipeDetails from '#lib/components/recipes/RecipeDetailsComponent.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Spinner } from '#lib/components/ui/spinner/index.js';
+	import { reportError } from '#lib/shared/toast.js';
+	import { PUBLIC_UPLOAD_ALLOWED_TYPES } from '$app/env/public';
+	import { PermissionsStore } from '#lib/store/roles.svelte.js';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
@@ -102,9 +102,8 @@
 	const handleAssistantApplied = async (result: { recipe: { slug: string } }) => {
 		if (result.recipe.slug !== params.slug) {
 			await goto(resolve('/(app)/[slug]', { slug: result.recipe.slug }), {
-				replaceState: true,
-				keepFocus: true,
-				noScroll: true
+				replace: true,
+				reset: false
 			});
 		} else {
 			await getRecipeBySlug(params.slug).refresh();
@@ -323,8 +322,9 @@
 				class="hidden"
 			>
 				<input {...uploadRecipeImage.fields.recipeId.as('hidden', recipe.id)} />
+
 				<input
-					accept={getUploadAllowedTypes()}
+					accept={PUBLIC_UPLOAD_ALLOWED_TYPES}
 					hidden
 					{...uploadRecipeImage.fields.file.as('file')}
 					bind:this={fileUploadInput}

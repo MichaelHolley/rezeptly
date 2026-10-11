@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { login } from '$lib/api/auth.remote';
-	import RezeptlyHeader from '$lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { toAppError } from '$lib/shared/error';
-	import { PermissionsStore } from '$lib/store/roles.svelte';
+	import { login } from '#lib/api/auth.remote.js';
+	import RezeptlyHeader from '#lib/components/common/navigation/RezeptlyHeaderComponent.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { toAppError } from '#lib/shared/error.js';
+	import { PermissionsStore } from '#lib/store/roles.svelte.js';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import LoginIcon from '@lucide/svelte/icons/log-in';
 	import { onMount } from 'svelte';

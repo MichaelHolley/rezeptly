@@ -1,14 +1,18 @@
 import { command, form, getRequestEvent } from '$app/server';
-import { AUTH_PASSWORD } from '$env/static/private';
+import { AUTH_PASSWORD } from '$app/env/private';
 import {
 	deleteSessionTokenCookie,
 	generateSessionToken,
 	setSessionTokenCookie,
 	verifyPassword
-} from '$lib/server/auth/auth';
-import { ADMIN_ROLE } from '$lib/server/auth/permissions';
-import { checkRateLimit, recordFailedAttempt, resetAttempts } from '$lib/server/auth/rateLimiter';
-import { safeRedirectPath } from '$lib/server/auth/safe-redirect';
+} from '#lib/server/auth/auth.js';
+import { ADMIN_ROLE } from '#lib/server/auth/permissions.js';
+import {
+	checkRateLimit,
+	recordFailedAttempt,
+	resetAttempts
+} from '#lib/server/auth/rateLimiter.js';
+import { safeRedirectPath } from '#lib/server/auth/safe-redirect.js';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -32,15 +36,16 @@ export const login = form(
 		const { limited, retryAfterMs } = checkRateLimit(clientKey);
 		if (limited) {
 			const retryAfterMinutes = Math.ceil(retryAfterMs / 60_000);
-			error(429, {
-				message: `Too many login attempts. Try again in ${retryAfterMinutes} minute${retryAfterMinutes === 1 ? '' : 's'}.`,
-				code: 'RATE_LIMITED'
-			});
+			error(
+				429,
+				`Too many login attempts. Try again in ${retryAfterMinutes} minute${retryAfterMinutes === 1 ? '' : 's'}.`,
+				{ code: 'RATE_LIMITED' }
+			);
 		}
 
 		if (!verifyPassword(password, AUTH_PASSWORD)) {
 			recordFailedAttempt(clientKey);
-			error(401, { message: 'Invalid password', code: 'INVALID_CREDENTIALS' });
+			error(401, 'Invalid password', { code: 'INVALID_CREDENTIALS' });
 		}
 
 		resetAttempts(clientKey);

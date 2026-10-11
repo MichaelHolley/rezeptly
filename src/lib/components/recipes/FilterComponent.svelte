@@ -1,10 +1,10 @@
 <script lang="ts">
-	import MultiSelectComponent from '$lib/components/common/MultiSelectComponent.svelte';
-	import { Button } from '$lib/components/ui/button/';
-	import type { Tag, TagCategory } from '$lib/server/types';
-	import { COURSE_LABELS, COURSES, type RecipeCourse } from '$lib/shared/course';
-	import { TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
-	import { cn } from '$lib/utils';
+	import MultiSelectComponent from '#lib/components/common/MultiSelectComponent.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import type { Tag, TagCategory } from '#lib/server/types.js';
+	import { COURSE_LABELS, COURSES, type RecipeCourse } from '#lib/shared/course.js';
+	import { TAG_CATEGORY_CONFIG } from '#lib/shared/tags.js';
+	import { cn } from '#lib/utils.js';
 	import StarIcon from '@lucide/svelte/icons/star';
 	import SearchBarComponent from '../common/SearchBarComponent.svelte';
 

@@ -1,37 +1,24 @@
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
-import { getUploadAllowedTypes } from '$lib/shared/upload';
+import { TARGET_IMAGE_WIDTH, BLOB_READ_WRITE_TOKEN, BLOG_STORAGE_DIR } from '$app/env/private';
+import { PUBLIC_UPLOAD_ALLOWED_TYPES, PUBLIC_UPLOAD_MAX_BYTES } from '$app/env/public';
 import { error } from '@sveltejs/kit';
 import { del, put } from '@vercel/blob';
 import sharp from 'sharp';
 
-const getAllowedTypes = () => getUploadAllowedTypes().split(',');
-
-const getTargetWidth = () => parseInt(env.TARGET_IMAGE_WIDTH || '800');
-
-export const DEFAULT_MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
-
-export const getMaxUploadBytes = (): number => {
-	const parsed = parseInt(publicEnv.PUBLIC_UPLOAD_MAX_BYTES || '', 10);
-	return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_MAX_UPLOAD_BYTES;
-};
-
 export const validateImageFile = (file: File): void => {
-	const allowedTypes = getAllowedTypes();
+	const allowedTypes = PUBLIC_UPLOAD_ALLOWED_TYPES.split(',');
 
 	if (!allowedTypes.includes(file.type)) {
-		error(400, {
-			message: `Invalid file type. Allowed types are: ${allowedTypes.join(', ')}`,
+		error(400, `Invalid file type. Allowed types are: ${allowedTypes.join(', ')}`, {
 			code: 'VALIDATION_ERROR'
 		});
 	}
 
-	const maxBytes = getMaxUploadBytes();
-	if (file.size > maxBytes) {
-		error(400, {
-			message: `File is too large. Maximum allowed size is ${(maxBytes / (1024 * 1024)).toFixed(1)} MB.`,
-			code: 'VALIDATION_ERROR'
-		});
+	if (file.size > PUBLIC_UPLOAD_MAX_BYTES) {
+		error(
+			400,
+			`File is too large. Maximum allowed size is ${(PUBLIC_UPLOAD_MAX_BYTES / (1024 * 1024)).toFixed(1)} MB.`,
+			{ code: 'VALIDATION_ERROR' }
+		);
 	}
 };
 
@@ -43,12 +30,11 @@ export const validateImageFile = (file: File): void => {
  * @returns A Buffer containing the transformed WebP image
  */
 const transformImage = async (file: File): Promise<Buffer> => {
-	const targetWidth = getTargetWidth();
 	const arrayBuffer = await file.arrayBuffer();
 	const buffer = Buffer.from(arrayBuffer);
 
 	return sharp(buffer)
-		.resize(targetWidth, null, {
+		.resize(TARGET_IMAGE_WIDTH, null, {
 			fit: 'inside',
 			withoutEnlargement: true
 		})
@@ -59,28 +45,12 @@ const transformImage = async (file: File): Promise<Buffer> => {
 export const uploadImage = async (file: File): Promise<string> => {
 	validateImageFile(file);
 
-	const token = env.BLOB_READ_WRITE_TOKEN;
-	if (!token) {
-		error(500, {
-			message: 'BLOB_READ_WRITE_TOKEN is not set',
-			code: 'CONFIGURATION_ERROR'
-		});
-	}
-
-	const blogStorageDir = env.BLOG_STORAGE_DIR;
-	if (!blogStorageDir) {
-		error(500, {
-			message: 'BLOG_STORAGE_DIR is not set',
-			code: 'CONFIGURATION_ERROR'
-		});
-	}
-
 	const transformedBuffer = await transformImage(file);
 	const fileName = file.name.replace(/\.[^/.]+$/, '.webp');
 
-	const blob = await put(`${blogStorageDir}/${fileName}`, transformedBuffer, {
+	const blob = await put(`${BLOG_STORAGE_DIR}/${fileName}`, transformedBuffer, {
 		access: 'public',
-		token,
+		token: BLOB_READ_WRITE_TOKEN,
 		contentType: 'image/webp',
 		addRandomSuffix: true
 	});
@@ -91,13 +61,5 @@ export const uploadImage = async (file: File): Promise<string> => {
 export const deleteImage = async (url: string): Promise<void> => {
 	if (!url) return;
 
-	const token = env.BLOB_READ_WRITE_TOKEN;
-	if (!token) {
-		error(500, {
-			message: 'BLOB_READ_WRITE_TOKEN is not set',
-			code: 'CONFIGURATION_ERROR'
-		});
-	}
-
-	await del(url, { token });
+	await del(url, { token: BLOB_READ_WRITE_TOKEN });
 };

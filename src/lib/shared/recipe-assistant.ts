@@ -1,5 +1,5 @@
-import { COURSES } from '$lib/shared/course';
-import { DURATION_BUCKETS, durationMinutesSchema } from '$lib/shared/duration';
+import { COURSES } from '#lib/shared/course.js';
+import { DURATION_BUCKETS, durationMinutesSchema } from '#lib/shared/duration.js';
 import type { UIMessage } from 'ai';
 import { z } from 'zod';
 

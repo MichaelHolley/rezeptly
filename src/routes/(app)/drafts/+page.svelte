@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { getDraftRecipesMetadata } from '$lib/api/recipes.remote';
-	import ErrorComponent from '$lib/components/common/ErrorComponent.svelte';
-	import BreadcrumbComponent from '$lib/components/common/navigation/BreadcrumbComponent.svelte';
-	import RecipeListComponent from '$lib/components/recipes/RecipeListComponent.svelte';
+	import { getDraftRecipesMetadata } from '#lib/api/recipes.remote.js';
+	import ErrorComponent from '#lib/components/common/ErrorComponent.svelte';
+	import BreadcrumbComponent from '#lib/components/common/navigation/BreadcrumbComponent.svelte';
+	import RecipeListComponent from '#lib/components/recipes/RecipeListComponent.svelte';
 </script>
 
 <svelte:head>

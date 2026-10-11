@@ -1,4 +1,4 @@
-import { COURSES } from '$lib/shared/course';
+import { COURSES } from '#lib/shared/course.js';
 import { relations } from 'drizzle-orm';
 import {
 	index,

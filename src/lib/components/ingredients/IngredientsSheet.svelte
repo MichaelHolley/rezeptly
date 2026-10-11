@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { addIngredient, getRecipeBySlug, updateRecipePortions } from '$lib/api/recipes.remote';
-	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import NumberStepper from '$lib/components/common/NumberStepper.svelte';
-	import { Button, buttonVariants } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Separator } from '$lib/components/ui/separator';
-	import * as Sheet from '$lib/components/ui/sheet/';
-	import { reportError } from '$lib/shared/toast';
-	import type { Ingredient } from '$lib/server/types';
+	import { addIngredient, getRecipeBySlug, updateRecipePortions } from '#lib/api/recipes.remote.js';
+	import FieldIssues from '#lib/components/common/FieldIssues.svelte';
+	import NumberStepper from '#lib/components/common/NumberStepper.svelte';
+	import { Button, buttonVariants } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Separator } from '#lib/components/ui/separator/index.js';
+	import * as Sheet from '#lib/components/ui/sheet/index.js';
+	import { reportError } from '#lib/shared/toast.js';
+	import type { Ingredient } from '#lib/server/types.js';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import UsersIcon from '@lucide/svelte/icons/users';

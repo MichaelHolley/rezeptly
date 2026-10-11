@@ -1,9 +1,9 @@
 <script lang="ts" generics="V extends string">
-	import { Button } from '$lib/components/ui/button/';
-	import { Checkbox } from '$lib/components/ui/checkbox/';
-	import * as InputGroup from '$lib/components/ui/input-group/';
-	import * as Popover from '$lib/components/ui/popover/';
-	import { cn } from '$lib/utils';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.js';
+	import * as InputGroup from '#lib/components/ui/input-group/index.js';
+	import * as Popover from '#lib/components/ui/popover/index.js';
+	import { cn } from '#lib/utils.js';
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 	import XIcon from '@lucide/svelte/icons/x';
 

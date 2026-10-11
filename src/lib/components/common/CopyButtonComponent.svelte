@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, type ButtonSize, type ButtonVariant } from '$lib/components/ui/button';
+	import { Button, type ButtonSize, type ButtonVariant } from '#lib/components/ui/button/index.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import CopyIcon from '@lucide/svelte/icons/copy';
 

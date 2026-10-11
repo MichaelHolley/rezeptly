@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { updateTag } from '$lib/api/tags.remote';
-	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import SingleSelectComponent from '$lib/components/common/SingleSelectComponent.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import type { TagWithUsage } from '$lib/server/services/tag.service';
-	import type { TagCategory } from '$lib/server/types';
-	import { toAppError } from '$lib/shared/error';
-	import { TAG_CATEGORY_SELECT_OPTIONS } from '$lib/shared/tags';
+	import { updateTag } from '#lib/api/tags.remote.js';
+	import FieldIssues from '#lib/components/common/FieldIssues.svelte';
+	import SingleSelectComponent from '#lib/components/common/SingleSelectComponent.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import type { TagWithUsage } from '#lib/server/services/tag.service.js';
+	import type { TagCategory } from '#lib/server/types.js';
+	import { toAppError } from '#lib/shared/error.js';
+	import { TAG_CATEGORY_SELECT_OPTIONS } from '#lib/shared/tags.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
 	import XIcon from '@lucide/svelte/icons/x';

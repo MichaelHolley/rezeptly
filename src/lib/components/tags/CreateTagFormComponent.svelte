@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { createTag } from '$lib/api/tags.remote';
-	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import type { TagCategory } from '$lib/server/types';
-	import { toAppError } from '$lib/shared/error';
-	import { cn } from '$lib/utils';
+	import { createTag } from '#lib/api/tags.remote.js';
+	import FieldIssues from '#lib/components/common/FieldIssues.svelte';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import type { TagCategory } from '#lib/server/types.js';
+	import { toAppError } from '#lib/shared/error.js';
+	import { cn } from '#lib/utils.js';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 
 	const { category, class: className }: { category: TagCategory; class?: string } = $props();

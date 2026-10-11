@@ -7,7 +7,7 @@ import { generateSlug } from './util/generate-slug';
 
 export type TagWithUsage = Tag & { recipeCount: number };
 
-export { TAG_CATEGORIES, TAG_CATEGORY_CONFIG } from '$lib/shared/tags';
+export { TAG_CATEGORIES, TAG_CATEGORY_CONFIG } from '#lib/shared/tags.js';
 
 export async function upsertTags(
 	tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
@@ -96,10 +96,7 @@ const resolveSlug = async (input: TagInput, excludeTagId?: TagId): Promise<strin
 	const slug = generateSlug(name);
 
 	if (!slug) {
-		error(400, {
-			message: 'Tag name must contain at least one letter or number',
-			code: 'VALIDATION_ERROR'
-		});
+		error(400, 'Tag name must contain at least one letter or number', { code: 'VALIDATION_ERROR' });
 	}
 
 	const conflict = await db.query.tags.findFirst({
@@ -109,8 +106,7 @@ const resolveSlug = async (input: TagInput, excludeTagId?: TagId): Promise<strin
 	});
 
 	if (conflict) {
-		error(409, {
-			message: `A "${input.category}" tag named "${conflict.name}" already exists`,
+		error(409, `A "${input.category}" tag named "${conflict.name}" already exists`, {
 			code: 'VALIDATION_ERROR'
 		});
 	}
@@ -139,7 +135,7 @@ export const updateTag = async (id: TagId, input: TagInput): Promise<Tag> => {
 		.returning();
 
 	if (!updatedTag) {
-		error(404, { message: `Tag with ID ${id} not found`, code: 'NOT_FOUND' });
+		error(404, `Tag with ID ${id} not found`, { code: 'NOT_FOUND' });
 	}
 
 	return updatedTag;
@@ -147,7 +143,7 @@ export const updateTag = async (id: TagId, input: TagInput): Promise<Tag> => {
 
 export const deleteTag = async (id: TagId, targetTagId?: TagId): Promise<void> => {
 	if (targetTagId === id) {
-		error(400, { message: 'A tag cannot be migrated to itself', code: 'VALIDATION_ERROR' });
+		error(400, 'A tag cannot be migrated to itself', { code: 'VALIDATION_ERROR' });
 	}
 
 	await db.transaction(async (tx) => {
@@ -155,7 +151,7 @@ export const deleteTag = async (id: TagId, targetTagId?: TagId): Promise<void> =
 			const target = await tx.query.tags.findFirst({ where: eq(tags.id, targetTagId) });
 
 			if (!target) {
-				error(404, { message: `Tag with ID ${targetTagId} not found`, code: 'NOT_FOUND' });
+				error(404, `Tag with ID ${targetTagId} not found`, { code: 'NOT_FOUND' });
 			}
 
 			await tx
@@ -177,7 +173,7 @@ export const deleteTag = async (id: TagId, targetTagId?: TagId): Promise<void> =
 		const [deleted] = await tx.delete(tags).where(eq(tags.id, id)).returning();
 
 		if (!deleted) {
-			error(404, { message: `Tag with ID ${id} not found`, code: 'NOT_FOUND' });
+			error(404, `Tag with ID ${id} not found`, { code: 'NOT_FOUND' });
 		}
 	});
 };

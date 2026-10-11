@@ -1,5 +1,5 @@
-import type { RecipeCourse } from '$lib/shared/course';
-import { DURATION_BUCKETS } from '$lib/shared/duration';
+import type { RecipeCourse } from '#lib/shared/course.js';
+import { DURATION_BUCKETS } from '#lib/shared/duration.js';
 import type { ExtractedRecipeData } from '../ai.service';
 import type { NewIngredient, NewInstruction, Tag, TagInput } from '../../types';
 import { resolveTags } from './resolve-tags';

@@ -1,4 +1,4 @@
-import type { RecipeCourse } from '$lib/shared/course';
+import type { RecipeCourse } from '#lib/shared/course.js';
 import CakeSliceIcon from '@lucide/svelte/icons/cake-slice';
 import HamburgerIcon from '@lucide/svelte/icons/hamburger';
 import SaladIcon from '@lucide/svelte/icons/salad';

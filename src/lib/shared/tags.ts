@@ -1,4 +1,4 @@
-import type { TagCategory } from '$lib/server/types';
+import type { TagCategory } from '#lib/server/types.js';
 
 export interface TagCategoryOption {
 	key: TagCategory;

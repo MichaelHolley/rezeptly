@@ -1,18 +1,13 @@
-import { JWT_SECRET } from '$env/static/private';
+import { redirect } from '@sveltejs/kit';
+import { JWT_SECRET } from '$app/env/private';
 import {
 	deleteSessionTokenCookie,
 	SESSION_ALGORITHM,
 	SESSION_ISSUER,
 	sessionCookieName
-} from '$lib/server/auth/auth';
-import type { ROLE } from '$lib/server/auth/permissions';
-import {
-	redirect,
-	type Handle,
-	type HandleServerError,
-	type HandleValidationError
-} from '@sveltejs/kit';
-import { sequence } from '@sveltejs/kit/hooks';
+} from '#lib/server/auth/auth.js';
+import type { ROLE } from '#lib/server/auth/permissions.js';
+import { sequence, type Handle, type HandleServerError } from '@sveltejs/kit/hooks';
 import jwt from 'jsonwebtoken';
 
 const protectedRoutes = ['/create', '/drafts', '/import', '/tags'];
@@ -44,11 +39,10 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 
 export const handle: Handle = sequence(handleAuth);
 
-export const handleError: HandleServerError = ({ error }) => {
+export const handleError: HandleServerError = ({ kind, error }) => {
+	if (kind === 'app') return error;
+	if (kind === 'validation') return { message: 'Invalid request', code: 'VALIDATION_ERROR' };
+
 	console.error(error);
 	return { message: 'Something went wrong', code: 'UNHANDLED_ERROR' };
-};
-
-export const handleValidationError: HandleValidationError = () => {
-	return { message: 'Invalid request', code: 'VALIDATION_ERROR' };
 };
