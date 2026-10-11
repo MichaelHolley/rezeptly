@@ -1,7 +1,6 @@
-import { env } from '$env/dynamic/private';
-import { deleteImage } from '$lib/server/services/image.service';
-import { getRecipesMetadata } from '$lib/server/services/recipe.service';
-import { json } from '@sveltejs/kit';
+import { CRON_SECRET, BLOB_READ_WRITE_TOKEN, BLOG_STORAGE_DIR } from '$app/env/private';
+import { deleteImage } from '#lib/server/services/image.service.js';
+import { getRecipesMetadata } from '#lib/server/services/recipe.service.js';
 import { list } from '@vercel/blob';
 import type { RequestHandler } from './$types';
 
@@ -10,35 +9,20 @@ const ORPHAN_GRACE_PERIOD_MS = 24 * 60 * 60 * 1000;
 export const GET: RequestHandler = async ({ request }) => {
 	// Verify Vercel cron secret for security
 	const authHeader = request.headers.get('authorization');
-	const cronSecret = env.CRON_SECRET;
-
-	if (!cronSecret) {
-		console.error('CRON_SECRET not configured');
-		return new Response('Server configuration error', { status: 500 });
-	}
-
-	if (authHeader !== `Bearer ${cronSecret}`) {
+	if (authHeader !== `Bearer ${CRON_SECRET}`) {
 		console.error('Unauthorized cron request');
 		return new Response('Unauthorized', { status: 401 });
-	}
-
-	const token = env.BLOB_READ_WRITE_TOKEN;
-	if (!token) {
-		console.error('BLOB_READ_WRITE_TOKEN not configured');
-		return new Response('Server configuration error', { status: 500 });
-	}
-
-	const storageDir = env.BLOG_STORAGE_DIR;
-	if (!storageDir) {
-		console.error('BLOG_STORAGE_DIR not configured');
-		return new Response('Server configuration error', { status: 500 });
 	}
 
 	try {
 		const blobs = [];
 		let cursor: string | undefined;
 		do {
-			const page = await list({ token, prefix: `${storageDir.replace(/\/+$/, '')}/`, cursor });
+			const page = await list({
+				token: BLOB_READ_WRITE_TOKEN,
+				prefix: `${BLOG_STORAGE_DIR.replace(/\/+$/, '')}/`,
+				cursor
+			});
 			blobs.push(...page.blobs);
 			cursor = page.hasMore ? page.cursor : undefined;
 		} while (cursor);
@@ -68,7 +52,7 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		console.log(`Cleanup complete: ${deletedUrls.length}/${orphanedUrls.length} images deleted`);
 
-		return json({
+		return Response.json({
 			success: true,
 			totalBlobs: blobs.length,
 			totalRecipeImages: dbImageUrls.size,
@@ -78,7 +62,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		});
 	} catch (error) {
 		console.error('Error during image cleanup:', error);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: error instanceof Error ? error.message : 'Unknown error'

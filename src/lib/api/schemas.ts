@@ -1,5 +1,5 @@
-import { COURSES } from '$lib/shared/course';
-import { durationMinutesSchema } from '$lib/shared/duration';
+import { COURSES } from '#lib/shared/course.js';
+import { durationMinutesSchema } from '#lib/shared/duration.js';
 import { z } from 'zod';
 
 const idSchema = z

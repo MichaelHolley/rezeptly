@@ -1,4 +1,4 @@
-import type { Ingredient, IngredientSectionWithIngredients } from '$lib/server/types';
+import type { Ingredient, IngredientSectionWithIngredients } from '#lib/server/types.js';
 import { describe, expect, it } from 'vitest';
 import { ingredientNameGroups } from './ingredients';
 

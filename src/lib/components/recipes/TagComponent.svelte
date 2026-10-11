@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
-	import { cn, viewTransition } from '$lib/utils';
+	import { Badge } from '#lib/components/ui/badge/index.js';
+	import { cn, viewTransition } from '#lib/utils.js';
 	import type { Snippet } from 'svelte';
 
 	const {

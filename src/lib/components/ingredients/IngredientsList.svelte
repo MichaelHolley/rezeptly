@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Ingredient, IngredientSectionWithIngredients } from '$lib/server/types';
-	import { groupIngredients } from '$lib/shared/ingredients';
+	import type { Ingredient, IngredientSectionWithIngredients } from '#lib/server/types.js';
+	import { groupIngredients } from '#lib/shared/ingredients.js';
 
 	const {
 		ingredients,

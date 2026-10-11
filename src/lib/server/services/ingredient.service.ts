@@ -9,8 +9,8 @@ import type {
 	IngredientSectionId,
 	RecipeId
 } from '../types';
-import { ingredientNameGroups, type IngredientNameGroup } from '$lib/shared/ingredients';
-import { listProposalIsStale } from '$lib/shared/recipe-assistant';
+import { ingredientNameGroups, type IngredientNameGroup } from '#lib/shared/ingredients.js';
+import { listProposalIsStale } from '#lib/shared/recipe-assistant.js';
 import { validateIngredientHierarchy } from './util/validate-ingredient-hierarchy';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -36,12 +36,12 @@ export type IngredientHierarchy = {
 async function lockRecipe(tx: Tx, recipeId: RecipeId): Promise<void> {
 	const rows = await tx.execute(sql`select id from ${recipes} where id = ${recipeId} for update`);
 	if (rows.length === 0) {
-		error(404, { message: `Recipe with ID ${recipeId} not found`, code: 'NOT_FOUND' });
+		error(404, `Recipe with ID ${recipeId} not found`, { code: 'NOT_FOUND' });
 	}
 }
 
 function hierarchyError(message: string): never {
-	error(409, { message, code: 'VALIDATION_ERROR' });
+	error(409, message, { code: 'VALIDATION_ERROR' });
 }
 
 function sectionCondition(sectionId: number | null) {

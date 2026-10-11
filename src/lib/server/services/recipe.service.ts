@@ -12,9 +12,9 @@ import type {
 	Tag,
 	TagInput
 } from '../types';
-import type { RecipeCourse } from '$lib/shared/course';
+import type { RecipeCourse } from '#lib/shared/course.js';
 import { deleteImage } from './image.service';
-import type { IngredientNameGroup } from '$lib/shared/ingredients';
+import type { IngredientNameGroup } from '#lib/shared/ingredients.js';
 import { insertIngredientGroups, orderedIngredientRelations } from './ingredient.service';
 import { upsertTags } from './tag.service';
 import { generateSlug } from './util/generate-slug';
@@ -134,7 +134,7 @@ export const getRecipeById = async (
 	});
 
 	if (!result) {
-		error(404, { message: `Recipe with ID ${id} not found`, code: 'NOT_FOUND' });
+		error(404, `Recipe with ID ${id} not found`, { code: 'NOT_FOUND' });
 	}
 
 	return flattenTags(result);
@@ -150,7 +150,7 @@ export const getRecipeBySlug = async (
 	});
 
 	if (!result) {
-		error(404, { message: `Recipe with slug ${slug} not found`, code: 'NOT_FOUND' });
+		error(404, `Recipe with slug ${slug} not found`, { code: 'NOT_FOUND' });
 	}
 
 	return flattenTags(result);
@@ -167,8 +167,7 @@ export const createRecipe = async (
 		const baseSlug = generateSlug(data.name);
 
 		if (!baseSlug) {
-			error(400, {
-				message: 'Generated slug is empty. Please provide a valid name for the recipe.',
+			error(400, 'Generated slug is empty. Please provide a valid name for the recipe.', {
 				code: 'VALIDATION_ERROR'
 			});
 		}
@@ -226,13 +225,12 @@ export const updateRecipe = async (
 		const [currentRecipe] = await tx.select().from(recipes).where(eq(recipes.id, id));
 
 		if (!currentRecipe) {
-			error(404, { message: `Recipe with ID ${id} not found`, code: 'NOT_FOUND' });
+			error(404, `Recipe with ID ${id} not found`, { code: 'NOT_FOUND' });
 		}
 
 		const baseSlug = data.name ? generateSlug(data.name) : currentRecipe.slug;
 		if (!baseSlug) {
-			error(400, {
-				message: 'Generated slug is empty. Please provide a valid name for the recipe.',
+			error(400, 'Generated slug is empty. Please provide a valid name for the recipe.', {
 				code: 'VALIDATION_ERROR'
 			});
 		}
@@ -290,7 +288,7 @@ export const setRecipePublished = async (id: RecipeId, published: boolean): Prom
 		.returning();
 
 	if (!updatedRecipe) {
-		error(404, { message: `Recipe with ID ${id} not found`, code: 'NOT_FOUND' });
+		error(404, `Recipe with ID ${id} not found`, { code: 'NOT_FOUND' });
 	}
 
 	return updatedRecipe;

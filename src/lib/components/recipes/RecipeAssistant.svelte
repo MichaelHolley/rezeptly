@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Spinner } from '$lib/components/ui/spinner';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Spinner } from '#lib/components/ui/spinner/index.js';
+	import { Textarea } from '#lib/components/ui/textarea/index.js';
 	import {
 		type AssistantDetailChange,
 		type AssistantDetailsProposal,
 		type AssistantToolResult,
 		type RecipeAssistantMessage
-	} from '$lib/shared/recipe-assistant';
-	import type { IngredientNameGroup } from '$lib/shared/ingredients';
+	} from '#lib/shared/recipe-assistant.js';
+	import type { IngredientNameGroup } from '#lib/shared/ingredients.js';
 	import { Chat } from '@ai-sdk/svelte';
 	import BotIcon from '@lucide/svelte/icons/bot';
 	import CheckIcon from '@lucide/svelte/icons/check';

@@ -1,4 +1,4 @@
-import type { Instruction } from '$lib/server/types';
+import type { Instruction } from '#lib/server/types.js';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';

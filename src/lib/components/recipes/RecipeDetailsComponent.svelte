@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import type { RecipeWithDetails, Tag } from '$lib/server/types';
-	import { COURSE_LABELS } from '$lib/shared/course';
-	import { formatDuration } from '$lib/shared/duration';
-	import { favoritesStore } from '$lib/store/favorites';
-	import { PermissionsStore } from '$lib/store/roles.svelte';
-	import { viewTransition } from '$lib/utils';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import type { RecipeWithDetails, Tag } from '#lib/server/types.js';
+	import { COURSE_LABELS } from '#lib/shared/course.js';
+	import { formatDuration } from '#lib/shared/duration.js';
+	import { favoritesStore } from '#lib/store/favorites.js';
+	import { PermissionsStore } from '#lib/store/roles.svelte.js';
+	import { viewTransition } from '#lib/utils.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 	import PenIcon from '@lucide/svelte/icons/pen';

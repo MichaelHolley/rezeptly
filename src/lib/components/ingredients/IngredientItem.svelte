@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { editIngredient, getRecipeBySlug, removeIngredient } from '$lib/api/recipes.remote';
-	import FieldIssues from '$lib/components/common/FieldIssues.svelte';
-	import { Button, buttonVariants } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Input } from '$lib/components/ui/input';
-	import { reportError } from '$lib/shared/toast';
-	import type { Ingredient } from '$lib/server/types';
+	import { editIngredient, getRecipeBySlug, removeIngredient } from '#lib/api/recipes.remote.js';
+	import FieldIssues from '#lib/components/common/FieldIssues.svelte';
+	import { Button, buttonVariants } from '#lib/components/ui/button/index.js';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { reportError } from '#lib/shared/toast.js';
+	import type { Ingredient } from '#lib/server/types.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
 	import MoreHorizontalIcon from '@lucide/svelte/icons/more-horizontal';

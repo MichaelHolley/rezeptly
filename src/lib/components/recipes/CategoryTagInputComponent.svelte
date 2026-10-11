@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TagCategory } from '$lib/server/types';
+	import type { TagCategory } from '#lib/server/types.js';
 	import TagInputComponent from './TagInputComponent.svelte';
 
 	let {

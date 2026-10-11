@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { updateInstructions } from '$lib/api/recipes.remote';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import type { RecipeWithDetails } from '$lib/server/types';
-	import { reportError } from '$lib/shared/toast';
+	import { updateInstructions } from '#lib/api/recipes.remote.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import { Input } from '#lib/components/ui/input/index.js';
+	import { Textarea } from '#lib/components/ui/textarea/index.js';
+	import type { RecipeWithDetails } from '#lib/server/types.js';
+	import { reportError } from '#lib/shared/toast.js';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';

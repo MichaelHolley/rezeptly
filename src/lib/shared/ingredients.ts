@@ -1,4 +1,4 @@
-import type { Ingredient, RecipeWithDetails } from '$lib/server/types';
+import type { Ingredient, RecipeWithDetails } from '#lib/server/types.js';
 
 export type IngredientGroup = {
 	id: number | null;

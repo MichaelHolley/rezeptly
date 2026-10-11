@@ -1,5 +1,5 @@
-import { getRoles } from '$lib/server/auth/permissions';
-import { aiEnabled, imageGenerationEnabled } from '$lib/server/services/ai.service';
+import { getRoles } from '#lib/server/auth/permissions.js';
+import { aiEnabled, imageGenerationEnabled } from '#lib/server/services/ai.service.js';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = () => {

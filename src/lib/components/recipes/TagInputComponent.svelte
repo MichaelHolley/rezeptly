@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Label } from '$lib/components/ui/label';
-	import type { TagCategory } from '$lib/server/types';
-	import { AvailableTagsStore } from '$lib/store/available-tags.svelte';
+	import { Label } from '#lib/components/ui/label/index.js';
+	import type { TagCategory } from '#lib/server/types.js';
+	import { AvailableTagsStore } from '#lib/store/available-tags.svelte.js';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { SvelteSet } from 'svelte/reactivity';
