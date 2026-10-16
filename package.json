@@ -74,10 +74,10 @@
     "zod": "^4.6.5"
   },
   "dependencies": {
-    "@ai-sdk/svelte": "^5.0.128",
+    "@ai-sdk/svelte": "^5.0.139",
     "@openrouter/ai-sdk-provider": "^3.1.0",
     "@vercel/blob": "^2.8.1",
-    "ai": "^7.0.128",
+    "ai": "^7.0.139",
     "drizzle-orm": "^0.45.4",
     "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.9",
