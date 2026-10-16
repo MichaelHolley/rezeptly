@@ -12,10 +12,12 @@ const idSchema = z
 
 export const recipeIdSchema = idSchema.brand<'RecipeId'>();
 export const ingredientIdSchema = idSchema.brand<'IngredientId'>();
+export const ingredientSectionIdSchema = idSchema.brand<'IngredientSectionId'>();
 export const tagIdSchema = idSchema.brand<'TagId'>();
 
 export type RecipeId = z.output<typeof recipeIdSchema>;
 export type IngredientId = z.output<typeof ingredientIdSchema>;
+export type IngredientSectionId = z.output<typeof ingredientSectionIdSchema>;
 export type TagId = z.output<typeof tagIdSchema>;
 
 export const recipeDetailsSchema = z.object({

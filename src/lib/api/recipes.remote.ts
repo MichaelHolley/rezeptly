@@ -7,15 +7,24 @@ import * as ingredientService from '#lib/server/services/ingredient.service.js';
 import * as instructionService from '#lib/server/services/instruction.service.js';
 import * as recipeService from '#lib/server/services/recipe.service.js';
 import * as tagService from '#lib/server/services/tag.service.js';
-import { buildRecipeInput } from '#lib/server/services/util/build-recipe-input.js';
+import {
+	buildIngredientGroups,
+	buildRecipeInput
+} from '#lib/server/services/util/build-recipe-input.js';
 import { resolveTags } from '#lib/server/services/util/resolve-tags.js';
 import type { TagCategory, TagInput } from '#lib/server/types.js';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { throwNewPermissionError } from '../server/error';
-import { ingredientIdSchema, recipeDetailsSchema, recipeIdSchema } from './schemas';
+import {
+	ingredientIdSchema,
+	ingredientSectionIdSchema,
+	recipeDetailsSchema,
+	recipeIdSchema
+} from './schemas';
 
 const ingredientNameSchema = z.string().trim().min(1, 'Name is required');
+const ingredientSectionNameSchema = z.string().trim().min(1, 'Section name is required');
 
 function buildTagInputs(input: Partial<Record<TagCategory, string[]>>): TagInput[] {
 	return (Object.entries(input) as [TagCategory, string[]][]).flatMap(([category, names]) =>
@@ -58,15 +67,16 @@ export const deleteRecipe = form(
 export const addIngredient = form(
 	z.object({
 		recipeId: recipeIdSchema,
-		name: ingredientNameSchema
+		name: ingredientNameSchema,
+		sectionId: ingredientSectionIdSchema.optional()
 	}),
-	async ({ recipeId, name }) => {
+	async ({ recipeId, name, sectionId }) => {
 		if (!userCanWrite()) {
 			throwNewPermissionError();
 		}
 
 		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
-		await ingredientService.createIngredient({ name, recipeId });
+		await ingredientService.createIngredient({ name, recipeId, sectionId: sectionId ?? null });
 
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
@@ -83,7 +93,7 @@ export const removeIngredient = command(
 		}
 
 		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
-		await ingredientService.deleteIngredient(ingrId);
+		await ingredientService.deleteIngredient(recipeId, ingrId);
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
@@ -100,7 +110,81 @@ export const editIngredient = form(
 		}
 
 		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
-		await ingredientService.updateIngredient(ingrId, name);
+		await ingredientService.updateIngredient(recipeId, ingrId, name);
+		await getRecipeBySlug(recipe.slug).refresh();
+	}
+);
+
+export const addIngredientSection = form(
+	z.object({
+		recipeId: recipeIdSchema,
+		name: ingredientSectionNameSchema
+	}),
+	async ({ recipeId, name }) => {
+		if (!userCanWrite()) {
+			throwNewPermissionError();
+		}
+
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
+		await ingredientService.createIngredientSection(recipeId, name);
+		await getRecipeBySlug(recipe.slug).refresh();
+	}
+);
+
+export const renameIngredientSection = form(
+	z.object({
+		recipeId: recipeIdSchema,
+		sectionId: ingredientSectionIdSchema,
+		name: ingredientSectionNameSchema
+	}),
+	async ({ recipeId, sectionId, name }) => {
+		if (!userCanWrite()) {
+			throwNewPermissionError();
+		}
+
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
+		await ingredientService.renameIngredientSection(recipeId, sectionId, name);
+		await getRecipeBySlug(recipe.slug).refresh();
+	}
+);
+
+export const removeIngredientSection = command(
+	z.object({
+		recipeId: recipeIdSchema,
+		sectionId: ingredientSectionIdSchema
+	}),
+	async ({ recipeId, sectionId }) => {
+		if (!userCanWrite()) {
+			throwNewPermissionError();
+		}
+
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
+		await ingredientService.deleteIngredientSection(recipeId, sectionId);
+		await getRecipeBySlug(recipe.slug).refresh();
+	}
+);
+
+export const reorderIngredientHierarchy = command(
+	z.object({
+		recipeId: recipeIdSchema,
+		ungroupedIngredientIds: z.array(ingredientIdSchema),
+		sections: z.array(
+			z.object({
+				sectionId: ingredientSectionIdSchema,
+				ingredientIds: z.array(ingredientIdSchema)
+			})
+		)
+	}),
+	async ({ recipeId, ungroupedIngredientIds, sections }) => {
+		if (!userCanWrite()) {
+			throwNewPermissionError();
+		}
+
+		const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
+		await ingredientService.reorderIngredientHierarchy(recipeId, {
+			ungroupedIngredientIds,
+			sections
+		});
 		await getRecipeBySlug(recipe.slug).refresh();
 	}
 );
@@ -188,7 +272,7 @@ export const createRecipe = form(
 			imageUrl,
 			course: course ?? null,
 			durationMinutes: durationMinutes ?? null,
-			ingredients: extracted.ingredients,
+			ingredientGroups: buildIngredientGroups(extracted.ingredients),
 			instructions: extracted.instructions.map((item, i) => ({ ...item, stepOrder: i + 1 })),
 			tags
 		});
