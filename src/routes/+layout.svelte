@@ -7,7 +7,7 @@
 
 	onNavigate((navigate) => {
 		if (!document.startViewTransition) return;
-		// Search-param updates fire per keystroke; a view transition there dismisses the mobile keyboard
+		// Query-only updates (search, filters) shouldn't animate the whole page
 		if (navigate.from?.url.pathname === navigate.to?.url.pathname) return;
 
 		return new Promise((resolve) => {
