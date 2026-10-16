@@ -7,6 +7,8 @@
 
 	onNavigate((navigate) => {
 		if (!document.startViewTransition) return;
+		// Search-param updates fire per keystroke; a view transition there dismisses the mobile keyboard
+		if (navigate.from?.url.pathname === navigate.to?.url.pathname) return;
 
 		return new Promise((resolve) => {
 			document.startViewTransition(async () => {
