@@ -41,8 +41,12 @@ test('filters the recipe list by search term', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.getByText(salad)).toBeVisible();
 
-	await page.getByPlaceholder('Search...').fill('pizza');
+	const search = page.getByPlaceholder('Search...');
+	await search.click();
+	await search.pressSequentially('pizza', { delay: 50 });
 
+	await expect(page).toHaveURL(/searchTerm=pizza/);
+	await expect(search).toBeFocused();
 	await expect(page.getByText(pizza)).toBeVisible();
 	await expect(page.getByText(salad)).toHaveCount(0);
 
