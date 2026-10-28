@@ -10,7 +10,15 @@ const groups = [
 describe('assistant ingredient proposals', () => {
 	it.each([
 		['accepts ordered groups, empty sections and duplicate headings', groups, true],
-		['requires one ungrouped group first', [{ heading: 'Sauce', items: ['Tomato'] }], false]
+		['allows omitting the ungrouped group', [{ heading: 'Sauce', items: ['Tomato'] }], true],
+		[
+			'rejects an ungrouped group after a section',
+			[
+				{ heading: 'Sauce', items: ['Tomato'] },
+				{ heading: null, items: ['Salt'] }
+			],
+			false
+		]
 	])('%s', (_, expected, success) => {
 		expect(
 			assistantIngredientProposalSchema.safeParse({ expected, replacement: groups }).success

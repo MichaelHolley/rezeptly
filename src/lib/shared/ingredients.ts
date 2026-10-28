@@ -42,3 +42,7 @@ export function ingredientNameGroups(
 		items: items.map(({ name }) => name)
 	}));
 }
+
+export function withUngroupedFirst(groups: IngredientNameGroup[]): IngredientNameGroup[] {
+	return groups[0]?.heading === null ? groups : [{ heading: null, items: [] }, ...groups];
+}

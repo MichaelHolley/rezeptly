@@ -66,7 +66,7 @@ export const assistantDetailsProposalSchema = z.object({
 
 const assistantIngredientGroupSchema = z.object({
 	heading: nullableTextSchema.describe(
-		'The ingredient section heading, or null for the first ungrouped block'
+		'The ingredient section heading, or null for the ungrouped block'
 	),
 	items: z
 		.array(z.string().trim().min(1))
@@ -77,16 +77,16 @@ const assistantIngredientGroupsSchema = z
 	.array(assistantIngredientGroupSchema)
 	.min(1)
 	.refine(
-		(groups) => groups[0]?.heading === null && groups.slice(1).every(({ heading }) => heading),
-		'The first group must be ungrouped and every later group must have a heading'
+		(groups) => groups.slice(1).every(({ heading }) => heading),
+		'Only the first group may be ungrouped; every later group must have a heading'
 	);
 
 export const assistantIngredientProposalSchema = z.object({
 	expected: assistantIngredientGroupsSchema.describe(
-		'An exact copy of all current ingredient groups, including order and empty named sections'
+		'An exact copy of all current ingredient groups, including the ungrouped group, order and empty named sections'
 	),
 	replacement: assistantIngredientGroupsSchema.describe(
-		'The complete desired ingredient groups, including every unchanged group and ingredient'
+		'The complete desired ingredient groups, including every unchanged group and ingredient. The ungrouped group (null heading) may be omitted or left empty when no ingredient should stay ungrouped.'
 	)
 });
 

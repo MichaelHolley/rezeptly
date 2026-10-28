@@ -9,7 +9,11 @@ import type {
 	IngredientSectionId,
 	RecipeId
 } from '../types';
-import { ingredientNameGroups, type IngredientNameGroup } from '#lib/shared/ingredients.js';
+import {
+	ingredientNameGroups,
+	withUngroupedFirst,
+	type IngredientNameGroup
+} from '#lib/shared/ingredients.js';
 import { listProposalIsStale } from '#lib/shared/recipe-assistant.js';
 import { validateIngredientHierarchy } from './util/validate-ingredient-hierarchy';
 
@@ -293,13 +297,16 @@ export const replaceIngredientsForRecipe = async (
 			columns: { id: true },
 			with: orderedIngredientRelations
 		});
-		if (!current || listProposalIsStale(ingredientNameGroups(current), expected)) {
+		if (
+			!current ||
+			listProposalIsStale(ingredientNameGroups(current), withUngroupedFirst(expected))
+		) {
 			return false;
 		}
 
 		await tx.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
 		await tx.delete(ingredientSections).where(eq(ingredientSections.recipeId, recipeId));
-		await insertIngredientGroups(tx, recipeId, replacement);
+		await insertIngredientGroups(tx, recipeId, withUngroupedFirst(replacement));
 		return true;
 	});
 };
