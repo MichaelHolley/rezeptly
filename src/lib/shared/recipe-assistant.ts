@@ -86,7 +86,7 @@ export const assistantIngredientProposalSchema = z.object({
 		'An exact copy of all current ingredient groups, including the ungrouped group, order and empty named sections'
 	),
 	replacement: assistantIngredientGroupsSchema.describe(
-		'The complete desired ingredient groups, including every unchanged group and ingredient. The ungrouped group (null heading) may be omitted or left empty when no ingredient should stay ungrouped.'
+		'The complete desired ingredient groups, including every unchanged group and ingredient. The ungrouped group (null heading) may be omitted or left empty when no ingredient should stay ungrouped. Removing a section keeps its ingredients: append them in order to the end of the ungrouped group. Only drop ingredients the writer explicitly asked to delete.'
 	)
 });
 

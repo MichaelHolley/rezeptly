@@ -354,7 +354,7 @@ export function createRecipeAssistantTools(recipeId: RecipeId) {
 		}),
 		replaceIngredients: tool({
 			description:
-				'Propose replacing the complete ordered ingredient groups. Preserve unchanged headings, membership and order. Use only after an explicit request to change ingredients.',
+				'Propose replacing the complete ordered ingredient groups. Preserve unchanged headings, membership and order. Removing a section moves its ingredients to the ungrouped group; never delete ingredients unless the writer explicitly asks. Use only after an explicit request to change ingredients.',
 			inputSchema: assistantIngredientProposalSchema,
 			needsApproval: true,
 			execute: ({ expected, replacement }) =>
