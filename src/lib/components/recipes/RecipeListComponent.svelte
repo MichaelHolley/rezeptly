@@ -24,7 +24,7 @@
 			diet: z.array(z.string()).default([]),
 			course: z.array(z.enum(COURSES)).default([])
 		}),
-		{ pushHistory: false }
+		{ pushHistory: false, noScroll: true }
 	);
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);

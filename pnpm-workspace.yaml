@@ -20,6 +20,3 @@ supportedArchitectures:
     - current
     - glibc
     - musl
-
-patchedDependencies:
-  runed@0.37.1: patches/runed@0.37.1.patch
