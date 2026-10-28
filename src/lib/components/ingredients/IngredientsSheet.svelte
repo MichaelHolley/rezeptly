@@ -255,7 +255,7 @@
 				{/if}
 
 				<div
-					class="flex flex-col gap-3"
+					class="flex flex-col gap-3 rounded-lg"
 					use:dragHandleZone={{
 						items: namedGroups,
 						type: 'ingredient-sections',
@@ -269,7 +269,11 @@
 					aria-label="Ingredient section order"
 				>
 					{#each namedGroups as group, index (group.id)}
-						<div animate:flip={{ duration: 150 }} aria-label={`Section ${group.heading}`}>
+						<div
+							class="rounded-lg"
+							animate:flip={{ duration: 150 }}
+							aria-label={`Section ${group.heading}`}
+						>
 							<IngredientBlock
 								{group}
 								{recipeId}
