@@ -7,6 +7,8 @@
 
 	onNavigate((navigate) => {
 		if (!document.startViewTransition) return;
+		// Query-only updates (search, filters) shouldn't animate the whole page
+		if (navigate.from?.url.pathname === navigate.to?.url.pathname) return;
 
 		return new Promise((resolve) => {
 			document.startViewTransition(async () => {

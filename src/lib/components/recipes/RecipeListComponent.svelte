@@ -23,7 +23,8 @@
 			nutrition: z.array(z.string()).default([]),
 			diet: z.array(z.string()).default([]),
 			course: z.array(z.enum(COURSES)).default([])
-		})
+		}),
+		{ pushHistory: false }
 	);
 
 	const debouncedSearchTerm = new Debounced(() => searchParams.searchTerm, 250);

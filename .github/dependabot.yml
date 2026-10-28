@@ -31,11 +31,9 @@ updates:
         patterns:
           - 'drizzle-*'
           - 'postgres'
-      dev-dependencies:
-        dependency-type: 'development'
-        update-types:
-          - 'minor'
-          - 'patch'
+      dependencies:
+        patterns:
+          - '*'
 
   # ---- GitHub Actions ----
   - package-ecosystem: 'github-actions'

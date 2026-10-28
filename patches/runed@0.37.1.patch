@@ -1,0 +1,26 @@
+diff --git a/dist/utilities/use-search-params/use-search-params.svelte.js b/dist/utilities/use-search-params/use-search-params.svelte.js
+index 8ddeb0eacf7ef5884c222536ff76588a4134d0c7..ee78003c89b67a8b65c4719b0dd4e374ab2163f5 100644
+--- a/dist/utilities/use-search-params/use-search-params.svelte.js
++++ b/dist/utilities/use-search-params/use-search-params.svelte.js
+@@ -683,7 +683,7 @@ class SearchParams {
+             this.#localCache = new SvelteURLSearchParams();
+             // If updateURL is true, clear the URL
+             if (this.#options.updateURL && BROWSER && !building) {
+-                goto("?", { replaceState: true, noScroll: this.#options.noScroll });
++                goto("?", { replaceState: true, reset: false });
+             }
+         }
+     }
+@@ -787,9 +787,9 @@ class SearchParams {
+                 return;
+             // When pushHistory is false, use replaceState to avoid creating a browser history entry
+             const gotoOptions = !this.#options.pushHistory
+-                ? { replaceState: true, keepFocus: true }
+-                : { keepFocus: true };
+-            goto("?" + params.toString(), { ...gotoOptions, noScroll: this.#options.noScroll });
++                ? { replaceState: true, reset: false }
++                : { reset: false };
++            goto("?" + params.toString(), gotoOptions);
+         };
+         // If debounce is set, delay the URL update
+         if (this.#options.debounce && this.#options.debounce > 0) {
