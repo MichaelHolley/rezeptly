@@ -121,7 +121,7 @@
 							</Button>
 						{/snippet}
 					</Sheet.Trigger>
-					<Sheet.Content side="right" class="w-72">
+					<Sheet.Content side="right" class="data-[side=right]:w-72">
 						<Sheet.Header>
 							<Sheet.Title>Menu</Sheet.Title>
 						</Sheet.Header>

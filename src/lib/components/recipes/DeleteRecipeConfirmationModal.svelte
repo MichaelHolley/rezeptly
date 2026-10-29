@@ -40,21 +40,18 @@
 			{#if errorMessage}
 				<p role="alert" class="text-destructive mt-4 text-sm">{errorMessage}</p>
 			{/if}
-			<Dialog.Footer>
-				<div class="mt-4 flex flex-row justify-between gap-2 sm:justify-end">
-					<Dialog.Close
-						type="button"
-						class={buttonVariants({ variant: 'secondary' })}
-						disabled={!!deleteRecipe.pending}
-					>
-						<XIcon />
-						Cancel
-					</Dialog.Close>
-					<Button variant="destructive" type="submit" disabled={!!deleteRecipe.pending}>
-						<TrashIcon />
-						Delete
-					</Button>
-				</div>
+			<Dialog.Footer class="mt-4 flex-row justify-between sm:justify-end">
+				<Dialog.Close
+					class={buttonVariants({ variant: 'secondary' })}
+					disabled={!!deleteRecipe.pending}
+				>
+					<XIcon />
+					Cancel
+				</Dialog.Close>
+				<Button variant="destructive" type="submit" disabled={!!deleteRecipe.pending}>
+					<TrashIcon />
+					Delete
+				</Button>
 			</Dialog.Footer>
 		</form>
 	</Dialog.Content>
