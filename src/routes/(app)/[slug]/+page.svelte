@@ -191,7 +191,7 @@
 			</div>
 		</div>
 		<div class="hidden md:block">
-			<div class="flex flex-row items-center gap-2 pb-2">
+			<div class="flex flex-row items-center gap-2 pb-4">
 				<h3 class="font-fraunces text-3xl font-semibold tracking-tight">Ingredients</h3>
 				{#if recipe.portions != null}
 					<span class="flex items-center gap-1 text-sm text-zinc-500">
