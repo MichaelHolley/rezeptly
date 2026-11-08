@@ -25,7 +25,7 @@ export function groupIngredients({
 		{
 			id: null,
 			heading: null,
-			items: ingredients.filter(({ sectionId }) => sectionId === null)
+			items: ingredients
 		},
 		...ingredientSections.map((section) => ({
 			id: section.id,

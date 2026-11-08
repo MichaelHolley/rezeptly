@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { and, asc, eq, gt, isNull, max, sql } from 'drizzle-orm';
+import { and, asc, eq, isNull, max, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { ingredientSections, ingredients, recipes } from '../db/schema';
 import type {
@@ -23,7 +23,7 @@ type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 const ingredientOrder = [asc(ingredients.ingredientOrder), asc(ingredients.id)];
 
 export const orderedIngredientRelations = {
-	ingredients: { orderBy: ingredientOrder },
+	ingredients: { where: isNull(ingredients.sectionId), orderBy: ingredientOrder },
 	ingredientSections: {
 		orderBy: [asc(ingredientSections.sectionOrder)],
 		with: { ingredients: { orderBy: ingredientOrder } }
@@ -92,39 +92,21 @@ export const updateIngredient = async (
 	id: IngredientId,
 	name: string
 ): Promise<Ingredient> => {
-	return db.transaction(async (tx) => {
-		await lockRecipe(tx, recipeId);
-		const [updated] = await tx
-			.update(ingredients)
-			.set({ name })
-			.where(and(eq(ingredients.id, id), eq(ingredients.recipeId, recipeId)))
-			.returning();
-		if (!updated) hierarchyError('The ingredient no longer exists.');
-		return updated;
-	});
+	const [updated] = await db
+		.update(ingredients)
+		.set({ name })
+		.where(and(eq(ingredients.id, id), eq(ingredients.recipeId, recipeId)))
+		.returning();
+	if (!updated) hierarchyError('The ingredient no longer exists.');
+	return updated;
 };
 
 export const deleteIngredient = async (recipeId: RecipeId, id: IngredientId): Promise<void> => {
-	await db.transaction(async (tx) => {
-		await lockRecipe(tx, recipeId);
-		const [ingredient] = await tx
-			.select()
-			.from(ingredients)
-			.where(and(eq(ingredients.id, id), eq(ingredients.recipeId, recipeId)));
-		if (!ingredient) hierarchyError('The ingredient no longer exists.');
-
-		await tx.delete(ingredients).where(eq(ingredients.id, id));
-		await tx
-			.update(ingredients)
-			.set({ ingredientOrder: sql`${ingredients.ingredientOrder} - 1` })
-			.where(
-				and(
-					eq(ingredients.recipeId, recipeId),
-					sectionCondition(ingredient.sectionId),
-					gt(ingredients.ingredientOrder, ingredient.ingredientOrder)
-				)
-			);
-	});
+	const [deleted] = await db
+		.delete(ingredients)
+		.where(and(eq(ingredients.id, id), eq(ingredients.recipeId, recipeId)))
+		.returning({ id: ingredients.id });
+	if (!deleted) hierarchyError('The ingredient no longer exists.');
 };
 
 export const createIngredientSection = async (
@@ -150,16 +132,13 @@ export const renameIngredientSection = async (
 	sectionId: IngredientSectionId,
 	name: string
 ): Promise<IngredientSection> => {
-	return db.transaction(async (tx) => {
-		await lockRecipe(tx, recipeId);
-		const [updated] = await tx
-			.update(ingredientSections)
-			.set({ name })
-			.where(and(eq(ingredientSections.id, sectionId), eq(ingredientSections.recipeId, recipeId)))
-			.returning();
-		if (!updated) hierarchyError('The ingredient section no longer exists.');
-		return updated;
-	});
+	const [updated] = await db
+		.update(ingredientSections)
+		.set({ name })
+		.where(and(eq(ingredientSections.id, sectionId), eq(ingredientSections.recipeId, recipeId)))
+		.returning();
+	if (!updated) hierarchyError('The ingredient section no longer exists.');
+	return updated;
 };
 
 export const deleteIngredientSection = async (
@@ -168,39 +147,24 @@ export const deleteIngredientSection = async (
 ): Promise<void> => {
 	await db.transaction(async (tx) => {
 		await lockRecipe(tx, recipeId);
-		const [section] = await tx
-			.select()
-			.from(ingredientSections)
-			.where(and(eq(ingredientSections.id, sectionId), eq(ingredientSections.recipeId, recipeId)));
-		if (!section) hierarchyError('The ingredient section no longer exists.');
-
 		const [position] = await tx
 			.select({ value: max(ingredients.ingredientOrder) })
 			.from(ingredients)
 			.where(and(eq(ingredients.recipeId, recipeId), isNull(ingredients.sectionId)));
-		const grouped = await tx
-			.select()
-			.from(ingredients)
-			.where(and(eq(ingredients.recipeId, recipeId), eq(ingredients.sectionId, sectionId)))
-			.orderBy(asc(ingredients.ingredientOrder));
 
-		for (const [index, ingredient] of grouped.entries()) {
-			await tx
-				.update(ingredients)
-				.set({ sectionId: null, ingredientOrder: (position?.value ?? 0) + index + 1 })
-				.where(eq(ingredients.id, ingredient.id));
-		}
-
-		await tx.delete(ingredientSections).where(eq(ingredientSections.id, sectionId));
 		await tx
-			.update(ingredientSections)
-			.set({ sectionOrder: sql`${ingredientSections.sectionOrder} - 1` })
-			.where(
-				and(
-					eq(ingredientSections.recipeId, recipeId),
-					gt(ingredientSections.sectionOrder, section.sectionOrder)
-				)
-			);
+			.update(ingredients)
+			.set({
+				sectionId: null,
+				ingredientOrder: sql`${ingredients.ingredientOrder} + ${position?.value ?? 0}`
+			})
+			.where(and(eq(ingredients.recipeId, recipeId), eq(ingredients.sectionId, sectionId)));
+
+		const [deleted] = await tx
+			.delete(ingredientSections)
+			.where(and(eq(ingredientSections.id, sectionId), eq(ingredientSections.recipeId, recipeId)))
+			.returning({ id: ingredientSections.id });
+		if (!deleted) hierarchyError('The ingredient section no longer exists.');
 	});
 };
 
@@ -231,28 +195,24 @@ export const reorderIngredientHierarchy = async (
 			hierarchyError('The ingredients changed. Refresh and try again.');
 		}
 
-		for (const [index, section] of hierarchy.sections.entries()) {
-			await tx
+		const sectionUpdates = hierarchy.sections.map(({ sectionId }, index) =>
+			tx
 				.update(ingredientSections)
 				.set({ sectionOrder: index + 1 })
-				.where(eq(ingredientSections.id, section.sectionId));
-		}
-
-		const blocks = [
+				.where(eq(ingredientSections.id, sectionId))
+		);
+		const ingredientUpdates = [
 			{ sectionId: null, ingredientIds: hierarchy.ungroupedIngredientIds },
-			...hierarchy.sections.map(({ sectionId, ingredientIds }) => ({
-				sectionId,
-				ingredientIds
-			}))
-		];
-		for (const block of blocks) {
-			for (const [index, ingredientId] of block.ingredientIds.entries()) {
-				await tx
+			...hierarchy.sections
+		].flatMap(({ sectionId, ingredientIds }) =>
+			ingredientIds.map((ingredientId, index) =>
+				tx
 					.update(ingredients)
-					.set({ sectionId: block.sectionId, ingredientOrder: index + 1 })
-					.where(eq(ingredients.id, ingredientId));
-			}
-		}
+					.set({ sectionId, ingredientOrder: index + 1 })
+					.where(eq(ingredients.id, ingredientId))
+			)
+		);
+		await Promise.all([...sectionUpdates, ...ingredientUpdates]);
 	});
 };
 

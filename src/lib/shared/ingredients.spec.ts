@@ -26,7 +26,7 @@ describe('ingredientNameGroups without empty sections', () => {
 		['ungrouped ingredients only', [salt], [], [{ heading: null, items: ['Salt'] }]],
 		[
 			'ungrouped first, sections in order, empty sections omitted',
-			[salt, tomato, spaghetti],
+			[salt],
 			[section(20, 'Sauce', [tomato]), section(21, 'Pasta', [spaghetti]), section(22, 'Empty', [])],
 			[
 				{ heading: null, items: ['Salt'] },
@@ -36,7 +36,7 @@ describe('ingredientNameGroups without empty sections', () => {
 		],
 		[
 			'no ungrouped group when every ingredient is in a section',
-			[tomato],
+			[],
 			[section(20, 'Sauce', [tomato])],
 			[{ heading: 'Sauce', items: ['Tomato'] }]
 		]

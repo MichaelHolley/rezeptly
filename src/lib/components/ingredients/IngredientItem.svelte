@@ -72,7 +72,7 @@
 	}
 </script>
 
-<div class="flex flex-row items-center gap-1" aria-label={ingredient.name}>
+<div class="flex flex-row items-center gap-1">
 	<button
 		type="button"
 		use:dragHandle

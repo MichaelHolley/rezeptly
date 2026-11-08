@@ -10,10 +10,8 @@ export type Recipe = typeof recipes.$inferSelect;
 export type NewRecipe = typeof recipes.$inferInsert;
 
 export type Ingredient = typeof ingredients.$inferSelect;
-export type NewIngredient = typeof ingredients.$inferInsert;
 
 export type IngredientSection = typeof ingredientSections.$inferSelect;
-export type NewIngredientSection = typeof ingredientSections.$inferInsert;
 export type IngredientSectionWithIngredients = IngredientSection & { ingredients: Ingredient[] };
 
 export type Instruction = typeof instructions.$inferSelect;
