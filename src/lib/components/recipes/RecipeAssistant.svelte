@@ -16,7 +16,7 @@
 	import SendIcon from '@lucide/svelte/icons/send';
 	import SquareIcon from '@lucide/svelte/icons/square';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { untrack } from 'svelte';
+	import { tick, untrack } from 'svelte';
 	import {
 		DefaultChatTransport,
 		isToolUIPart,
@@ -33,6 +33,7 @@
 
 	let open = $state(false);
 	let input = $state('');
+	let composer = $state<HTMLTextAreaElement | null>(null);
 	const assistantRecipeId = untrack(() => recipeId);
 
 	const chat = new Chat<RecipeAssistantMessage>({
@@ -95,6 +96,20 @@
 		await chat.sendMessage({ text });
 	}
 
+	async function toggle() {
+		open = !open;
+		if (!open) return;
+		await tick();
+		composer?.focus();
+	}
+
+	function handleWindowKeydown(event: KeyboardEvent) {
+		const modifier = event.metaKey || event.ctrlKey;
+		if (!modifier || event.shiftKey || event.altKey || event.key !== '.') return;
+		event.preventDefault();
+		void toggle();
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
@@ -102,6 +117,8 @@
 		}
 	}
 </script>
+
+<svelte:window onkeydown={handleWindowKeydown} />
 
 {#snippet approvalActions(approvalId: string)}
 	<div class="mt-3 flex gap-2">
@@ -314,6 +331,7 @@
 			}}
 		>
 			<Textarea
+				bind:ref={composer}
 				bind:value={input}
 				onkeydown={handleKeydown}
 				placeholder={pendingApprovals
