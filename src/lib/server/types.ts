@@ -1,6 +1,7 @@
-import type { ingredients, instructions, recipes, tags } from './db/schema';
+import type { IngredientGroup } from '#lib/shared/ingredients.js';
+import type { ingredientSections, ingredients, instructions, recipes, tags } from './db/schema';
 
-export type { IngredientId, RecipeId, TagId } from '#lib/api/schemas.js';
+export type { IngredientId, IngredientSectionId, RecipeId, TagId } from '#lib/api/schemas.js';
 export type { RecipeCourse } from '#lib/shared/course.js';
 
 export type TagCategory = 'type' | 'cuisine' | 'nutrition' | 'diet';
@@ -9,7 +10,9 @@ export type Recipe = typeof recipes.$inferSelect;
 export type NewRecipe = typeof recipes.$inferInsert;
 
 export type Ingredient = typeof ingredients.$inferSelect;
-export type NewIngredient = typeof ingredients.$inferInsert;
+
+export type IngredientSection = typeof ingredientSections.$inferSelect;
+export type IngredientSectionWithIngredients = IngredientSection & { ingredients: Ingredient[] };
 
 export type Instruction = typeof instructions.$inferSelect;
 export type NewInstruction = typeof instructions.$inferInsert;
@@ -24,7 +27,7 @@ export type TagInput = {
 };
 
 export type RecipeWithDetails = Recipe & {
-	ingredients: Ingredient[];
+	ingredientGroups: IngredientGroup[];
 	instructions: Instruction[];
 	tags: Tag[];
 };

@@ -54,18 +54,18 @@
 				? 'text-zinc-500'
 				: 'text-zinc-700'}"
 		>
-			{#each blocks as block (block)}
+			{#each blocks as block, index (index)}
 				{#if block.type === 'prose'}
 					<p class="whitespace-pre-wrap">{block.text}</p>
 				{:else if block.type === 'unordered-list'}
 					<ul class="ml-5 list-outside list-disc space-y-1">
-						{#each block.items as item (item)}
+						{#each block.items as item, itemIndex (itemIndex)}
 							<li>{item.text}</li>
 						{/each}
 					</ul>
 				{:else}
 					<ol start={block.start} class="ml-5 list-outside list-decimal space-y-1">
-						{#each block.items as item (item)}
+						{#each block.items as item, itemIndex (itemIndex)}
 							<li>{item.text}</li>
 						{/each}
 					</ol>

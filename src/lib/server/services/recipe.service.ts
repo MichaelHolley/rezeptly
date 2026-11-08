@@ -1,9 +1,8 @@
 import { error } from '@sveltejs/kit';
-import { and, count, eq, ilike, inArray, like, ne, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, inArray, like, ne, or, sql, type SQL } from 'drizzle-orm';
 import { db } from '../db';
-import { ingredients, instructions, recipes, recipesToTags, tags } from '../db/schema';
+import { instructions, recipes, recipesToTags, tags } from '../db/schema';
 import type {
-	NewIngredient,
 	NewInstruction,
 	NewRecipe,
 	Recipe,
@@ -15,6 +14,12 @@ import type {
 } from '../types';
 import type { RecipeCourse } from '#lib/shared/course.js';
 import { deleteImage } from './image.service';
+import {
+	groupIngredients,
+	type IngredientNameGroup,
+	type IngredientRows
+} from '#lib/shared/ingredients.js';
+import { insertIngredientGroups, orderedIngredientRelations } from './ingredient.service';
 import { upsertTags } from './tag.service';
 import { generateSlug } from './util/generate-slug';
 import { recipeVisibility, type ReadOptions } from './util/recipe-visibility';
@@ -26,6 +31,11 @@ const flattenTags = <T extends { tags: { tag: Tag }[] }>(row: T) => ({
 	tags: row.tags.map((rt) => rt.tag)
 });
 
+const toRecipeWithDetails = <T extends IngredientRows & { tags: { tag: Tag }[] }>(row: T) => {
+	const { ingredients, ingredientSections, ...recipe } = flattenTags(row);
+	return { ...recipe, ingredientGroups: groupIngredients({ ingredients, ingredientSections }) };
+};
+
 export type RecipeFilter = {
 	search?: string;
 	tags?: string[];
@@ -36,6 +46,12 @@ export type RecipeFilter = {
 const escapeLike = (term: string) => term.replace(/[\\%_]/g, '\\$&');
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+const recipeDetailRelations = {
+	...orderedIngredientRelations,
+	instructions: { orderBy: [asc(instructions.stepOrder)] },
+	tags: { with: { tag: true as const } }
+};
 
 /** Appends `-2`, `-3`, … until the slug is free. `excludeId` keeps a recipe from colliding with itself. */
 const resolveUniqueSlug = async (tx: Tx, base: string, excludeId?: RecipeId): Promise<string> => {
@@ -123,18 +139,14 @@ export const getRecipeById = async (
 ): Promise<RecipeWithDetails> => {
 	const result = await db.query.recipes.findFirst({
 		where: and(eq(recipes.id, id), recipeVisibility(options)),
-		with: {
-			ingredients: true,
-			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
-			tags: { with: { tag: true } }
-		}
+		with: recipeDetailRelations
 	});
 
 	if (!result) {
 		error(404, `Recipe with ID ${id} not found`, { code: 'NOT_FOUND' });
 	}
 
-	return flattenTags(result);
+	return toRecipeWithDetails(result);
 };
 
 export const getRecipeBySlug = async (
@@ -143,23 +155,19 @@ export const getRecipeBySlug = async (
 ): Promise<RecipeWithDetails> => {
 	const result = await db.query.recipes.findFirst({
 		where: and(eq(recipes.slug, slug), recipeVisibility(options)),
-		with: {
-			ingredients: true,
-			instructions: { orderBy: (i, { asc }) => [asc(i.stepOrder)] },
-			tags: { with: { tag: true } }
-		}
+		with: recipeDetailRelations
 	});
 
 	if (!result) {
 		error(404, `Recipe with slug ${slug} not found`, { code: 'NOT_FOUND' });
 	}
 
-	return flattenTags(result);
+	return toRecipeWithDetails(result);
 };
 
 export const createRecipe = async (
 	data: Omit<NewRecipe, 'id' | 'slug' | 'createdAt'> & {
-		ingredients: Omit<NewIngredient, 'recipeId'>[];
+		ingredientGroups: IngredientNameGroup[];
 		instructions: Omit<NewInstruction, 'recipeId'>[];
 		tags: TagInput[];
 	}
@@ -188,14 +196,7 @@ export const createRecipe = async (
 			})
 			.returning();
 
-		if (data.ingredients && data.ingredients.length > 0) {
-			const newIngredients = data.ingredients.map((ingredient) => ({
-				...ingredient,
-				recipeId: createdRecipe.id
-			}));
-
-			await tx.insert(ingredients).values(newIngredients);
-		}
+		await insertIngredientGroups(tx, createdRecipe.id as RecipeId, data.ingredientGroups);
 
 		if (data.instructions && data.instructions.length > 0) {
 			const newInstructions = data.instructions.map((instruction) => ({

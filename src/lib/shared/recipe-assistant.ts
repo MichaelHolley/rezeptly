@@ -64,13 +64,30 @@ export const assistantDetailsProposalSchema = z.object({
 		)
 });
 
+const assistantIngredientGroupSchema = z.object({
+	heading: nullableTextSchema.describe(
+		'The ingredient section heading, or null for the ungrouped block'
+	),
+	items: z
+		.array(z.string().trim().min(1))
+		.describe('Every ingredient in this group, in its desired order')
+});
+
+const assistantIngredientGroupsSchema = z
+	.array(assistantIngredientGroupSchema)
+	.min(1)
+	.refine(
+		(groups) => groups.slice(1).every(({ heading }) => heading),
+		'Only the first group may be ungrouped; every later group must have a heading'
+	);
+
 export const assistantIngredientProposalSchema = z.object({
-	expected: z
-		.array(z.string().trim().min(1))
-		.describe('An exact copy of the complete current ingredient list, in its current order'),
-	replacement: z
-		.array(z.string().trim().min(1))
-		.describe('The complete desired ingredient list, including every unchanged ingredient')
+	expected: assistantIngredientGroupsSchema.describe(
+		'An exact copy of all current ingredient groups, including the ungrouped group, order and empty named sections'
+	),
+	replacement: assistantIngredientGroupsSchema.describe(
+		'The complete desired ingredient groups, including every unchanged group and ingredient. The ungrouped group (null heading) may be omitted or left empty when no ingredient should stay ungrouped. Removing a section keeps its ingredients: append them in order to the end of the ungrouped group. Only drop ingredients the writer explicitly asked to delete.'
+	)
 });
 
 export const assistantInstructionSchema = z.object({

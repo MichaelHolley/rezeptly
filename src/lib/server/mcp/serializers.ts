@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type { RecipeMetadata, RecipeWithDetails, Tag } from '../types';
 import type { recipeDetailSchema, recipeSummarySchema } from './schemas';
+import { ingredientNameGroups, nonEmptyGroups } from '#lib/shared/ingredients.js';
 
 /** Internal row ids are omitted; `slug` is the public handle for a recipe. */
 export const serializeSummary = (recipe: RecipeMetadata): z.infer<typeof recipeSummarySchema> => ({
@@ -21,7 +22,7 @@ export const serializeDetail = (
 ): z.infer<typeof recipeDetailSchema> => ({
 	...serializeSummary(recipe),
 	url: `${baseUrl}/${recipe.slug}`,
-	ingredients: recipe.ingredients.map((i) => i.name),
+	ingredients: nonEmptyGroups(ingredientNameGroups(recipe.ingredientGroups)),
 	instructions: recipe.instructions.map((i) => ({
 		heading: i.heading,
 		instructions: i.instructions,
