@@ -59,10 +59,9 @@
 	function overrideIngredients(update: (items: Ingredient[]) => Ingredient[]) {
 		return getRecipeBySlug(recipeSlug).withOverride((recipe) => ({
 			...recipe,
-			ingredients: update(recipe.ingredients),
-			ingredientSections: recipe.ingredientSections.map((section) => ({
-				...section,
-				ingredients: update(section.ingredients)
+			ingredientGroups: recipe.ingredientGroups.map((group) => ({
+				...group,
+				items: update(group.items)
 			}))
 		}));
 	}

@@ -1,4 +1,4 @@
-import type { Ingredient, RecipeWithDetails } from '#lib/server/types.js';
+import type { Ingredient, IngredientSectionWithIngredients } from '#lib/server/types.js';
 
 export type IngredientGroup = {
 	id: number | null;
@@ -11,33 +11,40 @@ export type IngredientNameGroup = {
 	items: string[];
 };
 
-type GroupableRecipe = Pick<RecipeWithDetails, 'ingredients' | 'ingredientSections'>;
+export type IngredientRows = {
+	ingredients: Ingredient[];
+	ingredientSections: IngredientSectionWithIngredients[];
+};
 
-export function groupIngredients(
-	recipe: GroupableRecipe,
-	includeEmptySections = true
-): IngredientGroup[] {
-	const groups = [
+/** Always starts with the ungrouped block, even when it is empty, followed by every section in order. */
+export function groupIngredients({
+	ingredients,
+	ingredientSections
+}: IngredientRows): IngredientGroup[] {
+	return [
 		{
 			id: null,
 			heading: null,
-			items: recipe.ingredients.filter(({ sectionId }) => sectionId === null)
+			items: ingredients.filter(({ sectionId }) => sectionId === null)
 		},
-		...recipe.ingredientSections.map((section) => ({
+		...ingredientSections.map((section) => ({
 			id: section.id,
 			heading: section.name,
 			items: section.ingredients
 		}))
 	];
-
-	return includeEmptySections ? groups : groups.filter(({ items }) => items.length > 0);
 }
 
-export function ingredientNameGroups(
-	recipe: GroupableRecipe,
-	includeEmptySections = true
-): IngredientNameGroup[] {
-	return groupIngredients(recipe, includeEmptySections).map(({ heading, items }) => ({
+export function nonEmptyGroups<T extends { items: unknown[] }>(groups: T[]): T[] {
+	return groups.filter(({ items }) => items.length > 0);
+}
+
+export function ingredientNames(groups: IngredientGroup[]): string[] {
+	return groups.flatMap(({ items }) => items.map(({ name }) => name));
+}
+
+export function ingredientNameGroups(groups: IngredientGroup[]): IngredientNameGroup[] {
+	return groups.map(({ heading, items }) => ({
 		heading,
 		items: items.map(({ name }) => name)
 	}));

@@ -10,6 +10,7 @@ import type {
 	RecipeId
 } from '../types';
 import {
+	groupIngredients,
 	ingredientNameGroups,
 	withUngroupedFirst,
 	type IngredientNameGroup
@@ -299,7 +300,10 @@ export const replaceIngredientsForRecipe = async (
 		});
 		if (
 			!current ||
-			listProposalIsStale(ingredientNameGroups(current), withUngroupedFirst(expected))
+			listProposalIsStale(
+				ingredientNameGroups(groupIngredients(current)),
+				withUngroupedFirst(expected)
+			)
 		) {
 			return false;
 		}

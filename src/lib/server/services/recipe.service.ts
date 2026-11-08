@@ -14,7 +14,11 @@ import type {
 } from '../types';
 import type { RecipeCourse } from '#lib/shared/course.js';
 import { deleteImage } from './image.service';
-import type { IngredientNameGroup } from '#lib/shared/ingredients.js';
+import {
+	groupIngredients,
+	type IngredientNameGroup,
+	type IngredientRows
+} from '#lib/shared/ingredients.js';
 import { insertIngredientGroups, orderedIngredientRelations } from './ingredient.service';
 import { upsertTags } from './tag.service';
 import { generateSlug } from './util/generate-slug';
@@ -26,6 +30,11 @@ const flattenTags = <T extends { tags: { tag: Tag }[] }>(row: T) => ({
 	...row,
 	tags: row.tags.map((rt) => rt.tag)
 });
+
+const toRecipeWithDetails = <T extends IngredientRows & { tags: { tag: Tag }[] }>(row: T) => {
+	const { ingredients, ingredientSections, ...recipe } = flattenTags(row);
+	return { ...recipe, ingredientGroups: groupIngredients({ ingredients, ingredientSections }) };
+};
 
 export type RecipeFilter = {
 	search?: string;
@@ -137,7 +146,7 @@ export const getRecipeById = async (
 		error(404, `Recipe with ID ${id} not found`, { code: 'NOT_FOUND' });
 	}
 
-	return flattenTags(result);
+	return toRecipeWithDetails(result);
 };
 
 export const getRecipeBySlug = async (
@@ -153,7 +162,7 @@ export const getRecipeBySlug = async (
 		error(404, `Recipe with slug ${slug} not found`, { code: 'NOT_FOUND' });
 	}
 
-	return flattenTags(result);
+	return toRecipeWithDetails(result);
 };
 
 export const createRecipe = async (

@@ -148,18 +148,14 @@
 					{/if}
 					{#if PermissionsStore.canEdit}
 						<IngredientsSheet
-							ingredients={recipe.ingredients}
-							ingredientSections={recipe.ingredientSections}
+							groups={recipe.ingredientGroups}
 							recipeId={recipe.id}
 							recipeSlug={recipe.slug}
 							portions={recipe.portions}
 						/>
 					{/if}
 				</div>
-				<IngredientsListComponent
-					ingredients={recipe.ingredients}
-					ingredientSections={recipe.ingredientSections}
-				/>
+				<IngredientsListComponent groups={recipe.ingredientGroups} />
 			</div>
 			<div>
 				<div class="flex flex-row items-center gap-1 pb-4">
@@ -204,18 +200,14 @@
 				{/if}
 				{#if PermissionsStore.canEdit}
 					<IngredientsSheet
-						ingredients={recipe.ingredients}
-						ingredientSections={recipe.ingredientSections}
+						groups={recipe.ingredientGroups}
 						recipeId={recipe.id}
 						recipeSlug={recipe.slug}
 						portions={recipe.portions}
 					/>
 				{/if}
 			</div>
-			<IngredientsListComponent
-				ingredients={recipe.ingredients}
-				ingredientSections={recipe.ingredientSections}
-			/>
+			<IngredientsListComponent groups={recipe.ingredientGroups} />
 		</div>
 	</div>
 

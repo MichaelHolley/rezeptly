@@ -302,7 +302,7 @@ function recipeContext(recipe: RecipeWithDetails): string {
 	return JSON.stringify({
 		details: detailsState(recipe),
 		tags: recipe.tags.map(({ name, category }) => ({ name, category })),
-		ingredients: ingredientNameGroups(recipe),
+		ingredients: ingredientNameGroups(recipe.ingredientGroups),
 		instructions: instructionState(recipe)
 	});
 }

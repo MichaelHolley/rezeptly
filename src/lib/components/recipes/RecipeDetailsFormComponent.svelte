@@ -42,7 +42,7 @@
 		label: formatDuration(min)!
 	}));
 
-	const hasIngredients = $derived(recipe.ingredients.length > 0);
+	const hasIngredients = $derived(recipe.ingredientGroups.some(({ items }) => items.length > 0));
 
 	async function handleSuggestTags() {
 		try {

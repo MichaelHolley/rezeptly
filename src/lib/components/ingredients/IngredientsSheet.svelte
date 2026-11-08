@@ -10,9 +10,9 @@
 	import { Button, buttonVariants } from '#lib/components/ui/button/index.js';
 	import { Input } from '#lib/components/ui/input/index.js';
 	import * as Sheet from '#lib/components/ui/sheet/index.js';
-	import { groupIngredients, type IngredientGroup } from '#lib/shared/ingredients.js';
+	import type { IngredientGroup } from '#lib/shared/ingredients.js';
 	import { reportError } from '#lib/shared/toast.js';
-	import type { Ingredient, IngredientSectionWithIngredients } from '#lib/server/types.js';
+	import type { Ingredient } from '#lib/server/types.js';
 	import PenIcon from '@lucide/svelte/icons/pen';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import UsersIcon from '@lucide/svelte/icons/users';
@@ -25,19 +25,17 @@
 	const {
 		recipeId,
 		recipeSlug,
-		ingredients,
-		ingredientSections,
+		groups: serverGroups,
 		portions
 	}: {
 		recipeId: number;
 		recipeSlug: string;
-		ingredients: Ingredient[];
-		ingredientSections: IngredientSectionWithIngredients[];
+		groups: IngredientGroup[];
 		portions: number | null;
 	} = $props();
 
 	let draftPortions = $state(untrack(() => portions));
-	let groups = $derived(groupIngredients({ ingredients, ingredientSections }));
+	let groups = $derived(serverGroups);
 	let editingId = $state<number | null>(null);
 	let isSaving = $state(false);
 	let announcement = $state('');

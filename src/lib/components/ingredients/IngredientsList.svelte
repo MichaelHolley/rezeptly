@@ -1,22 +1,13 @@
 <script lang="ts">
-	import type { Ingredient, IngredientSectionWithIngredients } from '#lib/server/types.js';
-	import { groupIngredients } from '#lib/shared/ingredients.js';
+	import { nonEmptyGroups, type IngredientGroup } from '#lib/shared/ingredients.js';
 
-	const {
-		ingredients,
-		ingredientSections,
-		class: className
-	}: {
-		ingredients: Ingredient[];
-		ingredientSections: IngredientSectionWithIngredients[];
-		class?: string;
-	} = $props();
+	const { groups, class: className }: { groups: IngredientGroup[]; class?: string } = $props();
 
-	const groups = $derived(groupIngredients({ ingredients, ingredientSections }, false));
+	const visibleGroups = $derived(nonEmptyGroups(groups));
 </script>
 
 <div class={[className, 'flex max-w-sm flex-col gap-5']}>
-	{#each groups as group (group.id ?? 'ungrouped')}
+	{#each visibleGroups as group (group.id ?? 'ungrouped')}
 		<section class="flex flex-col gap-3">
 			{#if group.heading}<h4 class="font-semibold">{group.heading}</h4>{/if}
 			<ul class="flex flex-col gap-3">

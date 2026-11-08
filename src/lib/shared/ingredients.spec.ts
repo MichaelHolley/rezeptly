@@ -1,6 +1,6 @@
 import type { Ingredient, IngredientSectionWithIngredients } from '#lib/server/types.js';
 import { describe, expect, it } from 'vitest';
-import { ingredientNameGroups } from './ingredients';
+import { groupIngredients, ingredientNameGroups, nonEmptyGroups } from './ingredients';
 
 const ingredient = (id: number, name: string, sectionId: number | null = null): Ingredient => ({
 	id,
@@ -41,6 +41,8 @@ describe('ingredientNameGroups without empty sections', () => {
 			[{ heading: 'Sauce', items: ['Tomato'] }]
 		]
 	])('groups %s', (_, ingredients, ingredientSections, expected) => {
-		expect(ingredientNameGroups({ ingredients, ingredientSections }, false)).toEqual(expected);
+		expect(
+			nonEmptyGroups(ingredientNameGroups(groupIngredients({ ingredients, ingredientSections })))
+		).toEqual(expected);
 	});
 });

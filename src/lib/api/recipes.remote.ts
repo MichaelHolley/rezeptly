@@ -12,6 +12,7 @@ import {
 	buildRecipeInput
 } from '#lib/server/services/util/build-recipe-input.js';
 import { resolveTags } from '#lib/server/services/util/resolve-tags.js';
+import { ingredientNames } from '#lib/shared/ingredients.js';
 import type { TagCategory, TagInput } from '#lib/server/types.js';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -326,7 +327,8 @@ export const suggestRecipeTags = command(recipeIdSchema, async (recipeId) => {
 
 	const recipe = await recipeService.getRecipeById(recipeId, { includeDrafts: true });
 
-	if (recipe.ingredients.length === 0) {
+	const names = ingredientNames(recipe.ingredientGroups);
+	if (names.length === 0) {
 		return EMPTY_TAG_SUGGESTIONS;
 	}
 
@@ -336,7 +338,7 @@ export const suggestRecipeTags = command(recipeIdSchema, async (recipeId) => {
 			name: recipe.name,
 			description: recipe.description,
 			course: recipe.course,
-			ingredientNames: recipe.ingredients.map((i) => i.name),
+			ingredientNames: names,
 			instructionHeadings: recipe.instructions
 				.map((i) => i.heading)
 				.filter((heading): heading is string => Boolean(heading))
@@ -430,7 +432,7 @@ export const generateRecipeImage = command(recipeIdSchema, async (recipeId) => {
 		name: recipe.name,
 		description: recipe.description,
 		course: recipe.course,
-		ingredientNames: recipe.ingredients.map(({ name }) => name),
+		ingredientNames: ingredientNames(recipe.ingredientGroups),
 		instructionHeadings: recipe.instructions.flatMap(({ heading }) =>
 			heading?.trim() ? [heading.trim()] : []
 		)

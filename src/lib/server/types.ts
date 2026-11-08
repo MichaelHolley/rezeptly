@@ -1,3 +1,4 @@
+import type { IngredientGroup } from '#lib/shared/ingredients.js';
 import type { ingredientSections, ingredients, instructions, recipes, tags } from './db/schema';
 
 export type { IngredientId, IngredientSectionId, RecipeId, TagId } from '#lib/api/schemas.js';
@@ -28,8 +29,7 @@ export type TagInput = {
 };
 
 export type RecipeWithDetails = Recipe & {
-	ingredients: Ingredient[];
-	ingredientSections: IngredientSectionWithIngredients[];
+	ingredientGroups: IngredientGroup[];
 	instructions: Instruction[];
 	tags: Tag[];
 };
