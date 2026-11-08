@@ -105,7 +105,7 @@
 
 	function handleWindowKeydown(event: KeyboardEvent) {
 		const modifier = event.metaKey || event.ctrlKey;
-		if (!modifier || event.shiftKey || event.altKey || event.key !== '.') return;
+		if (!modifier || event.repeat || event.shiftKey || event.altKey || event.key !== '.') return;
 		event.preventDefault();
 		void toggle();
 	}
