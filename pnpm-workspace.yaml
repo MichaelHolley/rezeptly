@@ -2,6 +2,11 @@ packages: []
 
 minimumReleaseAge: 4320
 
+# The PWA plugin bundles registerSW.js and sw.js from imports resolved at the project root.
+publicHoistPattern:
+  - '@vite-pwa/*'
+  - '@unplugin-pwa/*'
+
 allowBuilds:
   esbuild: true
   sharp: true

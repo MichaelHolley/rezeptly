@@ -1,3 +1,4 @@
+/// <reference types="@unplugin-pwa/core/info" />
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 import type { ROLE } from '#lib/server/auth/permissions.js';
