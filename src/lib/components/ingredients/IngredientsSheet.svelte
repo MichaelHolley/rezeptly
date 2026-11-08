@@ -35,24 +35,20 @@
 	} = $props();
 
 	let draftPortions = $state(untrack(() => portions));
-	let groups = $derived(serverGroups);
+	let dragGroups = $state.raw<IngredientGroup[] | null>(null);
 	let editingId = $state<number | null>(null);
-	let isSaving = $state(false);
 	let announcement = $state('');
-	let dragSnapshot: IngredientGroup[] | null = null;
 	let persistTimer: ReturnType<typeof setTimeout> | undefined;
 
+	const groups = $derived(dragGroups ?? serverGroups);
 	const namedGroups = $derived(groups.slice(1));
+	const isSaving = $derived(reorderIngredientHierarchy.pending > 0);
 	const sectionForm = $derived(addIngredientSection.for(recipeId));
 
 	const savePortions = useDebounce(
 		(value: number | null) => updateRecipePortions({ recipeId, portions: value }),
 		400
 	);
-
-	function cloneGroups(source: IngredientGroup[]): IngredientGroup[] {
-		return source.map((group) => ({ ...group, items: [...group.items] }));
-	}
 
 	function handlePortionsChange(value: number | null) {
 		draftPortions = value;
@@ -62,92 +58,73 @@
 		});
 	}
 
-	function beginDrag() {
-		dragSnapshot ??= cloneGroups(groups);
+	function swap<T>(items: T[], from: number, to: number): T[] {
+		const next = [...items];
+		[next[from], next[to]] = [next[to], next[from]];
+		return next;
 	}
 
-	function replaceGroupItems(groupId: number | null, items: Ingredient[]) {
-		groups = groups.map((group) => (group.id === groupId ? { ...group, items } : group));
+	function withItems(groupId: number | null, items: Ingredient[]): IngredientGroup[] {
+		return groups.map((group) => (group.id === groupId ? { ...group, items } : group));
 	}
 
-	function hierarchyInput() {
-		return {
-			recipeId,
-			ungroupedIngredientIds: groups[0]?.items.map(({ id }) => id) ?? [],
-			sections: groups.slice(1).map((group) => ({
-				sectionId: group.id!,
-				ingredientIds: group.items.map(({ id }) => id)
-			}))
-		};
-	}
-
-	async function persist(previous: IngredientGroup[], successMessage: string) {
-		if (isSaving) return;
-		isSaving = true;
+	async function persist(next: IngredientGroup[], successMessage: string) {
+		const query = getRecipeBySlug(recipeSlug);
 		try {
-			await reorderIngredientHierarchy(hierarchyInput());
+			await reorderIngredientHierarchy({
+				recipeId,
+				ungroupedIngredientIds: next[0].items.map(({ id }) => id),
+				sections: next.slice(1).map((group) => ({
+					sectionId: group.id!,
+					ingredientIds: group.items.map(({ id }) => id)
+				}))
+			}).updates(query.withOverride((recipe) => ({ ...recipe, ingredientGroups: next })));
 			announcement = successMessage;
 		} catch (error) {
-			groups = previous;
 			reportError(error);
-			getRecipeBySlug(recipeSlug).refresh().catch(reportError);
+			query.refresh().catch(reportError);
 			announcement = 'The previous ingredient order was restored.';
 		} finally {
-			isSaving = false;
-			dragSnapshot = null;
+			dragGroups = null;
 		}
 	}
 
 	function scheduleDragSave() {
 		// A drag across sections finalizes both zones; defer so they persist as one save.
-		if (persistTimer) clearTimeout(persistTimer);
+		clearTimeout(persistTimer);
 		persistTimer = setTimeout(() => {
-			const previous = dragSnapshot;
-			if (previous) void persist(previous, 'Ingredient order saved.');
+			if (dragGroups) void persist(dragGroups, 'Ingredient order saved.');
 		}, 0);
 	}
 
 	function handleSectionDnd(event: CustomEvent<DndEvent<IngredientGroup>>, finalized: boolean) {
-		beginDrag();
-		groups = [groups[0], ...event.detail.items];
+		dragGroups = [groups[0], ...event.detail.items];
 		if (finalized) scheduleDragSave();
 	}
 
 	function handleIngredientDnd(groupId: number | null, items: Ingredient[], finalized: boolean) {
-		beginDrag();
-		replaceGroupItems(groupId, items);
+		dragGroups = withItems(groupId, items);
 		if (finalized) scheduleDragSave();
 	}
 
 	function moveSection(groupId: number, direction: -1 | 1) {
-		if (isSaving) return;
-		const previous = cloneGroups(groups);
 		const index = groups.findIndex(({ id }) => id === groupId);
 		const target = index + direction;
-		if (index < 1 || target < 1 || target >= groups.length) return;
-		const next = cloneGroups(groups);
-		[next[index], next[target]] = [next[target], next[index]];
-		groups = next;
-		void persist(previous, `${groups[target].heading} moved ${direction < 0 ? 'up' : 'down'}.`);
+		if (isSaving || index < 1 || target < 1 || target >= groups.length) return;
+		void persist(
+			swap(groups, index, target),
+			`${groups[index].heading} moved ${direction < 0 ? 'up' : 'down'}.`
+		);
 	}
 
 	function moveIngredientWithin(groupId: number | null, ingredientId: number, direction: -1 | 1) {
-		if (isSaving) return;
-		const previous = cloneGroups(groups);
-		const groupIndex = groups.findIndex(({ id }) => id === groupId);
-		const itemIndex = groups[groupIndex]?.items.findIndex(({ id }) => id === ingredientId) ?? -1;
-		const target = itemIndex + direction;
-		if (groupIndex < 0 || itemIndex < 0 || target < 0 || target >= groups[groupIndex].items.length)
-			return;
-		const next = cloneGroups(groups);
-		[next[groupIndex].items[itemIndex], next[groupIndex].items[target]] = [
-			next[groupIndex].items[target],
-			next[groupIndex].items[itemIndex]
-		];
-		groups = next;
+		const items = groups.find(({ id }) => id === groupId)?.items ?? [];
+		const index = items.findIndex(({ id }) => id === ingredientId);
+		const target = index + direction;
+		if (isSaving || index < 0 || target < 0 || target >= items.length) return;
 		void persist(
-			previous,
-			`${groups[groupIndex].items[target].name} moved ${direction < 0 ? 'up' : 'down'}.`
+			withItems(groupId, swap(items, index, target)),
+			`${items[index].name} moved ${direction < 0 ? 'up' : 'down'}.`
 		);
 	}
 
@@ -156,20 +133,17 @@
 		ingredientId: number,
 		targetGroupId: number | null
 	) {
-		if (isSaving || groupId === targetGroupId) return;
-		const previous = cloneGroups(groups);
-		const next = cloneGroups(groups);
-		const source = next.find(({ id }) => id === groupId);
-		const target = next.find(({ id }) => id === targetGroupId);
-		const itemIndex = source?.items.findIndex(({ id }) => id === ingredientId) ?? -1;
-		if (!source || !target || itemIndex < 0) return;
-		const [ingredient] = source.items.splice(itemIndex, 1);
-		target.items.push(ingredient);
-		groups = next;
-		void persist(
-			previous,
-			`${ingredient.name} moved to ${target.heading ?? 'ungrouped ingredients'}.`
-		);
+		const source = groups.find(({ id }) => id === groupId);
+		const target = groups.find(({ id }) => id === targetGroupId);
+		const ingredient = source?.items.find(({ id }) => id === ingredientId);
+		if (isSaving || !source || !target || !ingredient || source === target) return;
+		const next = groups.map((group) => {
+			if (group === source)
+				return { ...group, items: group.items.filter((item) => item !== ingredient) };
+			if (group === target) return { ...group, items: [...group.items, ingredient] };
+			return group;
+		});
+		void persist(next, `${ingredient.name} moved to ${target.heading ?? 'ungrouped ingredients'}.`);
 	}
 </script>
 
