@@ -35,6 +35,8 @@ export async function createRecipe(
 
 /** svelte-dnd-action ignores Playwright's single-jump `dragTo`; it needs gradual pointer moves. */
 export async function dragBelow(page: Page, source: Locator, target: Locator) {
+	// Raw mouse events skip actionability checks; handles stay disabled while a save runs.
+	await expect(source).toBeEnabled();
 	await source.hover();
 	const from = (await source.boundingBox())!;
 	const to = (await target.boundingBox())!;
