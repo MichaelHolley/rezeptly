@@ -70,7 +70,9 @@ export async function generateRecipeImage(
 		model: createOpenRouter({ apiKey }).imageModel('openai/gpt-image-2.5-flare'),
 		prompt: [
 			'Create a realistic, appetizing editorial food photograph of the finished dish.',
-			'Use natural lighting and a clean, opaque background. Show the food and appropriate tableware, plus a few raw or whole key ingredients arranged subtly to the side as decoration, like a cookbook photo. Keep the plated dish the clear focus — the ingredients should be a light garnish touch, not clutter. A utensil (fork, knife, or spoon) may appear beside the plate if it fits the scene naturally, but it is not required.',
+			'Style the scene around this specific dish and its culinary origin, as a food stylist would for a regional cookbook. Choose the serving vessel, table surface, textiles, props, camera angle and lighting so they suit the dish and the country or region it comes from — e.g. a cast-iron skillet on rough wood, a hand-painted ceramic bowl on tiles, a lacquered tray with chopsticks, or the baking tin the dish was made in.',
+			'Avoid the generic stock look: no default white plate on a plain light-grey background with a fork beside it. Vary materials, colors and textures, and pick whichever angle shows the dish best (top-down, 45°, low eye-level or a tight close-up).',
+			'Props are optional and should be few and relevant — key ingredients, a fitting drink, textiles or serving utensils. Keep the dish the clear focus and the scene uncluttered.',
 			'Do not include people, text, branding, logos, packaging, watermarks, or recipe-page imagery.',
 			...details
 		].join('\n'),
