@@ -67,7 +67,7 @@ export async function generateRecipeImage(
 	].filter(Boolean);
 
 	const { image } = await generateImage({
-		model: createOpenRouter({ apiKey }).imageModel('openai/gpt-image-2.5-flare'),
+		model: createOpenRouter({ apiKey }).imageModel('openai/gpt-image-2.6-sunburst'),
 		prompt: [
 			'Create a realistic, appetizing editorial food photograph of the finished dish.',
 			'Style the scene around this specific dish and its culinary origin, as a food stylist would for a regional cookbook. Choose the serving vessel, table surface, textiles, props, camera angle and lighting so they suit the dish and the country or region it comes from — e.g. a cast-iron skillet on rough wood, a hand-painted ceramic bowl on tiles, a lacquered tray with chopsticks, or the baking tin the dish was made in.',
