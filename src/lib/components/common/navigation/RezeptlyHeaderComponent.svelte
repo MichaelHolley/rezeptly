@@ -1,11 +1,5 @@
-<script lang="ts">
-	import UtensilsIcon from '@lucide/svelte/icons/utensils';
-</script>
-
-<a href="/" class="flex flex-row items-center gap-3">
-	<div class="p-2 rounded-full bg-orange-500 drop-shadow-md">
-		<UtensilsIcon class="size-6 sm:size-6 stroke-3 drop-shadow-sm stroke-neutral-100" />
-	</div>
+<a href="/" aria-label="rezeptly" class="flex flex-row items-center gap-3">
+	<img src="/favicon.svg" alt="" class="size-10 drop-shadow-md" />
 	<h1 class="font-modak hidden pt-2 text-4xl text-orange-500 text-shadow-md sm:block italic">
 		rezeptly
 	</h1>

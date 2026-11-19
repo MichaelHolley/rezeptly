@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-  <circle cx="12" cy="12" r="12" fill="white"/>
-  <g transform="translate(4, 4) scale(0.666)" stroke="oklch(0.646 0.222 41.116)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-    <path d="M7 2v20"/>
-    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="14 10 182 182" fill="none" role="img" aria-label="Rezeptly"><title>Rezeptly</title><g transform="translate(100 100) rotate(12) scale(0.88) translate(-100 -96)"><path d="M34 14a8 8 0 0 1 16 0v34h6V14a8 8 0 0 1 16 0v34h6V14a8 8 0 0 1 16 0v52c0 14-11 26-26 26h-8c-15 0-26-12-26-26Z" fill="#f54900"/><path d="M52 100h28l-6 82a8 8 0 0 1-16 0Z" fill="#9f2d00"/><path d="M118 8c30 4 48 30 48 66v26h-48Z" fill="#f54900"/><path d="M124 108h38l-8 74a8 8 0 0 1-16 0Z" fill="#9f2d00"/></g></svg>
